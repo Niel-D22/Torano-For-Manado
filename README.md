@@ -1,12 +1,12 @@
-# Bakudapa
+# Torano
 
-Bakudapa adalah platform job portal untuk pekerja informal di Manado, termasuk ART, tukang harian, kru event adat, dan montir panggilan.
+torano adalah platform job portal untuk pekerja informal di Manado, termasuk ART, tukang harian, kru event adat, dan montir panggilan.
 
 ## Struktur folder
 
 - frontend/ : aplikasi React + Vite + Tailwind CSS + React Router
 - backend/ : API Express + Supabase
-- .claude/skills/ : tempat skill dan instruksi khusus
+
 
 ## Cara menjalankan development
 
