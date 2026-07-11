@@ -4,7 +4,8 @@ import logo from "../assets/LOGO.png";
 const navItems = [
   { to: "/cari", label: "Cari Tenaga Kerja" },
   { to: "/peta", label: "Peta" },
-  { to: "/#cara-kerja", label: "Cara Kerja" },
+  { to: "/chat", label: "Pesan" },
+  { to: "/mitra", label: "Mode Pekerja" },
 ];
 
 const Navbar = () => {

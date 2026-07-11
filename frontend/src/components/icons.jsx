@@ -61,3 +61,54 @@ export const MapIcon = (props) => (
     <path d="M9 4v14M15 6v14" />
   </svg>
 );
+
+export const SendIcon = (props) => (
+  <svg viewBox="0 0 24 24" {...base} {...props}>
+    <path d="M4 12 20 4l-4 16-4-6-8-2Z" />
+  </svg>
+);
+
+export const PlusIcon = (props) => (
+  <svg viewBox="0 0 24 24" {...base} {...props}>
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+);
+
+export const PhoneIcon = (props) => (
+  <svg viewBox="0 0 24 24" {...base} {...props}>
+    <path d="M4 5c0 8 7 15 15 15l1-4-4-2-2 2a11 11 0 0 1-6-6l2-2-2-4-4 1Z" />
+  </svg>
+);
+
+export const CheckIcon = (props) => (
+  <svg viewBox="0 0 24 24" {...base} {...props}>
+    <path d="m5 13 4 4 10-11" />
+  </svg>
+);
+
+export const ClockIcon = (props) => (
+  <svg viewBox="0 0 24 24" {...base} {...props}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 7.5V12l3 2" />
+  </svg>
+);
+
+export const BellIcon = (props) => (
+  <svg viewBox="0 0 24 24" {...base} {...props}>
+    <path d="M6 10a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" />
+    <path d="M10 20a2 2 0 0 0 4 0" />
+  </svg>
+);
+
+export const PowerIcon = (props) => (
+  <svg viewBox="0 0 24 24" {...base} {...props}>
+    <path d="M12 4v8" />
+    <path d="M7 6a8 8 0 1 0 10 0" />
+  </svg>
+);
+
+export const CloseIcon = (props) => (
+  <svg viewBox="0 0 24 24" {...base} {...props}>
+    <path d="M6 6l12 12M18 6 6 18" />
+  </svg>
+);

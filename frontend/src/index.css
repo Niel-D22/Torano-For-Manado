@@ -5,9 +5,9 @@
   --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     sans-serif;
 
-  --color-paper: #f6f9f4; /* latar halaman */
-  --color-cloud: #eef3e8; /* permukaan lembut */
-  --color-line: #e3e8de; /* garis/border */
+  --color-paper: #f8f3ea; /* latar halaman — krem hangat (mengikuti BG hero) */
+  --color-cloud: #f0e9db; /* permukaan lembut */
+  --color-line: #e8dfcf; /* garis/border */
   --color-ink: #0d3b2e; /* Hijau Tua — teks utama, wordmark */
   --color-moss: #6b7280; /* Abu-abu — teks sekunder */
   --color-forest: #16a34a; /* Hijau — warna primer */

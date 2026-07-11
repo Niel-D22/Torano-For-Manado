@@ -119,10 +119,13 @@ const WorkerProfile = () => {
           </div>
 
           <div className="flex shrink-0 gap-2">
-            <button className="ring-focus flex items-center gap-2 rounded-xl bg-forest px-5 py-3 font-semibold text-white transition-colors hover:bg-ink">
+            <Link
+              to={`/chat/${worker.id}`}
+              className="ring-focus flex items-center gap-2 rounded-xl bg-forest px-5 py-3 font-semibold text-white transition-colors hover:bg-ink"
+            >
               <ChatIcon className="h-5 w-5" />
               Chat & Tawar
-            </button>
+            </Link>
             <button className="ring-focus rounded-xl border border-line bg-white px-5 py-3 font-semibold text-forest transition-colors hover:border-forest">
               Booking
             </button>
