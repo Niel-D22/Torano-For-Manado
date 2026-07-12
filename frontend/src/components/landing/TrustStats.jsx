@@ -39,7 +39,7 @@ const stats = [
 ];
 
 const TrustStats = () => (
-  <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:py-28">
+  <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:py-28">
     {/* Strip statistik — ringan, tanpa banner berat */}
     <Reveal>
       <dl className="grid gap-10 text-center sm:grid-cols-3 sm:divide-x sm:divide-line">

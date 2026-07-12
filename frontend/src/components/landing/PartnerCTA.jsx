@@ -23,7 +23,7 @@ const PartnerCTA = () => (
       aria-hidden="true"
     />
 
-    <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:py-28">
+    <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:py-28">
       <Reveal className="max-w-xl">
         <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
           Punya keahlian?{" "}

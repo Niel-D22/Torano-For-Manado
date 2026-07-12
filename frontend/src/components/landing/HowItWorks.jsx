@@ -124,7 +124,7 @@ const steps = [
 
 const HowItWorks = () => (
   <section className="py-24 lg:py-32">
-    <div className="mx-auto max-w-6xl px-4 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6">
       <Reveal>
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-moss">
           Cara kerja

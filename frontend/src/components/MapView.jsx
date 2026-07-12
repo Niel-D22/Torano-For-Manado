@@ -9,33 +9,24 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { MessageSquareText, Star, MapPin, ArrowRight } from "lucide-react";
 import { categoryMap, MANADO_CENTER } from "../data/workers";
-import { StarIcon, PinIcon, ArrowIcon } from "./icons";
+import { workerPhotos } from "../assets/workers/photos";
+import { useAuthGate } from "../lib/auth";
 
-const initials = (name) =>
-  name
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
-
+// Pin harga (mockup): pil "Rp90rb"; yang terpilih jadi hijau tua & lebih menonjol.
 const makeIcon = (worker, active) => {
-  const color = categoryMap[worker.category].color;
-  const size = active ? 44 : 38;
+  const label = `Rp${worker.priceMin}rb`;
   return L.divIcon({
-    className: "torano-pin",
-    html: `<div class="tp${active ? " tp-active" : ""}" style="--pin:${color}">
-             <span class="tp-body">${initials(worker.name)}</span>
-           </div>`,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size],
-    popupAnchor: [0, -size + 4],
+    className: "price-pin",
+    html: `<div class="pp${active ? " pp-active" : ""}">${label}</div>`,
+    iconSize: [66, 28],
+    iconAnchor: [33, 28],
+    popupAnchor: [0, -26],
   });
 };
 
-// Menggerakkan peta ke pekerja terpilih.
 function FlyTo({ worker }) {
   const map = useMap();
   useEffect(() => {
@@ -48,11 +39,11 @@ function FlyTo({ worker }) {
   return null;
 }
 
-// Pastikan peta menghitung ulang ukuran setelah kontainer siap (hindari tile kosong).
+// Recalculate ukuran setelah panel slide selesai agar tile tidak kosong.
 function AutoResize() {
   const map = useMap();
   useEffect(() => {
-    const t = setTimeout(() => map.invalidateSize(), 120);
+    const t = setTimeout(() => map.invalidateSize(), 480);
     return () => clearTimeout(t);
   }, [map]);
   return null;
@@ -60,6 +51,8 @@ function AutoResize() {
 
 const MapView = ({ workers, selectedId, onSelect }) => {
   const selected = workers.find((w) => w.id === selectedId) || null;
+  const navigate = useNavigate();
+  const gate = useAuthGate();
 
   return (
     <MapContainer
@@ -88,42 +81,50 @@ const MapView = ({ workers, selectedId, onSelect }) => {
             eventHandlers={{ click: () => onSelect(w.id) }}
           >
             <Popup>
-              <div className="w-56 font-sans">
-                <div className="flex items-center gap-2.5">
-                  <span
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-sm font-extrabold text-white"
-                    style={{ background: cat.color }}
-                  >
-                    {initials(w.name)}
-                  </span>
+              <div className="w-60 font-sans">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={workerPhotos[w.id]}
+                    alt={w.name}
+                    className="h-14 w-14 shrink-0 rounded-xl object-cover"
+                  />
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-ink">
-                      {w.name}
+                    <p className="truncate text-sm font-extrabold text-ink">{w.name}</p>
+                    <p className="truncate text-xs" style={{ color: cat.color }}>
+                      {cat.label}
                     </p>
-                    <p className="flex items-center gap-1 text-xs text-moss">
-                      <StarIcon className="h-3.5 w-3.5 text-sun" />
-                      {w.rating.toFixed(1)} · {cat.short}
+                    <p className="mt-0.5 flex items-center gap-1 text-xs text-moss">
+                      <Star className="h-3.5 w-3.5 fill-sun text-sun" />
+                      {w.rating.toFixed(1)} ({w.jobs} jobs)
                     </p>
                   </div>
                 </div>
 
                 <p className="mt-2 flex items-center gap-1.5 text-xs text-moss">
-                  <PinIcon className="h-3.5 w-3.5 text-leaf" />
-                  {w.area} · {w.distanceKm.toFixed(1)} km dari kamu
+                  <MapPin className="h-3.5 w-3.5 text-forest" />
+                  {w.area} · {w.distanceKm.toFixed(1)} km
                 </p>
-
-                <p className="mt-1.5 text-sm font-bold text-ink">
+                <p className="mt-1 font-extrabold text-forest">
                   Rp{w.priceMin}–{w.priceMax}rb
-                  <span className="text-xs font-medium text-moss"> /hari</span>
+                  <span className="text-xs font-semibold text-moss"> / jam</span>
                 </p>
 
-                <Link
-                  to={`/pekerja/${w.id}`}
-                  className="tp-cta mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-forest py-2 text-sm font-semibold text-white hover:bg-ink"
-                >
-                  Lihat Profil
-                  <ArrowIcon className="h-4 w-4" />
-                </Link>
+                <div className="mt-3 flex gap-2">
+                  <button
+                    onClick={() => gate(() => navigate(`/chat/${w.id}`))}
+                    className="tp-cta flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-forest py-2 text-sm font-bold text-white hover:bg-ink"
+                  >
+                    <MessageSquareText className="h-4 w-4" />
+                    Chat
+                  </button>
+                  <button
+                    onClick={() => navigate(`/pekerja/${w.id}`)}
+                    className="grid place-items-center rounded-lg border border-line px-2.5 text-forest hover:border-forest"
+                    aria-label="Lihat profil"
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </Popup>
           </Marker>

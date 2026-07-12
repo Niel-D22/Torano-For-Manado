@@ -1,5 +1,6 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getWorker, categoryMap } from "../data/workers";
+import { useAuthGate } from "../lib/auth";
 import MapView from "../components/MapView";
 import {
   StarIcon,
@@ -34,6 +35,12 @@ const portfolio = ["Sebelum", "Sesudah", "Hasil kerja", "Detail"];
 const WorkerProfile = () => {
   const { id } = useParams();
   const worker = getWorker(id);
+  const gate = useAuthGate();
+  const navigate = useNavigate();
+
+  // Lihat profil bebas; chat & booking butuh login (gerbang di sini).
+  const chat = () => gate(() => navigate(`/chat/${id}`));
+  const booking = () => gate(() => navigate(`/chat/${id}`));
 
   if (!worker) {
     return (
@@ -52,7 +59,7 @@ const WorkerProfile = () => {
   const cat = categoryMap[worker.category];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       <Link
         to="/cari"
         className="inline-flex items-center gap-1.5 text-sm font-semibold text-moss transition-colors hover:text-ink"
@@ -119,14 +126,17 @@ const WorkerProfile = () => {
           </div>
 
           <div className="flex shrink-0 gap-2">
-            <Link
-              to={`/chat/${worker.id}`}
+            <button
+              onClick={chat}
               className="ring-focus flex items-center gap-2 rounded-xl bg-forest px-5 py-3 font-semibold text-white transition-colors hover:bg-ink"
             >
               <ChatIcon className="h-5 w-5" />
               Chat & Tawar
-            </Link>
-            <button className="ring-focus rounded-xl border border-line bg-white px-5 py-3 font-semibold text-forest transition-colors hover:border-forest">
+            </button>
+            <button
+              onClick={booking}
+              className="ring-focus rounded-xl border border-line bg-white px-5 py-3 font-semibold text-forest transition-colors hover:border-forest"
+            >
               Booking
             </button>
           </div>
@@ -239,7 +249,10 @@ const WorkerProfile = () => {
               </div>
             </div>
 
-            <button className="ring-focus mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-forest py-3 font-semibold text-white transition-colors hover:bg-ink">
+            <button
+              onClick={booking}
+              className="ring-focus mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-forest py-3 font-semibold text-white transition-colors hover:bg-ink"
+            >
               <WalletIcon className="h-5 w-5" />
               Booking &amp; bayar aman
             </button>

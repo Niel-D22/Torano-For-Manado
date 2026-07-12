@@ -69,7 +69,7 @@ const Testimonials = () => {
   const at = (i) => testimonials[(offset + i + testimonials.length * 10) % testimonials.length];
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:py-32">
+    <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:py-32">
       <div className="grid items-start gap-10 lg:grid-cols-[0.75fr_1fr_1.15fr_1fr_1fr]">
         {/* Judul di kiri, sejajar dengan kartu */}
         <Reveal>

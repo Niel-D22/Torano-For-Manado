@@ -30,7 +30,7 @@ const Hero = () => (
       aria-hidden="true"
     />
 
-    <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pb-24 pt-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:pb-32 lg:pt-24">
+    <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-4 pb-24 pt-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:pb-32 lg:pt-24">
       {/* ── Kiri: pesan utama + pencarian ── */}
       <Reveal>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-sun/15 px-3 py-1.5 text-xs font-bold text-[#8a6a00]">

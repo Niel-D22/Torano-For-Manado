@@ -1,158 +1,164 @@
-import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import SearchBar from "../components/SearchBar";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Map, ArrowLeft } from "lucide-react";
 import WorkerCard from "../components/WorkerCard";
-import { categories, workers } from "../data/workers";
-import { MapIcon, SearchIcon } from "../components/icons";
-
-const sortOptions = [
-  { id: "distance", label: "Terdekat" },
-  { id: "rating", label: "Rating tertinggi" },
-  { id: "price", label: "Tarif termurah" },
-];
+import MapView from "../components/MapView";
+import CariControls, { jarakOpts, hargaOpts } from "../components/CariControls";
+import { workers } from "../data/workers";
+import { useLayout } from "../lib/layout";
 
 const SearchResults = () => {
   const [params] = useSearchParams();
-  const q = params.get("q") || "";
-  const katParam = params.get("kat") || "";
+  const [f, setF] = useState({
+    lokasi: "Wanea, Manado",
+    q: params.get("q") || "",
+    cat: params.get("kat") || "",
+    jarak: "",
+    harga: "",
+    sort: "rekomendasi",
+  });
+  const up = (patch) => setF((v) => ({ ...v, ...patch }));
 
-  const [activeCat, setActiveCat] = useState(katParam);
-  const [sort, setSort] = useState("distance");
+  // null = mode grid; berisi id = mode split (peta terbuka di kanan).
+  const [selectedId, setSelectedId] = useState(null);
 
-  // Sinkronkan filter saat query string berubah (mis. klik kategori dari beranda).
-  const [prevKat, setPrevKat] = useState(katParam);
-  if (katParam !== prevKat) {
-    setPrevKat(katParam);
-    setActiveCat(katParam);
-  }
+  // Saat peta terbuka, navbar melebar mentok kiri-kanan (tanpa celah pinggir).
+  const { setWide } = useLayout();
+  useEffect(() => {
+    setWide(!!selectedId);
+    return () => setWide(false);
+  }, [selectedId, setWide]);
+
+  const maxJarak = jarakOpts.find((o) => o.id === f.jarak).max;
+  const maxHarga = hargaOpts.find((o) => o.id === f.harga).max;
 
   const results = useMemo(() => {
-    let list = workers.filter((w) => {
-      const matchCat = activeCat ? w.category === activeCat : true;
-      const haystack = `${w.name} ${w.skill} ${w.area}`.toLowerCase();
-      const matchQ = q ? haystack.includes(q.toLowerCase()) : true;
-      return matchCat && matchQ;
+    const list = workers.filter((w) => {
+      const byCat = f.cat ? w.category === f.cat : true;
+      const byQ = f.q
+        ? `${w.name} ${w.skill} ${w.area}`.toLowerCase().includes(f.q.toLowerCase())
+        : true;
+      return byCat && byQ && w.distanceKm <= maxJarak && w.priceMin <= maxHarga;
     });
-    list = [...list].sort((a, b) => {
-      if (sort === "rating") return b.rating - a.rating;
-      if (sort === "price") return a.priceMin - b.priceMin;
-      return a.distanceKm - b.distanceKm;
+    return [...list].sort((a, b) => {
+      if (f.sort === "rating") return b.rating - a.rating;
+      if (f.sort === "price") return a.priceMin - b.priceMin;
+      if (f.sort === "distance") return a.distanceKm - b.distanceKm;
+      return b.rating * 10 - a.distanceKm - (a.rating * 10 - b.distanceKm);
     });
-    return list;
-  }, [activeCat, q, sort]);
+  }, [f.cat, f.q, f.sort, maxJarak, maxHarga]);
 
-  // Bawa filter aktif ke halaman peta.
-  const mapHref = () => {
-    const p = new URLSearchParams();
-    if (q) p.set("q", q);
-    if (activeCat) p.set("kat", activeCat);
-    const s = p.toString();
-    return s ? `/peta?${s}` : "/peta";
-  };
+  const count = (
+    <p className="text-sm text-moss">
+      Menampilkan <span className="font-bold text-ink">{results.length}</span>{" "}
+      pekerja{f.lokasi && ` di ${f.lokasi}`}
+    </p>
+  );
 
   return (
     <>
-      {/* Header pencarian lengket */}
-      <div className="sticky top-14 z-30 border-b border-line bg-paper/90 backdrop-blur-md">
-        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
-          <SearchBar size="md" initialQ={q} initialKat={activeCat} />
-
-          <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1">
-            <button
-              onClick={() => setActiveCat("")}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-colors ${
-                activeCat === ""
-                  ? "bg-forest text-white"
-                  : "border border-line bg-white text-moss hover:text-ink"
-              }`}
-            >
-              Semua
-            </button>
-            {categories.map((c) => (
-              <button
-                key={c.id}
-                onClick={() => setActiveCat(c.id)}
-                className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-colors ${
-                  activeCat === c.id
-                    ? "text-white"
-                    : "border border-line bg-white text-moss hover:text-ink"
-                }`}
-                style={activeCat === c.id ? { background: c.color } : undefined}
-              >
-                {c.short}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-bold text-ink sm:text-2xl">
-              {results.length} pekerja ditemukan
-              {q && <span className="text-moss"> untuk “{q}”</span>}
-            </h1>
-            <p className="mt-1 text-sm text-moss">
-              Tersedia di Kota Manado
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <label className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-2.5 text-sm">
-              <span className="hidden text-moss sm:inline">Urutkan</span>
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value)}
-                className="cursor-pointer bg-transparent font-semibold text-ink focus:outline-none"
-              >
-                {sortOptions.map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            {/* Masuk ke halaman peta penuh */}
-            <Link
-              to={mapHref()}
-              className="ring-focus flex items-center gap-2 rounded-xl bg-forest px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-ink"
-            >
-              <MapIcon className="h-4 w-4" />
-              Lihat di Peta
-            </Link>
-          </div>
-        </div>
+      {/* ── Mode grid (default) ── */}
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+        <CariControls f={f} up={up} />
+        <div className="mt-5">{count}</div>
 
         {results.length > 0 ? (
-          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {results.map((w, i) => (
               <WorkerCard
                 key={w.id}
                 worker={w}
-                style={{ animationDelay: `${i * 0.04}s` }}
+                onSelect={setSelectedId}
+                style={{ animationDelay: `${i * 0.03}s` }}
               />
             ))}
           </div>
         ) : (
           <div className="mt-10 grid place-items-center rounded-2xl border border-dashed border-line bg-white py-16 text-center">
             <span className="grid h-14 w-14 place-items-center rounded-2xl bg-cloud text-moss">
-              <SearchIcon className="h-7 w-7" />
+              <Search className="h-7 w-7" aria-hidden="true" />
             </span>
             <h2 className="mt-4 font-bold text-ink">Belum ada yang cocok</h2>
             <p className="mt-1 max-w-sm text-sm text-moss">
-              Coba ganti kata kunci atau pilih kategori lain.
+              Coba ganti kata kunci, kategori, atau longgarkan filter jarak/harga.
             </p>
             <button
-              onClick={() => setActiveCat("")}
+              onClick={() => up({ cat: "", jarak: "", harga: "", q: "" })}
               className="mt-5 rounded-xl bg-forest px-5 py-2.5 text-sm font-semibold text-white hover:bg-ink"
             >
-              Tampilkan semua pekerja
+              Reset filter
             </button>
           </div>
         )}
-      </section>
+
+        {results.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setSelectedId(results[0].id)}
+            className="ring-focus fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-ink px-6 py-3.5 font-bold text-white shadow-[0_20px_50px_-15px_rgba(13,59,46,0.6)] transition-colors hover:bg-forest"
+          >
+            <Map className="h-5 w-5" aria-hidden="true" />
+            Lihat di Peta
+          </button>
+        )}
+      </div>
+
+      {/* ── Mode split: daftar kiri + peta menggeser masuk dari kanan ── */}
+      <AnimatePresence>
+        {selectedId && (
+          <motion.div
+            key="split"
+            className="fixed inset-x-0 bottom-0 top-14 z-30 flex overflow-hidden bg-paper"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Kiri: kontrol + daftar */}
+            <div className="flex w-full flex-col lg:w-[44%] xl:w-[38%]">
+              <div className="border-b border-line px-4 py-4">
+                <button
+                  type="button"
+                  onClick={() => setSelectedId(null)}
+                  className="ring-focus mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-moss hover:text-ink"
+                >
+                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                  Kembali ke daftar
+                </button>
+                <CariControls f={f} up={up} variant="panel" />
+              </div>
+              <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+                <p className="text-sm text-moss">
+                  Menampilkan{" "}
+                  <span className="font-bold text-ink">{results.length}</span>{" "}
+                  pekerja di area ini
+                </p>
+                {results.map((w) => (
+                  <WorkerCard
+                    key={w.id}
+                    worker={w}
+                    compact
+                    selected={w.id === selectedId}
+                    onSelect={setSelectedId}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Kanan: peta yang menggeser masuk */}
+            <motion.div
+              className="relative hidden flex-1 lg:block"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "tween", duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
+            >
+              <MapView workers={results} selectedId={selectedId} onSelect={setSelectedId} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

@@ -45,7 +45,7 @@ const cards = [
 ];
 
 const CategoryBento = () => (
-  <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:py-32">
+  <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:py-32">
     <Reveal className="text-center">
       <p className="text-xs font-bold uppercase tracking-[0.2em] text-moss">
         Kategori populer
