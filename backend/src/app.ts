@@ -1,21 +1,26 @@
-import path from "path";
-import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+import { env } from "./config/env.js";
 import healthRoutes from "./routes/health.routes.js";
 import errorHandler from "./middleware/errorHandler.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.resolve(__dirname, ".env") });
+import notFoundHandler from "./middleware/notFoundHandler.js";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: env.CORS_ORIGIN,
+  }),
+);
 app.use(express.json());
+
+// Routes
 app.use("/api", healthRoutes);
+
+// Fallback for not found endpoints
+app.use(notFoundHandler);
+
+// Global Error Handler must be last
 app.use(errorHandler);
 
 export default app;
