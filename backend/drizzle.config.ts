@@ -4,7 +4,7 @@ import { defineConfig } from "drizzle-kit";
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL wajib tersedia untuk Drizzle CLI");
+  throw new Error("DATABASE_URL is required for Drizzle CLI");
 }
 
 export default defineConfig({
@@ -14,4 +14,6 @@ export default defineConfig({
   dbCredentials: {
     url: databaseUrl,
   },
+  strict: true,
+  verbose: true,
 });

@@ -1,9 +1,17 @@
 import type { Request, Response, NextFunction } from "express";
 
-const notFoundHandler = (req: Request, res: Response, next: NextFunction) => {
+const notFoundHandler = (
+  req: Request,
+  res: Response,
+  _next: NextFunction,
+): void => {
   res.status(404).json({
     success: false,
-    message: `Endpoint ${req.method} ${req.originalUrl} tidak ditemukan`,
+    error: {
+      code: "ROUTE_NOT_FOUND",
+      message: `Route ${req.method} ${req.originalUrl} not found`,
+    },
+    requestId: req.requestId ?? "unknown",
   });
 };
 
