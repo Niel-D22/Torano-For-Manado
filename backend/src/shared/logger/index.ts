@@ -7,24 +7,22 @@ export const logger = pino({
   level: isProduction ? "info" : "debug",
   ...(isProduction
     ? {
-        // JSON output in production for log aggregation
-        formatters: {
-          level(label) {
-            return { level: label };
-          },
+      formatters: {
+        level(label) {
+          return { level: label };
         },
-      }
+      },
+    }
     : {
-        transport: {
-          target: "pino-pretty",
-          options: {
-            colorize: true,
-            translateTime: "SYS:yyyy-mm-dd HH:MM:ss.l",
-            ignore: "pid,hostname",
-          },
+      transport: {
+        target: "pino-pretty",
+        options: {
+          colorize: true,
+          translateTime: "SYS:yyyy-mm-dd HH:MM:ss.l",
+          ignore: "pid,hostname",
         },
-      }),
-  // Redact sensitive values from ever appearing in logs
+      },
+    }),
   redact: {
     paths: [
       "req.headers.authorization",

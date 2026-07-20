@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { env } from "./config/env.js";
-import { requestIdMiddleware } from "./shared/middleware/request-id.js";
-import { requestLogger } from "./shared/middleware/request-logger.js";
+import { requestIdMiddleware } from "./middleware/request-id.js";
+import { requestLogger } from "./middleware/request-logger.js";
 import healthRoutes from "./routes/health.routes.js";
 import errorHandler from "./middleware/errorHandler.js";
 import notFoundHandler from "./middleware/notFoundHandler.js";

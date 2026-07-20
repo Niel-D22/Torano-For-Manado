@@ -1,10 +1,9 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import { pinoHttp } from "pino-http";
-import { logger } from "../logger/index.js";
+import { logger } from "../shared/logger/index.js";
 
 export const requestLogger = pinoHttp({
   logger,
-  // Use our custom requestId instead of pino-http's generated id
   genReqId: (req: IncomingMessage) =>
     (req as IncomingMessage & { requestId?: string }).requestId ?? "unknown",
   customLogLevel: (
@@ -29,7 +28,6 @@ export const requestLogger = pinoHttp({
   ) => {
     return `${req.method} ${req.url} failed`;
   },
-  // Redaction is already handled by the base logger config
   serializers: {
     req: (req: Record<string, unknown>) => ({
       id: req["id"],
