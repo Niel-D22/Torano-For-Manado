@@ -5,9 +5,9 @@
   --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     sans-serif;
 
-  --color-paper: #f8f3ea; /* latar halaman — krem hangat (mengikuti BG hero) */
-  --color-cloud: #f0e9db; /* permukaan lembut */
-  --color-line: #e8dfcf; /* garis/border */
+  --color-paper: #ffffff; /* latar halaman — putih (mengikuti BG hero baru) */
+  --color-cloud: #f4f5f3; /* permukaan lembut — abu-abu netral sangat muda */
+  --color-line: #e7e8e4; /* garis/border — netral, kontras lembut di atas putih */
   --color-ink: #0d3b2e; /* Hijau Tua — teks utama, wordmark */
   --color-moss: #6b7280; /* Abu-abu — teks sekunder */
   --color-forest: #16a34a; /* Hijau — warna primer */
@@ -68,6 +68,14 @@
       0 0 0 2px #fff,
       0 0 0 4px var(--color-leaf);
   }
+  /* Sembunyikan scrollbar tapi tetap bisa di-scroll (daftar & baris kategori) */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @keyframes rise {
@@ -125,31 +133,47 @@
   z-index: 1000;
 }
 
-/* ── Pin harga peta (mockup): pil "Rp90rb" ── */
+/* ── Pin harga peta (gaya Google Maps): pil "Rp90rb" + ekor ── */
 .price-pin .pp {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 26px;
-  padding: 0 10px;
+  height: 27px;
+  padding: 0 11px;
   background: #fff;
-  border: 1.5px solid var(--color-line);
+  border: 1.5px solid var(--color-forest);
   border-radius: 9999px;
   font-family: "Manrope", sans-serif;
   font-weight: 800;
   font-size: 12px;
   color: var(--color-ink);
   white-space: nowrap;
-  box-shadow: 0 8px 16px -8px rgba(13, 59, 46, 0.5);
+  box-shadow: 0 3px 8px -3px rgba(13, 59, 46, 0.3);
   transition:
     transform 0.15s ease,
-    background 0.15s ease;
+    background 0.15s ease,
+    color 0.15s ease;
+}
+/* Ekor kecil di bawah pil (penunjuk lokasi) */
+.price-pin .pp::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  background: inherit;
+  border-right: inherit;
+  border-bottom: inherit;
+  transform: translateX(-50%) rotate(45deg);
 }
 .price-pin .pp-active {
-  background: var(--color-ink);
+  background: var(--color-forest);
   color: #fff;
-  border-color: var(--color-ink);
-  transform: scale(1.08);
+  border-color: var(--color-forest);
+  transform: scale(1.1);
+  box-shadow: 0 8px 18px -4px rgba(13, 59, 46, 0.5);
   z-index: 1000;
 }
 

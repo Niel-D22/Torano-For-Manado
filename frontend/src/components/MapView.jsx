@@ -10,7 +10,7 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
-import { MessageSquareText, Star, MapPin, ArrowRight } from "lucide-react";
+import { MessageSquareText, Star, BadgeCheck } from "lucide-react";
 import { categoryMap, MANADO_CENTER } from "../data/workers";
 import { workerPhotos } from "../assets/workers/photos";
 import { useAuthGate } from "../lib/auth";
@@ -21,9 +21,9 @@ const makeIcon = (worker, active) => {
   return L.divIcon({
     className: "price-pin",
     html: `<div class="pp${active ? " pp-active" : ""}">${label}</div>`,
-    iconSize: [66, 28],
-    iconAnchor: [33, 28],
-    popupAnchor: [0, -26],
+    iconSize: [70, 34],
+    iconAnchor: [35, 33],
+    popupAnchor: [0, -30],
   });
 };
 
@@ -39,12 +39,23 @@ function FlyTo({ worker }) {
   return null;
 }
 
-// Recalculate ukuran setelah panel slide selesai agar tile tidak kosong.
+// Panel peta menggeser masuk (animasi framer-motion), jadi ukuran kontainer
+// berubah selama beberapa ratus ms. ResizeObserver memanggil invalidateSize
+// setiap kali ukuran berubah → seluruh tile termuat, tanpa area abu-abu di tepi.
 function AutoResize() {
   const map = useMap();
   useEffect(() => {
-    const t = setTimeout(() => map.invalidateSize(), 480);
-    return () => clearTimeout(t);
+    const el = map.getContainer();
+    const ro = new ResizeObserver(() => map.invalidateSize({ animate: false }));
+    ro.observe(el);
+    // Jaring pengaman untuk browser tanpa event resize awal.
+    const timers = [200, 500, 900].map((t) =>
+      setTimeout(() => map.invalidateSize({ animate: false }), t),
+    );
+    return () => {
+      ro.disconnect();
+      timers.forEach(clearTimeout);
+    };
   }, [map]);
   return null;
 }
@@ -62,10 +73,13 @@ const MapView = ({ workers, selectedId, onSelect }) => {
       scrollWheelZoom={false}
       className="h-full w-full"
     >
+      {/* CARTO Voyager — gaya bersih menyerupai Google Maps (jalan kuning,
+          taman hijau muda, air biru muda, label kawasan) */}
       <TileLayer
-        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
-        attribution="Tiles &copy; Esri — Esri, HERE, Garmin, © OpenStreetMap contributors"
-        maxZoom={19}
+        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        subdomains="abcd"
+        maxZoom={20}
       />
       <ZoomControl position="bottomright" />
       <AutoResize />
@@ -81,50 +95,46 @@ const MapView = ({ workers, selectedId, onSelect }) => {
             eventHandlers={{ click: () => onSelect(w.id) }}
           >
             <Popup>
-              <div className="w-60 font-sans">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={workerPhotos[w.id]}
-                    alt={w.name}
-                    className="h-14 w-14 shrink-0 rounded-xl object-cover"
-                  />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-extrabold text-ink">{w.name}</p>
-                    <p className="truncate text-xs" style={{ color: cat.color }}>
+              <div className="w-64 font-sans">
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => navigate(`/pekerja/${w.id}`)}
+                    className="shrink-0"
+                    aria-label={`Lihat profil ${w.name}`}
+                  >
+                    <img
+                      src={workerPhotos[w.id]}
+                      alt={w.name}
+                      className="h-16 w-16 rounded-xl object-cover"
+                    />
+                  </button>
+                  <div className="min-w-0 flex-1">
+                    <p className="flex items-center gap-1 truncate text-sm font-extrabold text-ink">
+                      {w.name}
+                      <BadgeCheck className="h-4 w-4 shrink-0 text-forest" aria-label="Terverifikasi" />
+                    </p>
+                    <p className="mt-0.5 truncate text-xs" style={{ color: cat.color }}>
                       {cat.label}
                     </p>
-                    <p className="mt-0.5 flex items-center gap-1 text-xs text-moss">
+                    <p className="mt-1 flex items-center gap-1 text-xs text-moss">
                       <Star className="h-3.5 w-3.5 fill-sun text-sun" />
-                      {w.rating.toFixed(1)} ({w.jobs} jobs)
+                      <span className="font-bold text-ink">{w.rating.toFixed(1)}</span>
+                      ({w.jobs} jobs)
+                    </p>
+                    <p className="mt-1 text-sm font-extrabold text-forest">
+                      Rp{w.priceMin}–{w.priceMax}rb
+                      <span className="text-xs font-semibold text-moss">/jam</span>
                     </p>
                   </div>
                 </div>
 
-                <p className="mt-2 flex items-center gap-1.5 text-xs text-moss">
-                  <MapPin className="h-3.5 w-3.5 text-forest" />
-                  {w.area} · {w.distanceKm.toFixed(1)} km
-                </p>
-                <p className="mt-1 font-extrabold text-forest">
-                  Rp{w.priceMin}–{w.priceMax}rb
-                  <span className="text-xs font-semibold text-moss"> / jam</span>
-                </p>
-
-                <div className="mt-3 flex gap-2">
-                  <button
-                    onClick={() => gate(() => navigate(`/chat/${w.id}`))}
-                    className="tp-cta flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-forest py-2 text-sm font-bold text-white hover:bg-ink"
-                  >
-                    <MessageSquareText className="h-4 w-4" />
-                    Chat
-                  </button>
-                  <button
-                    onClick={() => navigate(`/pekerja/${w.id}`)}
-                    className="grid place-items-center rounded-lg border border-line px-2.5 text-forest hover:border-forest"
-                    aria-label="Lihat profil"
-                  >
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                </div>
+                <button
+                  onClick={() => gate(() => navigate(`/chat/${w.id}`))}
+                  className="tp-cta mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-forest py-2.5 text-sm font-bold text-white hover:bg-ink"
+                >
+                  <MessageSquareText className="h-4 w-4" />
+                  Chat
+                </button>
               </div>
             </Popup>
           </Marker>

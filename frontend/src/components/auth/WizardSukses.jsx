@@ -15,7 +15,7 @@ const WizardSukses = ({ form }) => {
   ];
 
   return (
-    <div className="relative w-full max-w-xl rounded-[28px] border border-[#EAE5DB] bg-white px-8 py-7 text-center shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-12">
+    <div className="relative w-full max-w-xl rounded-[28px] border border-line bg-white px-8 py-7 text-center shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-12">
       <div className="relative mx-auto grid h-24 w-24 place-items-center rounded-full bg-limesoft/60">
         <Sparkles className="absolute left-2 top-3 h-5 w-5 text-sun" aria-hidden="true" />
         <Sparkles className="absolute right-3 top-5 h-4 w-4 text-sun" aria-hidden="true" />

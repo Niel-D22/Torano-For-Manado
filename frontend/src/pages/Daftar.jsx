@@ -38,7 +38,7 @@ const Daftar = () => {
 
   return (
     <AuthShell>
-      <div className="relative w-full max-w-3xl rounded-[28px] border border-[#EAE5DB] bg-white px-6 py-6 shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-10">
+      <div className="relative w-full max-w-3xl rounded-[28px] border border-line bg-white px-6 py-6 shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-10">
         <StepIndicator current={1} />
 
         <div className="mt-7 text-center">

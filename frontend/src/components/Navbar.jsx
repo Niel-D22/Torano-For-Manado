@@ -1,44 +1,48 @@
 import { Link, NavLink } from "react-router-dom";
 import { Heart, MessageSquareText, Bell, ChevronDown } from "lucide-react";
 import logo from "../assets/LOGO.png";
+import avatar from "../assets/avatar-nanda.jpg";
 import { useAuth } from "../lib/auth";
 import { useLayout } from "../lib/layout";
 
 const navItems = [
   { to: "/cari", label: "Cari Pekerja" },
-  { to: "/peta", label: "Peta" },
   { to: "/", label: "Cara Kerja" },
+  { to: "/", label: "Keamanan" },
   { to: "/", label: "Bantuan" },
 ];
 
 const linkClass =
-  "rounded-lg px-3 py-2 text-sm font-medium text-moss transition-colors hover:bg-cloud hover:text-ink";
+  "rounded-lg px-3 py-2 text-sm font-medium text-ink/90 transition-colors hover:bg-cloud hover:text-ink";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const { wide } = useLayout();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-line bg-white">
       <div
         className={`mx-auto flex items-center justify-between px-4 py-3 sm:px-6 ${
           wide ? "max-w-full" : "max-w-7xl"
         }`}
       >
-        <Link to="/" className="flex items-center gap-2" aria-label="Torano beranda">
-          <img src={logo} alt="" className="h-9 w-auto" />
-          <span className="text-xl font-extrabold lowercase tracking-tight text-ink">
-            torano
-          </span>
-        </Link>
+        {/* Kelompok kiri: logo + navigasi (mengikuti komposisi referensi) */}
+        <div className="flex items-center gap-4 lg:gap-8">
+          <Link to="/" className="flex items-center gap-2" aria-label="Torano beranda">
+            <img src={logo} alt="" className="h-9 w-auto" />
+            <span className="text-xl font-extrabold lowercase tracking-tight text-ink">
+              torano
+            </span>
+          </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
-          {navItems.map((item) => (
-            <NavLink key={item.label} to={item.to} className={linkClass}>
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+          <nav className="hidden items-center gap-1 md:flex">
+            {navItems.map((item) => (
+              <NavLink key={item.label} to={item.to} className={linkClass}>
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
 
         {user ? (
           // ── Sudah login: akses cepat + menu akun ──
@@ -53,20 +57,22 @@ const Navbar = () => {
             </NavLink>
             <button
               type="button"
-              className="ring-focus relative rounded-lg p-2 text-moss hover:bg-cloud hover:text-ink"
+              className="ring-focus relative rounded-lg p-2 text-ink/90 hover:bg-cloud hover:text-ink"
               aria-label="Notifikasi"
             >
               <Bell className="h-5 w-5" aria-hidden="true" />
-              <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-sun px-1 text-[10px] font-bold text-ink">
+              <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-forest px-1 text-[10px] font-bold text-white">
                 2
               </span>
             </button>
 
             <details className="group relative">
               <summary className="ring-focus flex cursor-pointer list-none items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-cloud">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-forest text-sm font-bold text-white">
-                  {user.name?.[0]?.toUpperCase() ?? "U"}
-                </span>
+                <img
+                  src={avatar}
+                  alt=""
+                  className="h-8 w-8 rounded-full object-cover ring-1 ring-line"
+                />
                 <span className="hidden text-sm font-semibold text-ink sm:inline">
                   {user.name}
                 </span>

@@ -19,7 +19,7 @@ const DaftarPencari = () => {
 
   return (
     <AuthShell>
-      <div className="relative w-full max-w-[440px] rounded-3xl border border-[#EAE5DB] bg-white px-8 py-5 shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-10">
+      <div className="relative w-full max-w-[440px] rounded-3xl border border-line bg-white px-8 py-5 shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-10">
         <img src={logo} alt="Torano" className="mx-auto w-[104px]" />
         <h1 className="mt-3 text-center text-xl font-extrabold tracking-tight text-ink">
           Buat akun baru

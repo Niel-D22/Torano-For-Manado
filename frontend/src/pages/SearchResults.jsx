@@ -116,7 +116,7 @@ const SearchResults = () => {
             transition={{ duration: 0.2 }}
           >
             {/* Kiri: kontrol + daftar */}
-            <div className="flex w-full flex-col lg:w-[44%] xl:w-[38%]">
+            <div className="flex w-full flex-col lg:w-[46%] xl:w-[42%]">
               <div className="border-b border-line px-4 py-4">
                 <button
                   type="button"

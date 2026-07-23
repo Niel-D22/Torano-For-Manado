@@ -54,7 +54,7 @@ const Login = () => {
       />
 
       {/* Kartu login — spacing kompak agar selalu muat setinggi layar */}
-      <div className="relative max-h-full w-full max-w-[520px] overflow-y-auto rounded-[24px] border border-[#EAE5DB] bg-white px-8 py-6 shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-12">
+      <div className="relative max-h-full w-full max-w-[520px] overflow-y-auto rounded-[24px] border border-line bg-white px-8 py-6 shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-12">
         {/* Lebar logo mengikuti tinggi layar: 120px (layar pendek) s.d. 176px */}
         <img
           src={logo}
