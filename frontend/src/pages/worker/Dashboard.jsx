@@ -62,7 +62,7 @@ const Dashboard = () => {
           <p className="mt-1 text-3xl font-extrabold">{rupiah(partner.balance)}</p>
           <div className="mt-4 flex items-center gap-3">
             <Link
-              to="/mitra/saldo"
+              to="/mitra/penghasilan"
               className="ring-focus inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-bold text-forest transition-colors hover:bg-paper"
             >
               <ArrowUpRight className="h-4 w-4" aria-hidden="true" />

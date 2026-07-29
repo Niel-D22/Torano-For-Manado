@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Link, useNavigate, useSearchParams, useParams } from "react-router-dom";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import logo from "../assets/LOGO.png";
 import bgLogin from "../assets/BG_HeroLandingPage.png";
 import { useAuth } from "../lib/auth";
@@ -32,15 +32,40 @@ const inputClass =
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
+  const { mode: modeParam } = useParams();
+  const mode = modeParam === "pekerja" ? "pekerja" : "pencari";
 
-  // Setelah masuk, kembali ke halaman yang tadi digerbang (?next=), atau beranda.
-  const masuk = (e) => {
+  // Setelah masuk: pekerja → area mitra; pencari → halaman yang tadi digerbang
+  // (?next=) atau beranda. (Akun sama bisa dipakai untuk dua-duanya.)
+  const masuk = async (e) => {
     e.preventDefault();
-    login();
-    navigate(params.get("next") || "/", { replace: true });
+    setErr("");
+    setBusy(true);
+    try {
+      await login(email, password);
+      const dest = mode === "pekerja" ? "/mitra" : params.get("next") || "/";
+      navigate(dest, { replace: true });
+    } catch (e2) {
+      setErr(e2.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const google = async () => {
+    setErr("");
+    try {
+      await loginWithGoogle();
+    } catch (e2) {
+      setErr(e2.message);
+    }
   };
 
   return (
@@ -55,7 +80,6 @@ const Login = () => {
 
       {/* Kartu login — spacing kompak agar selalu muat setinggi layar */}
       <div className="relative max-h-full w-full max-w-[520px] overflow-y-auto rounded-[24px] border border-line bg-white px-8 py-6 shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-12">
-        {/* Lebar logo mengikuti tinggi layar: 120px (layar pendek) s.d. 176px */}
         <img
           src={logo}
           alt="Torano"
@@ -63,50 +87,65 @@ const Login = () => {
         />
 
         <h1 className="mt-4 text-center text-2xl font-extrabold tracking-tight text-ink">
-          Selamat datang kembali
+          {mode === "pekerja" ? "Masuk sebagai Pekerja" : "Selamat datang kembali"}
         </h1>
         <p className="mt-1.5 text-center text-sm text-moss">
-          Masuk untuk mulai cari atau terima pekerjaan.
+          {mode === "pekerja"
+            ? "Kelola pekerjaan dan terima orderan sebagai mitra."
+            : "Masuk untuk mulai cari pekerja terpercaya."}
         </p>
+        <div className="mt-3 text-center">
+          <Link
+            to="/login"
+            className="ring-focus inline-flex items-center gap-1 rounded-lg text-sm font-semibold text-forest hover:underline"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Ganti peran
+          </Link>
+        </div>
+
+        {err && (
+          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600">
+            {err}
+          </p>
+        )}
 
         <form className="mt-6 space-y-4" onSubmit={masuk}>
           <div>
-            <label
-              htmlFor="email"
-              className="mb-1.5 block text-sm font-bold text-ink"
-            >
+            <label htmlFor="email" className="mb-1.5 block text-sm font-bold text-ink">
               Email
             </label>
             <input
               id="email"
               type="email"
+              required
               autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="contoh: nanda@email.com"
               className={inputClass}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="mb-1.5 block text-sm font-bold text-ink"
-            >
+            <label htmlFor="password" className="mb-1.5 block text-sm font-bold text-ink">
               Kata Sandi
             </label>
             <div className="relative">
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
+                required
                 autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Masukkan kata sandi"
                 className={`${inputClass} pr-14`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                aria-label={
-                  showPassword ? "Sembunyikan kata sandi" : "Lihat kata sandi"
-                }
+                aria-label={showPassword ? "Sembunyikan kata sandi" : "Lihat kata sandi"}
                 className="ring-focus absolute right-4 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-moss transition-colors hover:text-ink"
               >
                 {showPassword ? (
@@ -117,10 +156,7 @@ const Login = () => {
               </button>
             </div>
             <div className="mt-2 text-right">
-              <Link
-                to="/login"
-                className="text-sm font-semibold text-forest hover:underline"
-              >
+              <Link to="/login" className="text-sm font-semibold text-forest hover:underline">
                 Lupa kata sandi?
               </Link>
             </div>
@@ -128,9 +164,10 @@ const Login = () => {
 
           <button
             type="submit"
-            className="ring-focus h-12 w-full rounded-[14px] bg-ink text-sm font-bold text-white transition-colors hover:bg-forest"
+            disabled={busy}
+            className="ring-focus h-12 w-full rounded-[14px] bg-ink text-sm font-bold text-white transition-colors hover:bg-forest disabled:opacity-60"
           >
-            Masuk
+            {busy ? "Memproses…" : "Masuk"}
           </button>
         </form>
 
@@ -143,7 +180,7 @@ const Login = () => {
 
         <button
           type="button"
-          onClick={masuk}
+          onClick={google}
           className="ring-focus mt-5 flex h-12 w-full items-center justify-center gap-2.5 rounded-[14px] border border-line bg-white text-sm font-bold text-ink transition-colors hover:bg-paper"
         >
           <GoogleIcon className="h-5 w-5" />
@@ -152,7 +189,7 @@ const Login = () => {
 
         <p className="mt-6 text-center text-sm text-moss">
           Belum punya akun?{" "}
-          <Link to="/daftar" className="font-bold text-forest hover:underline">
+          <Link to={`/daftar/${mode}`} className="font-bold text-forest hover:underline">
             Daftar sekarang
           </Link>
         </p>

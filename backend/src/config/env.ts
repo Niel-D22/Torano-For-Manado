@@ -31,6 +31,14 @@ const envSchema = z.object({
   CORS_ORIGIN: z
     .string()
     .url("CORS_ORIGIN must be a valid URL"),
+
+  // Kredensial admin panel (login username/password terpisah dari Supabase).
+  ADMIN_USERNAME: z.string().min(1).default("admin"),
+  ADMIN_PASSWORD: z.string().min(1).default("torano-admin-2026"),
+  ADMIN_SECRET: z
+    .string()
+    .min(1)
+    .default("torano-dev-admin-secret-change-me"),
 });
 
 const parseResult = envSchema.safeParse(process.env);

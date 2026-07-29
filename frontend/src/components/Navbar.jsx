@@ -69,12 +69,12 @@ const Navbar = () => {
             <details className="group relative">
               <summary className="ring-focus flex cursor-pointer list-none items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-cloud">
                 <img
-                  src={avatar}
+                  src={user.avatarUrl || avatar}
                   alt=""
                   className="h-8 w-8 rounded-full object-cover ring-1 ring-line"
                 />
                 <span className="hidden text-sm font-semibold text-ink sm:inline">
-                  {user.name}
+                  {user.fullName?.split(" ")[0] ?? "Akun"}
                 </span>
                 <ChevronDown className="h-4 w-4 text-moss transition-transform group-open:rotate-180" aria-hidden="true" />
               </summary>

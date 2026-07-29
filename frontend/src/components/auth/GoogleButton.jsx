@@ -1,8 +1,10 @@
 // Tombol "lanjut dengan Google" + ikon merek resmi (lucide tak menyediakannya).
-const GoogleButton = ({ label = "Masuk dengan Google" }) => (
+const GoogleButton = ({ label = "Masuk dengan Google", onClick, disabled }) => (
   <button
     type="button"
-    className="ring-focus flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-line bg-white text-sm font-bold text-ink transition-colors hover:bg-paper"
+    onClick={onClick}
+    disabled={disabled}
+    className="ring-focus flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-line bg-white text-sm font-bold text-ink transition-colors hover:bg-paper disabled:opacity-60"
   >
     <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
       <path

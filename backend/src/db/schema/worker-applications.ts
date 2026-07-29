@@ -4,6 +4,8 @@ import {
   varchar,
   text,
   numeric,
+  integer,
+  date,
   timestamp,
   index,
   check,
@@ -30,11 +32,19 @@ export const workerApplications = pgTable(
       .notNull()
       .references(() => categories.id, { onDelete: "restrict" }),
     skillDescription: text("skill_description").notNull(),
+    // Data profil yang ditinjau admin (mengikuti mockup Verifikasi Mitra).
+    dateOfBirth: date("date_of_birth"),
+    experienceYears: integer("experience_years"),
+    // Daftar keahlian & area kerja (chip) — array agar dinamis tanpa tabel baru.
+    skills: text("skills").array(),
+    serviceAreas: text("service_areas").array(),
     /**
-     * Fixed rate in IDR stored as numeric(12,0) — safe for Rupiah amounts up to
-     * 999 billion without floating-point rounding issues.
+     * Tarif per jam dalam IDR — numeric(12,0) aman untuk Rupiah tanpa galat
+     * pembulatan floating-point. `fixedRate` = tarif minimum, `rateMax` opsional
+     * untuk menampilkan rentang (mis. Rp90–150rb).
      */
     fixedRate: numeric("fixed_rate", { precision: 12, scale: 0 }).notNull(),
+    rateMax: numeric("rate_max", { precision: 12, scale: 0 }),
     /**
      * Coordinates use numeric(9,6) for ~11cm precision at the equator,
      * which is more than sufficient for service area matching.
@@ -43,7 +53,14 @@ export const workerApplications = pgTable(
     longitude: numeric("longitude", { precision: 10, scale: 6 }),
     profilePhotoUrl: text("profile_photo_url"),
     selfiePhotoUrl: text("selfie_photo_url"),
+    // draft -> submitted -> verified | rejected (divalidasi di layer aplikasi)
     status: varchar("status", { length: 30 }).notNull().default("draft"),
+    // Jejak keputusan admin saat verifikasi.
+    reviewedBy: uuid("reviewed_by").references(() => profiles.id, {
+      onDelete: "set null",
+    }),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    rejectionReason: text("rejection_reason"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

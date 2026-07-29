@@ -7,20 +7,71 @@ import { AuthenticationError } from "../shared/errors/index.js";
 
 type Profile = typeof profiles.$inferSelect;
 
+interface AuthUser {
+  id: string;
+  email: string | null;
+  fullName: string | null;
+  role: string | null;
+}
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
-      authUser?: { id: string; email: string | null };
+      authUser?: AuthUser;
       profile?: Profile;
     }
   }
 }
 
+// Verifikasi Bearer token (JWT Supabase) ke GoTrue dan tarik info pengguna.
+// Menyertakan nama & peran dari user_metadata (diisi saat sign up email/Google).
+async function verifyToken(req: Request): Promise<AuthUser> {
+  const header = req.headers.authorization;
+  const token = header?.startsWith("Bearer ")
+    ? header.slice(7).trim()
+    : undefined;
+
+  if (!token) {
+    throw new AuthenticationError("Token akses tidak ditemukan");
+  }
+
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data.user) {
+    throw new AuthenticationError("Sesi tidak valid atau sudah kedaluwarsa");
+  }
+
+  const md = (data.user.user_metadata ?? {}) as Record<string, unknown>;
+  const fullName =
+    typeof md["full_name"] === "string"
+      ? md["full_name"]
+      : typeof md["name"] === "string"
+        ? md["name"]
+        : null;
+  const role = typeof md["role"] === "string" ? md["role"] : null;
+
+  return { id: data.user.id, email: data.user.email ?? null, fullName, role };
+}
+
 /**
- * Melindungi route: memverifikasi Bearer token (JWT Supabase) ke GoTrue,
- * lalu memuat profil pengguna dan menempelkannya ke `req` agar handler tahu
- * siapa pemanggilnya.
+ * Verifikasi token saja (tanpa mewajibkan profil). Dipakai endpoint sinkron
+ * profil, karena user OAuth (Google) belum punya baris profil saat pertama login.
+ */
+export async function authenticate(
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    req.authUser = await verifyToken(req);
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * Melindungi route: verifikasi token + wajib punya profil, lalu tempel ke `req`.
  */
 export async function requireAuth(
   req: Request,
@@ -28,28 +79,15 @@ export async function requireAuth(
   next: NextFunction,
 ): Promise<void> {
   try {
-    const header = req.headers.authorization;
-    const token = header?.startsWith("Bearer ")
-      ? header.slice(7).trim()
-      : undefined;
-
-    if (!token) {
-      throw new AuthenticationError("Token akses tidak ditemukan");
-    }
-
-    const { data, error } = await supabase.auth.getUser(token);
-    if (error || !data.user) {
-      throw new AuthenticationError("Sesi tidak valid atau sudah kedaluwarsa");
-    }
+    req.authUser = await verifyToken(req);
 
     const profile = await db.query.profiles.findFirst({
-      where: eq(profiles.authUserId, data.user.id),
+      where: eq(profiles.authUserId, req.authUser.id),
     });
     if (!profile) {
       throw new AuthenticationError("Profil pengguna tidak ditemukan");
     }
 
-    req.authUser = { id: data.user.id, email: data.user.email ?? null };
     req.profile = profile;
     next();
   } catch (err) {

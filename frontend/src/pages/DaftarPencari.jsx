@@ -1,20 +1,43 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck, User } from "lucide-react";
+import { ShieldCheck, User, Mail } from "lucide-react";
 import logo from "../assets/LOGO.png";
 import AuthShell from "../components/auth/AuthShell";
-import { TextField, PhoneField, PasswordField } from "../components/auth/fields";
+import { TextField, PasswordField } from "../components/auth/fields";
 import GoogleButton from "../components/auth/GoogleButton";
 import { useAuth } from "../lib/auth";
 
-// Pendaftaran pencari kerja — cukup satu halaman (tanpa wizard).
+// Pendaftaran pencari kerja — cukup satu halaman, pakai email (bukan nomor HP).
 const DaftarPencari = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
+  const [nama, setNama] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const daftar = (e) => {
+  const daftar = async (e) => {
     e.preventDefault();
-    login(); // ponytail: langsung aktif & masuk beranda; sambungkan auth backend nanti
-    navigate("/");
+    setErr("");
+    setBusy(true);
+    try {
+      await register({ email, password, fullName: nama, role: "customer" });
+      navigate("/");
+    } catch (e2) {
+      setErr(e2.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const google = async () => {
+    setErr("");
+    try {
+      await loginWithGoogle();
+    } catch (e2) {
+      setErr(e2.message);
+    }
   };
 
   return (
@@ -28,6 +51,12 @@ const DaftarPencari = () => {
           Daftar untuk mulai cari atau terima pekerjaan
         </p>
 
+        {err && (
+          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600">
+            {err}
+          </p>
+        )}
+
         <form className="mt-5 space-y-3" onSubmit={daftar}>
           <TextField
             id="nama"
@@ -35,16 +64,20 @@ const DaftarPencari = () => {
             icon={User}
             placeholder="Contoh: Andi Setiawan"
             autoComplete="name"
+            required
+            value={nama}
+            onChange={(e) => setNama(e.target.value)}
           />
-          <PhoneField
-            id="telepon"
-            label="Nomor Telepon"
-            note={
-              <p className="mt-1.5 flex items-center gap-1.5 text-xs text-moss">
-                <ShieldCheck className="h-4 w-4 text-forest" aria-hidden="true" />
-                Kami akan kirim kode OTP ke nomor ini
-              </p>
-            }
+          <TextField
+            id="email"
+            label="Email"
+            icon={Mail}
+            type="email"
+            placeholder="contoh: andi@email.com"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <PasswordField
             id="sandi"
@@ -52,6 +85,9 @@ const DaftarPencari = () => {
             withIcon
             placeholder="Minimal 8 karakter"
             autoComplete="new-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
 
           <div className="flex items-start gap-2.5 rounded-2xl bg-limesoft/50 p-3">
@@ -66,9 +102,10 @@ const DaftarPencari = () => {
 
           <button
             type="submit"
-            className="ring-focus h-11 w-full rounded-xl bg-ink text-sm font-bold text-white transition-colors hover:bg-forest"
+            disabled={busy}
+            className="ring-focus h-11 w-full rounded-xl bg-ink text-sm font-bold text-white transition-colors hover:bg-forest disabled:opacity-60"
           >
-            Daftar
+            {busy ? "Memproses…" : "Daftar"}
           </button>
         </form>
 
@@ -78,7 +115,7 @@ const DaftarPencari = () => {
           <span className="h-px flex-1 bg-line" />
         </div>
 
-        <GoogleButton label="Daftar dengan Google" />
+        <GoogleButton label="Daftar dengan Google" onClick={google} />
 
         <p className="mt-4 text-center text-sm text-moss">
           Sudah punya akun?{" "}

@@ -5,26 +5,27 @@ import * as schema from "./schema/index.js";
 import { categories } from "./schema/categories.js";
 import { sql } from "drizzle-orm";
 
+// Selaras dengan kategori di frontend (art, tukang, event, montir).
 const SEED_CATEGORIES = [
   {
-    name: "ART",
+    name: "ART & Bersih Rumah",
     slug: "art",
-    description: "Asisten Rumah Tangga dan layanan kebersihan rumah",
+    description: "Asisten rumah tangga & layanan kebersihan rumah",
   },
   {
-    name: "Montir",
+    name: "Tukang Harian",
+    slug: "tukang",
+    description: "Tukang bangunan, renovasi, dan perbaikan rumah",
+  },
+  {
+    name: "Kru Acara & Adat",
+    slug: "event",
+    description: "Kru dan tenaga bantuan untuk acara dan adat",
+  },
+  {
+    name: "Montir Panggilan",
     slug: "montir",
     description: "Montir panggilan untuk kendaraan dan mesin",
-  },
-  {
-    name: "Teknisi AC",
-    slug: "teknisi-ac",
-    description: "Pemasangan, perawatan, dan perbaikan AC",
-  },
-  {
-    name: "Tim Acara",
-    slug: "tim-acara",
-    description: "Kru dan tenaga bantuan untuk acara dan kegiatan",
   },
 ];
 

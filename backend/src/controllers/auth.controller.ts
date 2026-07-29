@@ -107,6 +107,34 @@ export async function login(req: Request, res: Response): Promise<void> {
 }
 
 /**
+ * POST /api/auth/sync — dipanggil frontend setelah login (email/Google).
+ * Membuat baris profil bila belum ada (kasus login Google pertama kali),
+ * lalu mengembalikan profilnya. Idempoten.
+ */
+export async function syncProfile(req: Request, res: Response): Promise<void> {
+  const authUser = req.authUser;
+  if (!authUser) {
+    throw new AuthenticationError("Sesi tidak valid");
+  }
+
+  await db
+    .insert(profiles)
+    .values({
+      authUserId: authUser.id,
+      fullName: authUser.fullName ?? authUser.email ?? "Pengguna",
+      email: authUser.email,
+      role: authUser.role === "worker" ? "worker" : "customer",
+    })
+    .onConflictDoNothing();
+
+  const profile = await db.query.profiles.findFirst({
+    where: eq(profiles.authUserId, authUser.id),
+  });
+
+  sendSuccess(res, { profile });
+}
+
+/**
  * GET /api/auth/me — profil pengguna yang sedang login (dilindungi requireAuth).
  */
 export async function me(req: Request, res: Response): Promise<void> {

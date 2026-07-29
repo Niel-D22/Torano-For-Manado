@@ -1,94 +1,71 @@
 import { useState } from "react";
-import { NavLink, Link, Outlet } from "react-router-dom";
-import {
-  LayoutDashboard,
-  ClipboardList,
-  CalendarDays,
-  Wallet,
-  UserRound,
-  Bell,
-  ArrowLeft,
-} from "lucide-react";
+import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
+import { Bell, ChevronDown } from "lucide-react";
 import logo from "../assets/LOGO.png";
-import { workerPhotos } from "../assets/workers/photos";
-import { partner } from "../data/partner";
+import avatar from "../assets/avatar-nanda.jpg";
+import { useAuth } from "../lib/auth";
 
 const nav = [
-  { to: "/mitra", label: "Dashboard", Icon: LayoutDashboard, end: true },
-  { to: "/mitra/pesanan", label: "Pesanan", Icon: ClipboardList },
-  { to: "/mitra/jadwal", label: "Jadwal", Icon: CalendarDays },
-  { to: "/mitra/saldo", label: "Saldo", Icon: Wallet },
-  { to: "/mitra/profil", label: "Profil", Icon: UserRound },
+  { to: "/mitra", label: "Beranda", end: true },
+  { to: "/mitra/jadwal", label: "Jadwal" },
+  { to: "/mitra/penghasilan", label: "Penghasilan" },
+  { to: "/mitra/ulasan", label: "Ulasan" },
 ];
 
 const linkClass = ({ isActive }) =>
-  `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
-    isActive
-      ? "bg-limesoft text-ink"
-      : "text-moss hover:bg-cloud hover:text-ink"
+  `rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+    isActive ? "text-ink" : "text-moss hover:text-ink"
   }`;
 
+// Area mitra (POV pekerja) — navbar ATAS mengikuti mockup "profil-saya" UI Torano.
 const WorkerLayout = () => {
-  const [available, setAvailable] = useState(true);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [online, setOnline] = useState(true);
+
+  const keluar = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-paper">
-      {/* ── Sidebar kiri (khusus mitra) ── */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-white md:flex">
-        <Link to="/mitra" className="flex items-center gap-2 px-6 py-5">
-          <img src={logo} alt="" className="h-8 w-auto" />
-          <span className="text-lg font-extrabold lowercase tracking-tight text-ink">
-            torano
-          </span>
-          <span className="rounded-md bg-limesoft px-1.5 py-0.5 text-[11px] font-bold text-forest">
-            Mitra
-          </span>
-        </Link>
+      <header className="sticky top-0 z-40 border-b border-line bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          {/* Kiri: logo + Mitra + navigasi */}
+          <div className="flex items-center gap-4 lg:gap-8">
+            <Link to="/mitra" className="flex items-center gap-2" aria-label="Torano Mitra">
+              <img src={logo} alt="" className="h-9 w-auto" />
+              <span className="text-xl font-extrabold lowercase tracking-tight text-ink">
+                torano
+              </span>
+              <span className="rounded-md bg-limesoft px-1.5 py-0.5 text-[11px] font-bold text-forest">
+                Mitra
+              </span>
+            </Link>
+            <nav className="hidden items-center gap-1 md:flex">
+              {nav.map((item) => (
+                <NavLink key={item.label} to={item.to} end={item.end} className={linkClass}>
+                  {item.label}
+                </NavLink>
+              ))}
+            </nav>
+          </div>
 
-        <nav className="flex-1 space-y-1 px-3">
-          {nav.map(({ to, label, Icon, end }) => (
-            <NavLink key={label} to={to} end={end} className={linkClass}>
-              <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="border-t border-line px-3 py-4">
-          <Link
-            to="/"
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-moss transition-colors hover:bg-cloud hover:text-ink"
-          >
-            <ArrowLeft className="h-5 w-5 shrink-0" aria-hidden="true" />
-            Mode pencari
-          </Link>
-        </div>
-      </aside>
-
-      {/* ── Area konten ── */}
-      <div className="md:pl-64">
-        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-line bg-white/90 px-4 py-3 backdrop-blur sm:px-6">
-          {/* Logo untuk layar kecil (sidebar tersembunyi) */}
-          <Link to="/mitra" className="flex items-center gap-2 md:hidden">
-            <img src={logo} alt="" className="h-8 w-auto" />
-            <span className="text-lg font-extrabold lowercase text-ink">torano</span>
-          </Link>
-
-          <div className="ml-auto flex items-center gap-2 sm:gap-3">
+          {/* Kanan: toggle online + notifikasi + akun */}
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
-              onClick={() => setAvailable((v) => !v)}
-              aria-pressed={available}
-              className={`flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold transition-colors ${
-                available
-                  ? "bg-forest text-white"
-                  : "border border-line bg-white text-moss"
+              onClick={() => setOnline((v) => !v)}
+              aria-pressed={online}
+              className={`flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${
+                online
+                  ? "border-limesoft bg-limesoft/60 text-forest"
+                  : "border-line bg-white text-moss"
               }`}
             >
-              <span
-                className={`h-2.5 w-2.5 rounded-full ${available ? "bg-lime" : "bg-moss"}`}
-              />
-              {available ? "Tersedia" : "Tidak tersedia"}
+              <span className={`h-2 w-2 rounded-full ${online ? "bg-forest" : "bg-moss"}`} />
+              {online ? "Menerima pekerjaan" : "Sedang libur"}
             </button>
 
             <button
@@ -102,23 +79,41 @@ const WorkerLayout = () => {
               </span>
             </button>
 
-            <div className="flex items-center gap-2">
-              <img
-                src={workerPhotos[partner.photoId]}
-                alt=""
-                className="h-8 w-8 rounded-full object-cover ring-1 ring-line"
-              />
-              <span className="hidden text-sm font-semibold text-ink sm:inline">
-                {partner.name.split(" ")[0]}
-              </span>
-            </div>
+            <details className="group relative">
+              <summary className="ring-focus flex cursor-pointer list-none items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-cloud">
+                <img
+                  src={user?.avatarUrl || avatar}
+                  alt=""
+                  className="h-8 w-8 rounded-full object-cover ring-1 ring-line"
+                />
+                <ChevronDown className="h-4 w-4 text-moss transition-transform group-open:rotate-180" aria-hidden="true" />
+              </summary>
+              <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-2xl border border-line bg-white py-1.5 shadow-[0_20px_50px_-20px_rgba(13,59,46,0.4)]">
+                <div className="border-b border-line px-4 py-2">
+                  <p className="truncate text-sm font-bold text-ink">
+                    {user?.fullName ?? "Mitra"}
+                  </p>
+                  <p className="text-xs text-moss">Akun pekerja</p>
+                </div>
+                <Link to="/mitra/profil" className="block px-4 py-2 text-sm text-ink hover:bg-cloud">
+                  Profil Saya
+                </Link>
+                <button
+                  type="button"
+                  onClick={keluar}
+                  className="block w-full px-4 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50"
+                >
+                  Keluar
+                </button>
+              </div>
+            </details>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <main>
-          <Outlet />
-        </main>
-      </div>
+      <main>
+        <Outlet />
+      </main>
     </div>
   );
 };

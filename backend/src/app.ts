@@ -5,6 +5,7 @@ import { requestIdMiddleware } from "./middleware/request-id.js";
 import { requestLogger } from "./middleware/request-logger.js";
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 import errorHandler from "./middleware/errorHandler.js";
 import notFoundHandler from "./middleware/notFoundHandler.js";
 
@@ -23,6 +24,7 @@ app.use(express.json());
 // --- Routes ---
 app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 // --- Fallback for unmatched routes ---
 app.use(notFoundHandler);
