@@ -6,7 +6,9 @@ import MapPage from "../pages/MapPage";
 import WorkerProfile from "../pages/WorkerProfile";
 import ChatInbox from "../pages/ChatInbox";
 import ChatRoom from "../pages/ChatRoom";
-import PartnerHome from "../pages/PartnerHome";
+import WorkerLayout from "../layouts/WorkerLayout";
+import Dashboard from "../pages/worker/Dashboard";
+import Soon from "../pages/worker/Soon";
 import Login from "../pages/Login";
 import Daftar from "../pages/Daftar";
 import DaftarPencari from "../pages/DaftarPencari";
@@ -28,7 +30,15 @@ const AppRoutes = () => {
         <Route path="/pekerja/:id" element={<WorkerProfile />} />
         <Route path="/chat" element={<ChatInbox />} />
         <Route path="/chat/:id" element={<ChatRoom />} />
-        <Route path="/mitra" element={<PartnerHome />} />
+      </Route>
+
+      {/* ── Area mitra (POV pekerja) — layout & navigasi tersendiri ── */}
+      <Route path="/mitra" element={<WorkerLayout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="pesanan" element={<Soon title="Pesanan" />} />
+        <Route path="jadwal" element={<Soon title="Jadwal" />} />
+        <Route path="saldo" element={<Soon title="Saldo & Penarikan" />} />
+        <Route path="profil" element={<Soon title="Profil & Keahlian" />} />
       </Route>
     </Routes>
   );

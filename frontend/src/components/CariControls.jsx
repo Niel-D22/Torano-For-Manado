@@ -93,12 +93,12 @@ const CategoryScroller = ({ value, onChange }) => {
 
 const FilterSelect = ({ icon: Icon, prefix, value, onChange, options, grow }) => (
   <label
-    className={`flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-2 text-[13px] ${
+    className={`flex items-center gap-1 rounded-xl border border-line bg-white px-2.5 py-2 text-[13px] ${
       grow ? "min-w-0 flex-1" : "shrink-0"
     }`}
   >
     <Icon className="h-4 w-4 shrink-0 text-moss" aria-hidden="true" />
-    <span className="shrink-0 font-semibold text-moss">{prefix}:</span>
+    <span className="shrink-0 text-moss">{prefix}:</span>
     <div className="relative min-w-0 flex-1">
       <select
         value={value}
@@ -171,8 +171,8 @@ const CariControls = ({ f, up, variant = "full" }) => {
             <CategoryScroller value={f.cat} onChange={(cat) => up({ cat })} />
           </div>
           <div className="mt-2 flex items-center gap-2">
-            <FilterSelect icon={MapPin} prefix="Jarak" value={f.jarak} onChange={(v) => up({ jarak: v })} options={jarakOpts} grow />
-            <FilterSelect icon={Wallet} prefix="Harga" value={f.harga} onChange={(v) => up({ harga: v })} options={hargaOpts} grow />
+            <FilterSelect icon={MapPin} prefix="Jarak" value={f.jarak} onChange={(v) => up({ jarak: v })} options={jarakOpts} />
+            <FilterSelect icon={Wallet} prefix="Harga" value={f.harga} onChange={(v) => up({ harga: v })} options={hargaOpts} />
             <FilterSelect icon={ArrowUpDown} prefix="Urutkan" value={f.sort} onChange={(v) => up({ sort: v })} options={sortOpts} grow />
           </div>
         </>

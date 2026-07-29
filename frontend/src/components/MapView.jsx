@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -27,15 +27,33 @@ const makeIcon = (worker, active) => {
   });
 };
 
-function FlyTo({ worker }) {
+// Kamera peta: saat pertama terbuka, tampilkan SELURUH area (semua pin terlihat,
+// seperti referensi) lalu buka popup pekerja terpilih. Saat memilih kartu lain,
+// cukup geser lembut ke pekerja itu tanpa mengubah zoom agar pin lain tetap terlihat.
+function SelectSync({ selected, workers, markerRefs }) {
   const map = useMap();
+  const init = useRef(false);
+
   useEffect(() => {
-    if (worker) {
-      map.flyTo([worker.lat, worker.lng], Math.max(map.getZoom(), 14), {
-        duration: 0.7,
-      });
+    if (!selected) return;
+    const openPopup = () => markerRefs.current[selected.id]?.openPopup();
+
+    if (!init.current) {
+      init.current = true;
+      const bounds = L.latLngBounds(workers.map((w) => [w.lat, w.lng]));
+      // Tunggu panel selesai menggeser & ukuran peta stabil sebelum fit.
+      const t = setTimeout(() => {
+        map.fitBounds(bounds, { padding: [70, 70], maxZoom: 14 });
+        setTimeout(openPopup, 350);
+      }, 560);
+      return () => clearTimeout(t);
     }
-  }, [worker, map]);
+
+    map.panTo([selected.lat, selected.lng], { animate: true, duration: 0.5 });
+    const t = setTimeout(openPopup, 250);
+    return () => clearTimeout(t);
+  }, [selected, workers, map, markerRefs]);
+
   return null;
 }
 
@@ -64,6 +82,7 @@ const MapView = ({ workers, selectedId, onSelect }) => {
   const selected = workers.find((w) => w.id === selectedId) || null;
   const navigate = useNavigate();
   const gate = useAuthGate();
+  const markerRefs = useRef({});
 
   return (
     <MapContainer
@@ -83,7 +102,7 @@ const MapView = ({ workers, selectedId, onSelect }) => {
       />
       <ZoomControl position="bottomright" />
       <AutoResize />
-      <FlyTo worker={selected} />
+      <SelectSync selected={selected} workers={workers} markerRefs={markerRefs} />
 
       {workers.map((w) => {
         const cat = categoryMap[w.category];
@@ -92,6 +111,9 @@ const MapView = ({ workers, selectedId, onSelect }) => {
             key={w.id}
             position={[w.lat, w.lng]}
             icon={makeIcon(w, w.id === selectedId)}
+            ref={(el) => {
+              if (el) markerRefs.current[w.id] = el;
+            }}
             eventHandlers={{ click: () => onSelect(w.id) }}
           >
             <Popup>
@@ -111,7 +133,7 @@ const MapView = ({ workers, selectedId, onSelect }) => {
                   <div className="min-w-0 flex-1">
                     <p className="flex items-center gap-1 truncate text-sm font-extrabold text-ink">
                       {w.name}
-                      <BadgeCheck className="h-4 w-4 shrink-0 text-forest" aria-label="Terverifikasi" />
+                      <BadgeCheck className="h-4 w-4 shrink-0 fill-[#2f80ed] text-white" aria-label="Terverifikasi" />
                     </p>
                     <p className="mt-0.5 truncate text-xs" style={{ color: cat.color }}>
                       {cat.label}

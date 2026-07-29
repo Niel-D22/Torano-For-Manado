@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Map, ArrowLeft } from "lucide-react";
 import WorkerCard from "../components/WorkerCard";
 import MapView from "../components/MapView";
-import CariControls, { jarakOpts, hargaOpts } from "../components/CariControls";
+import CariControls, { jarakOpts, hargaOpts, CategoryChips } from "../components/CariControls";
 import { workers } from "../data/workers";
 import { useLayout } from "../lib/layout";
 
@@ -128,7 +128,7 @@ const SearchResults = () => {
                 </button>
                 <CariControls f={f} up={up} variant="panel" />
               </div>
-              <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+              <div className="no-scrollbar flex-1 space-y-2.5 overflow-y-auto px-4 py-4">
                 <p className="text-sm text-moss">
                   Menampilkan{" "}
                   <span className="font-bold text-ink">{results.length}</span>{" "}
@@ -155,6 +155,11 @@ const SearchResults = () => {
               transition={{ type: "tween", duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
             >
               <MapView workers={results} selectedId={selectedId} onSelect={setSelectedId} />
+
+              {/* Bilah kategori mengambang di atas peta (mengikuti referensi) */}
+              <div className="no-scrollbar absolute inset-x-0 top-0 z-[1000] flex gap-2 overflow-x-auto px-4 py-3">
+                <CategoryChips value={f.cat} onChange={(cat) => up({ cat })} />
+              </div>
             </motion.div>
           </motion.div>
         )}

@@ -42,14 +42,14 @@ const WorkerCard = ({ worker, style, selected = false, onSelect, compact = false
           src={workerPhotos[worker.id]}
           alt={worker.name}
           loading="lazy"
-          className="h-[86px] w-[86px] shrink-0 rounded-xl object-cover"
+          className="h-20 w-20 shrink-0 rounded-xl object-cover"
         />
 
         {/* Kolom tengah: identitas */}
         <div className="flex min-w-0 flex-1 flex-col">
           <h3 className="flex items-center gap-1 truncate text-[15px] font-extrabold text-ink">
             <span className="truncate">{worker.name}</span>
-            <BadgeCheck className="h-4 w-4 shrink-0 text-forest" aria-label="Terverifikasi" />
+            <BadgeCheck className="h-4 w-4 shrink-0 fill-[#2f80ed] text-white" aria-label="Terverifikasi" />
           </h3>
           <p className="mt-1 flex items-center gap-1.5 text-[13px] text-moss">
             <CatIcon className="h-3.5 w-3.5 shrink-0" style={{ color: cat.color }} aria-hidden="true" />
