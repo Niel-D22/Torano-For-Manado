@@ -33,7 +33,7 @@ export async function listApplications(
     id: a.id,
     name: a.profile.fullName,
     avatarUrl: a.profile.avatarUrl,
-    category: a.category.name,
+    category: a.category?.name ?? null,
     area: a.serviceAreas?.[0] ?? null,
     status: a.status,
     submittedAt: a.createdAt,

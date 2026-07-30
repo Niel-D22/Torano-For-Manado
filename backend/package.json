@@ -16,7 +16,9 @@
     "db:seed": "tsx src/db/seed.ts",
     "db:seed:workers": "tsx src/db/seed-workers.ts",
     "db:make-admin": "tsx src/db/make-admin.ts",
-    "db:seed:demo": "tsx src/db/seed-demo-users.ts"
+    "db:seed:demo": "tsx src/db/seed-demo-users.ts",
+    "db:setup-storage": "tsx src/db/setup-storage.ts",
+    "db:setup-realtime": "tsx src/db/setup-realtime.ts"
   },
   "keywords": [],
   "author": "",

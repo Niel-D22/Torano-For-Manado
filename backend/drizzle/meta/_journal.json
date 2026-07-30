@@ -15,6 +15,48 @@
       "when": 1785341543367,
       "tag": "0001_high_medusa",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785393546539,
+      "tag": "0002_wakeful_calypso",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1785393706264,
+      "tag": "0003_amazing_ronan",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1785400262722,
+      "tag": "0004_sparkling_swordsman",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1785401815651,
+      "tag": "0005_cute_gambit",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1785403186657,
+      "tag": "0006_simple_firebird",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1785411693549,
+      "tag": "0007_youthful_zombie",
+      "breakpoints": true
     }
   ]
 }

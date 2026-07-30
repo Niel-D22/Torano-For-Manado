@@ -5,7 +5,7 @@ import { Search, Map, ArrowLeft } from "lucide-react";
 import WorkerCard from "../components/WorkerCard";
 import MapView from "../components/MapView";
 import CariControls, { jarakOpts, hargaOpts, CategoryChips } from "../components/CariControls";
-import { workers } from "../data/workers";
+import { api } from "../lib/api";
 import { useLayout } from "../lib/layout";
 
 const SearchResults = () => {
@@ -19,6 +19,12 @@ const SearchResults = () => {
     sort: "rekomendasi",
   });
   const up = (patch) => setF((v) => ({ ...v, ...patch }));
+
+  // Pekerja terverifikasi dari database (bukan lagi data statis).
+  const [workers, setWorkers] = useState([]);
+  useEffect(() => {
+    api.get("/workers").then((r) => setWorkers(r.data.data)).catch(() => setWorkers([]));
+  }, []);
 
   // null = mode grid; berisi id = mode split (peta terbuka di kanan).
   const [selectedId, setSelectedId] = useState(null);
@@ -47,7 +53,7 @@ const SearchResults = () => {
       if (f.sort === "distance") return a.distanceKm - b.distanceKm;
       return b.rating * 10 - a.distanceKm - (a.rating * 10 - b.distanceKm);
     });
-  }, [f.cat, f.q, f.sort, maxJarak, maxHarga]);
+  }, [workers, f.cat, f.q, f.sort, maxJarak, maxHarga]);
 
   const count = (
     <p className="text-sm text-moss">

@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
-import { Bell, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import logo from "../assets/LOGO.png";
-import avatar from "../assets/avatar-nanda.jpg";
+import Avatar from "../components/Avatar";
+import NotificationBell from "../components/NotificationBell";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useAuth } from "../lib/auth";
 
 const nav = [
   { to: "/mitra", label: "Beranda", end: true },
   { to: "/mitra/jadwal", label: "Jadwal" },
+  { to: "/mitra/pesan", label: "Pesan" },
   { to: "/mitra/penghasilan", label: "Penghasilan" },
   { to: "/mitra/ulasan", label: "Ulasan" },
 ];
@@ -73,23 +75,15 @@ const WorkerLayout = () => {
               {online ? "Menerima pekerjaan" : "Sedang libur"}
             </button>
 
-            <button
-              type="button"
-              aria-label="Notifikasi"
-              className="ring-focus relative rounded-lg p-2 text-ink/90 hover:bg-cloud hover:text-ink"
-            >
-              <Bell className="h-5 w-5" aria-hidden="true" />
-              <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-forest px-1 text-[10px] font-bold text-white">
-                3
-              </span>
-            </button>
+            <NotificationBell chatPath="/mitra/pesan" />
 
             <details className="group relative">
               <summary className="ring-focus flex cursor-pointer list-none items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-cloud">
-                <img
-                  src={user?.avatarUrl || avatar}
-                  alt=""
-                  className="h-8 w-8 rounded-full object-cover ring-1 ring-line"
+                <Avatar
+                  src={user?.avatarUrl}
+                  name={user?.fullName}
+                  className="h-8 w-8 ring-1 ring-line"
+                  textClass="text-xs"
                 />
                 <ChevronDown className="h-4 w-4 text-moss transition-transform group-open:rotate-180" aria-hidden="true" />
               </summary>

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, MapPin, ShieldCheck, Heart, Sparkles, Hammer, Users, Wrench, BadgeCheck } from "lucide-react";
 import { categoryMap } from "../data/workers";
-import { workerPhotos } from "../assets/workers/photos";
 import { useAuthGate } from "../lib/auth";
+import Avatar from "./Avatar";
 
 const catIcons = { art: Sparkles, tukang: Hammer, event: Users, montir: Wrench };
 
@@ -38,11 +38,12 @@ const WorkerCard = ({ worker, style, selected = false, onSelect, compact = false
             : "border-line hover:border-forest/40 hover:shadow-[0_16px_36px_-24px_rgba(13,59,46,0.45)]"
         }`}
       >
-        <img
-          src={workerPhotos[worker.id]}
-          alt={worker.name}
-          loading="lazy"
-          className="h-20 w-20 shrink-0 rounded-xl object-cover"
+        <Avatar
+          src={worker.photo}
+          name={worker.name}
+          className="h-20 w-20 shrink-0"
+          square
+          textClass="text-xl"
         />
 
         {/* Kolom tengah: identitas */}
@@ -57,12 +58,12 @@ const WorkerCard = ({ worker, style, selected = false, onSelect, compact = false
           </p>
           <p className="mt-1 flex items-center gap-1.5 text-[13px]">
             <Star className="h-3.5 w-3.5 shrink-0 fill-sun text-sun" aria-hidden="true" />
-            <span className="font-bold text-ink">{worker.rating.toFixed(1)}</span>
+            <span className="font-bold text-ink">{(worker.rating ?? 0).toFixed(1)}</span>
             <span className="text-moss">({worker.jobs} jobs)</span>
           </p>
           <p className="mt-auto flex items-center gap-1.5 pt-1 text-[13px] text-moss">
             <MapPin className="h-3.5 w-3.5 shrink-0 text-forest" aria-hidden="true" />
-            {worker.distanceKm.toFixed(1)} km · {worker.area}
+            {(worker.distanceKm ?? 0).toFixed(1)} km · {worker.area}
           </p>
         </div>
 
@@ -111,11 +112,12 @@ const WorkerCard = ({ worker, style, selected = false, onSelect, compact = false
           : "border-line hover:-translate-y-0.5 hover:shadow-[0_24px_50px_-28px_rgba(13,59,46,0.45)]"
       }`}
     >
-      <img
-        src={workerPhotos[worker.id]}
-        alt={worker.name}
-        loading="lazy"
-        className="w-32 shrink-0 object-cover sm:w-36"
+      <Avatar
+        src={worker.photo}
+        name={worker.name}
+        className="w-32 shrink-0 self-stretch sm:w-36"
+        square
+        textClass="text-3xl"
       />
 
       <div className="flex min-w-0 flex-1 flex-col p-4">
@@ -151,13 +153,13 @@ const WorkerCard = ({ worker, style, selected = false, onSelect, compact = false
 
           <p className="mt-1.5 flex items-center gap-1.5 text-sm">
             <Star className="h-4 w-4 fill-sun text-sun" aria-hidden="true" />
-            <span className="font-bold text-ink">{worker.rating.toFixed(1)}</span>
+            <span className="font-bold text-ink">{(worker.rating ?? 0).toFixed(1)}</span>
             <span className="text-moss">({worker.jobs} jobs)</span>
           </p>
 
           <p className="mt-1 flex items-center gap-1.5 text-sm text-moss">
             <MapPin className="h-4 w-4 shrink-0 text-forest" aria-hidden="true" />
-            {worker.distanceKm.toFixed(1)} km · {worker.area}
+            {(worker.distanceKm ?? 0).toFixed(1)} km · {worker.area}
           </p>
 
           <p className="mt-1.5 font-extrabold text-forest">

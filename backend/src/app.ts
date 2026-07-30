@@ -6,6 +6,11 @@ import { requestLogger } from "./middleware/request-logger.js";
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import workerRoutes from "./routes/worker.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
+import workersRoutes from "./routes/workers.routes.js";
+import chatRoutes from "./routes/chat.routes.js";
+import notificationsRoutes from "./routes/notifications.routes.js";
 import errorHandler from "./middleware/errorHandler.js";
 import notFoundHandler from "./middleware/notFoundHandler.js";
 
@@ -25,6 +30,11 @@ app.use(express.json());
 app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/worker", workerRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/workers", workersRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/notifications", notificationsRoutes);
 
 // --- Fallback for unmatched routes ---
 app.use(notFoundHandler);

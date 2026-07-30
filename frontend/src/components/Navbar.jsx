@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Heart, MessageSquareText, Bell, ChevronDown } from "lucide-react";
+import { Heart, MessageSquareText, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import logo from "../assets/LOGO.png";
-import avatar from "../assets/avatar-nanda.jpg";
+import Avatar from "./Avatar";
+import NotificationBell from "./NotificationBell";
 import ConfirmDialog from "./ConfirmDialog";
 import { useAuth } from "../lib/auth";
 import { useLayout } from "../lib/layout";
@@ -68,23 +69,15 @@ const Navbar = () => {
               <MessageSquareText className="h-4 w-4" aria-hidden="true" />
               Pesanan Saya
             </NavLink>
-            <button
-              type="button"
-              className="ring-focus relative rounded-lg p-2 text-ink/90 hover:bg-cloud hover:text-ink"
-              aria-label="Notifikasi"
-            >
-              <Bell className="h-5 w-5" aria-hidden="true" />
-              <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-forest px-1 text-[10px] font-bold text-white">
-                2
-              </span>
-            </button>
+            <NotificationBell chatPath="/chat" />
 
             <details className="group relative">
               <summary className="ring-focus flex cursor-pointer list-none items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-cloud">
-                <img
-                  src={user.avatarUrl || avatar}
-                  alt=""
-                  className="h-8 w-8 rounded-full object-cover ring-1 ring-line"
+                <Avatar
+                  src={user.avatarUrl}
+                  name={user.fullName}
+                  className="h-8 w-8 ring-1 ring-line"
+                  textClass="text-xs"
                 />
                 <span className="hidden text-sm font-semibold text-ink sm:inline">
                   {user.fullName?.split(" ")[0] ?? "Akun"}
@@ -92,6 +85,9 @@ const Navbar = () => {
                 <ChevronDown className="h-4 w-4 text-moss transition-transform group-open:rotate-180" aria-hidden="true" />
               </summary>
               <div className="absolute right-0 mt-2 w-44 overflow-hidden rounded-2xl border border-line bg-white py-1.5 shadow-[0_20px_50px_-20px_rgba(13,59,46,0.4)]">
+                <Link to="/akun" className="block px-4 py-2 text-sm text-ink hover:bg-cloud">
+                  Akun Saya
+                </Link>
                 <Link to="/chat" className="block px-4 py-2 text-sm text-ink hover:bg-cloud">
                   Pesanan Saya
                 </Link>

@@ -4,13 +4,18 @@ import Home from "../pages/Home";
 import SearchResults from "../pages/SearchResults";
 import MapPage from "../pages/MapPage";
 import WorkerProfile from "../pages/WorkerProfile";
+import ProfilPencari from "../pages/ProfilPencari";
 import ChatInbox from "../pages/ChatInbox";
-import ChatRoom from "../pages/ChatRoom";
 import WorkerLayout from "../layouts/WorkerLayout";
 import Dashboard from "../pages/worker/Dashboard";
+import ProfilSaya from "../pages/worker/ProfilSaya";
+import Jadwal from "../pages/worker/Jadwal";
+import Ulasan from "../pages/worker/Ulasan";
+import Penghasilan from "../pages/worker/Penghasilan";
 import Soon from "../pages/worker/Soon";
 import AdminLayout from "../layouts/AdminLayout";
 import AdminHome from "../pages/admin/AdminHome";
+import AdminVerifikasi from "../pages/admin/AdminVerifikasi";
 import AdminLogin from "../pages/admin/AdminLogin";
 import ProtectedRoute from "../components/ProtectedRoute";
 import AdminProtected from "../components/AdminProtected";
@@ -35,8 +40,30 @@ const AppRoutes = () => {
         <Route path="/cari" element={<SearchResults />} />
         <Route path="/peta" element={<MapPage />} />
         <Route path="/pekerja/:id" element={<WorkerProfile />} />
-        <Route path="/chat" element={<ChatInbox />} />
-        <Route path="/chat/:id" element={<ChatRoom />} />
+        <Route
+          path="/akun"
+          element={
+            <ProtectedRoute>
+              <ProfilPencari />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <ChatInbox />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chat/:id"
+          element={
+            <ProtectedRoute>
+              <ChatInbox />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       {/* ── Area mitra (POV pekerja) — wajib login sbg worker/admin ── */}
@@ -49,10 +76,11 @@ const AppRoutes = () => {
         }
       >
         <Route index element={<Dashboard />} />
-        <Route path="jadwal" element={<Soon title="Jadwal" />} />
-        <Route path="penghasilan" element={<Soon title="Penghasilan" />} />
-        <Route path="ulasan" element={<Soon title="Ulasan" />} />
-        <Route path="profil" element={<Soon title="Profil Saya" />} />
+        <Route path="jadwal" element={<Jadwal />} />
+        <Route path="pesan" element={<ChatInbox />} />
+        <Route path="penghasilan" element={<Penghasilan />} />
+        <Route path="ulasan" element={<Ulasan />} />
+        <Route path="profil" element={<ProfilSaya />} />
       </Route>
 
       {/* ── Area admin — login username/password terpisah ── */}
@@ -66,7 +94,7 @@ const AppRoutes = () => {
         }
       >
         <Route index element={<AdminHome />} />
-        <Route path="verifikasi" element={<Soon title="Verifikasi Mitra" />} />
+        <Route path="verifikasi" element={<AdminVerifikasi />} />
         <Route path="transaksi" element={<Soon title="Transaksi" />} />
         <Route path="sengketa" element={<Soon title="Sengketa" />} />
         <Route path="pengguna" element={<Soon title="Pengguna" />} />

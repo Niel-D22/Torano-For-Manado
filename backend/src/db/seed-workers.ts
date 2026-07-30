@@ -27,6 +27,7 @@ const SAMPLE = [
     rateMin: 90,
     rateMax: 150,
     reference: { name: "Bpk. Jhon Lumentut", relationship: "Ketua RT 03", phone: "+62 821-9876-5432" },
+    lat: 1.478, lng: 124.836, rating: 4.9, jobs: 132, completion: 98, status: "verified",
   },
   {
     authUserId: "22222222-2222-4222-8222-222222222222",
@@ -42,6 +43,7 @@ const SAMPLE = [
     rateMin: 70,
     rateMax: 110,
     reference: { name: "Ibu Sarah Rumagit", relationship: "Tetangga", phone: "+62 852-1122-3344" },
+    lat: 1.487, lng: 124.851, rating: 4.8, jobs: 98, completion: 96, status: "verified",
   },
   {
     authUserId: "33333333-3333-4333-8333-333333333333",
@@ -57,6 +59,7 @@ const SAMPLE = [
     rateMin: 100,
     rateMax: 180,
     reference: { name: "Pak Hans Karundeng", relationship: "Pemilik Bengkel", phone: "+62 813-4455-6677" },
+    lat: 1.474, lng: 124.807, rating: 4.7, jobs: 76, completion: 94, status: "verified",
   },
   {
     authUserId: "44444444-4444-4444-8444-444444444444",
@@ -72,6 +75,7 @@ const SAMPLE = [
     rateMin: 130,
     rateMax: 200,
     reference: { name: "Pdt. Samuel R.", relationship: "Pendeta Jemaat", phone: "+62 821-3322-1100" },
+    lat: 1.479, lng: 124.834, rating: 4.9, jobs: 71, completion: 97, status: "verified",
   },
   {
     authUserId: "55555555-5555-4555-8555-555555555555",
@@ -87,6 +91,7 @@ const SAMPLE = [
     rateMin: 95,
     rateMax: 160,
     reference: { name: "Bpk. Boy Mongdong", relationship: "Ketua RT 02", phone: "+62 852-6677-8899" },
+    lat: 1.503, lng: 124.842, rating: 4.6, jobs: 54, completion: 92, status: "submitted",
   },
   {
     authUserId: "66666666-6666-4666-8666-666666666666",
@@ -102,6 +107,7 @@ const SAMPLE = [
     rateMin: 110,
     rateMax: 190,
     reference: { name: "Vino Manueke", relationship: "Pelanggan tetap", phone: "+62 813-9900-1122" },
+    lat: 1.481, lng: 124.838, rating: 4.7, jobs: 88, completion: 95, status: "submitted",
   },
 ];
 
@@ -163,9 +169,16 @@ async function seedWorkers(): Promise<void> {
         serviceAreas: w.areas,
         fixedRate: String(w.rateMin),
         rateMax: String(w.rateMax),
+        latitude: String(w.lat),
+        longitude: String(w.lng),
+        radiusKm: 5,
+        ratingAvg: String(w.rating),
+        reviewCount: w.jobs,
+        jobsCompleted: w.jobs,
+        completionRate: w.completion,
         selfiePhotoUrl: w.photo,
         profilePhotoUrl: w.photo,
-        status: "submitted",
+        status: w.status,
       })
       .returning();
 

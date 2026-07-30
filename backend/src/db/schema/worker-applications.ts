@@ -6,6 +6,7 @@ import {
   numeric,
   integer,
   date,
+  jsonb,
   timestamp,
   index,
   check,
@@ -27,11 +28,12 @@ export const workerApplications = pgTable(
     profileId: uuid("profile_id")
       .notNull()
       .references(() => profiles.id, { onDelete: "cascade" }),
-    nik: varchar("nik", { length: 20 }).notNull(),
-    categoryId: uuid("category_id")
-      .notNull()
-      .references(() => categories.id, { onDelete: "restrict" }),
-    skillDescription: text("skill_description").notNull(),
+    // Nullable agar pekerja bisa mengisi bertahap (draft) lalu submit.
+    nik: varchar("nik", { length: 20 }),
+    categoryId: uuid("category_id").references(() => categories.id, {
+      onDelete: "restrict",
+    }),
+    skillDescription: text("skill_description"),
     // Data profil yang ditinjau admin (mengikuti mockup Verifikasi Mitra).
     dateOfBirth: date("date_of_birth"),
     experienceYears: integer("experience_years"),
@@ -43,14 +45,23 @@ export const workerApplications = pgTable(
      * pembulatan floating-point. `fixedRate` = tarif minimum, `rateMax` opsional
      * untuk menampilkan rentang (mis. Rp90–150rb).
      */
-    fixedRate: numeric("fixed_rate", { precision: 12, scale: 0 }).notNull(),
+    fixedRate: numeric("fixed_rate", { precision: 12, scale: 0 }),
     rateMax: numeric("rate_max", { precision: 12, scale: 0 }),
+    // Ketersediaan per hari + jam, mis. { days: {sen:true,...}, start, end }
+    workingHours: jsonb("working_hours"),
+    // Statistik pekerja (didenormalisasi untuk tampilan profil).
+    ratingAvg: numeric("rating_avg", { precision: 2, scale: 1 }),
+    reviewCount: integer("review_count").notNull().default(0),
+    jobsCompleted: integer("jobs_completed").notNull().default(0),
+    completionRate: integer("completion_rate"),
     /**
      * Coordinates use numeric(9,6) for ~11cm precision at the equator,
      * which is more than sufficient for service area matching.
      */
     latitude: numeric("latitude", { precision: 9, scale: 6 }),
     longitude: numeric("longitude", { precision: 10, scale: 6 }),
+    // Radius jangkauan layanan dari titik lokasi (km).
+    radiusKm: integer("radius_km"),
     profilePhotoUrl: text("profile_photo_url"),
     selfiePhotoUrl: text("selfie_photo_url"),
     // draft -> submitted -> verified | rejected (divalidasi di layer aplikasi)

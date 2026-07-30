@@ -11,9 +11,11 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
 import { MessageSquareText, Star, BadgeCheck } from "lucide-react";
+import { toast } from "sonner";
 import { categoryMap, MANADO_CENTER } from "../data/workers";
-import { workerPhotos } from "../assets/workers/photos";
+import { api } from "../lib/api";
 import { useAuthGate } from "../lib/auth";
+import Avatar from "./Avatar";
 
 // Pin harga (mockup): pil "Rp90rb"; yang terpilih jadi hijau tua & lebih menonjol.
 const makeIcon = (worker, active) => {
@@ -84,6 +86,15 @@ const MapView = ({ workers, selectedId, onSelect }) => {
   const gate = useAuthGate();
   const markerRefs = useRef({});
 
+  const startChat = async (workerProfileId) => {
+    try {
+      await api.post("/chat/conversations", { workerProfileId });
+      navigate("/chat");
+    } catch {
+      toast.error("Gagal memulai chat");
+    }
+  };
+
   return (
     <MapContainer
       center={MANADO_CENTER}
@@ -124,10 +135,12 @@ const MapView = ({ workers, selectedId, onSelect }) => {
                     className="shrink-0"
                     aria-label={`Lihat profil ${w.name}`}
                   >
-                    <img
-                      src={workerPhotos[w.id]}
-                      alt={w.name}
-                      className="h-16 w-16 rounded-xl object-cover"
+                    <Avatar
+                      src={w.photo}
+                      name={w.name}
+                      className="h-16 w-16"
+                      square
+                      textClass="text-lg"
                     />
                   </button>
                   <div className="min-w-0 flex-1">
@@ -140,7 +153,7 @@ const MapView = ({ workers, selectedId, onSelect }) => {
                     </p>
                     <p className="mt-1 flex items-center gap-1 text-xs text-moss">
                       <Star className="h-3.5 w-3.5 fill-sun text-sun" />
-                      <span className="font-bold text-ink">{w.rating.toFixed(1)}</span>
+                      <span className="font-bold text-ink">{(w.rating ?? 0).toFixed(1)}</span>
                       ({w.jobs} jobs)
                     </p>
                     <p className="mt-1 text-sm font-extrabold text-forest">
@@ -151,7 +164,7 @@ const MapView = ({ workers, selectedId, onSelect }) => {
                 </div>
 
                 <button
-                  onClick={() => gate(() => navigate(`/chat/${w.id}`))}
+                  onClick={() => gate(() => startChat(w.profileId))}
                   className="tp-cta mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-forest py-2.5 text-sm font-bold text-white hover:bg-ink"
                 >
                   <MessageSquareText className="h-4 w-4" />

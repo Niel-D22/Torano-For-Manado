@@ -99,6 +99,12 @@ export const AuthProvider = ({ children }) => {
     [fetchProfile],
   );
 
+  // Muat ulang profil dari backend (mis. setelah ganti foto profil).
+  const refresh = useCallback(async () => {
+    const { data } = await supabase.auth.getSession();
+    return fetchProfile(data.session);
+  }, [fetchProfile]);
+
   const loginWithGoogle = useCallback(async (dest = "/") => {
     // Simpan tujuan (mis. /mitra) agar tak hilang saat redirect ke Google.
     sessionStorage.setItem(OAUTH_DEST_KEY, dest);
@@ -119,7 +125,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, register, loginWithGoogle, logout }}
+      value={{ user, loading, login, register, loginWithGoogle, logout, refresh }}
     >
       {children}
     </AuthContext.Provider>

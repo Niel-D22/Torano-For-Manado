@@ -9,7 +9,11 @@ import {
   AuthenticationError,
   ConflictError,
 } from "../shared/errors/index.js";
-import type { RegisterInput, LoginInput } from "../validators/auth.validator.js";
+import type {
+  RegisterInput,
+  LoginInput,
+  UpdateProfileInput,
+} from "../validators/auth.validator.js";
 
 type Profile = typeof profiles.$inferSelect;
 
@@ -139,4 +143,29 @@ export async function syncProfile(req: Request, res: Response): Promise<void> {
  */
 export async function me(req: Request, res: Response): Promise<void> {
   sendSuccess(res, { profile: req.profile });
+}
+
+/**
+ * PATCH /api/auth/profile — ubah profil sendiri (nama, telepon, foto).
+ * Dipakai pencari maupun pekerja untuk mengedit identitasnya.
+ */
+export async function updateProfile(req: Request, res: Response): Promise<void> {
+  const profile = req.profile;
+  if (!profile) {
+    throw new AuthenticationError("Sesi tidak valid");
+  }
+  const { fullName, phone, avatarUrl } = req.body as UpdateProfileInput;
+
+  const set: Partial<typeof profiles.$inferInsert> = { updatedAt: new Date() };
+  if (fullName !== undefined) set.fullName = fullName;
+  if (phone !== undefined) set.phone = phone || null;
+  if (avatarUrl !== undefined) set.avatarUrl = avatarUrl || null;
+
+  const [updated] = await db
+    .update(profiles)
+    .set(set)
+    .where(eq(profiles.id, profile.id))
+    .returning();
+
+  sendSuccess(res, { profile: updated }, { message: "Profil diperbarui" });
 }
