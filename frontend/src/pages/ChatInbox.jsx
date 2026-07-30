@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Send, MessageSquareText, Search, ArrowLeft } from "lucide-react";
+// Send juga dipakai untuk menandai kartu pesan sistem "Permintaan".
 import { api } from "../lib/api";
 import { supabase } from "../lib/supabase";
 import Spinner from "../components/Spinner";
@@ -196,6 +197,19 @@ const ChatInbox = () => {
                 ) : (
                   thread.messages.map((m) => {
                     const mine = m.senderProfileId === meId;
+                    if (m.type === "system") {
+                      return (
+                        <div key={m.id} className="flex justify-center">
+                          <div className="max-w-[85%] rounded-2xl border border-forest/20 bg-limesoft/40 px-4 py-3 text-sm text-forest">
+                            <p className="mb-1 flex items-center gap-1.5 font-bold">
+                              <Send className="h-3.5 w-3.5" aria-hidden="true" />
+                              Permintaan
+                            </p>
+                            <p className="whitespace-pre-line text-ink">{m.body}</p>
+                          </div>
+                        </div>
+                      );
+                    }
                     return (
                       <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                         <div

@@ -11,6 +11,7 @@ import categoryRoutes from "./routes/category.routes.js";
 import workersRoutes from "./routes/workers.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
 import notificationsRoutes from "./routes/notifications.routes.js";
+import requestsRoutes from "./routes/requests.routes.js";
 import errorHandler from "./middleware/errorHandler.js";
 import notFoundHandler from "./middleware/notFoundHandler.js";
 
@@ -35,6 +36,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/workers", workersRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/notifications", notificationsRoutes);
+app.use("/api/requests", requestsRoutes);
 
 // --- Fallback for unmatched routes ---
 app.use(notFoundHandler);

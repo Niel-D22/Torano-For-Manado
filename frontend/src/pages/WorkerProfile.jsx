@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
+import { Link, useParams } from "react-router-dom";
 import {
   Star,
   MapPin,
   ShieldCheck,
-  MessageSquareText,
   BadgeCheck,
-  CalendarCheck,
   Check,
+  Send,
 } from "lucide-react";
 import { api } from "../lib/api";
 import { useAuthGate } from "../lib/auth";
 import Avatar from "../components/Avatar";
 import Spinner from "../components/Spinner";
+import RequestModal from "../components/RequestModal";
 import { categoryMap } from "../data/workers";
 
 const rb = (n) => (n == null ? "-" : `Rp${n}rb`);
@@ -33,9 +32,9 @@ const Stars = ({ value }) => (
 const WorkerProfile = () => {
   const { id } = useParams();
   const gate = useAuthGate();
-  const navigate = useNavigate();
   const [worker, setWorker] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [reqOpen, setReqOpen] = useState(false);
 
   useEffect(() => {
     api
@@ -45,15 +44,7 @@ const WorkerProfile = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const startChat = async () => {
-    try {
-      await api.post("/chat/conversations", { workerProfileId: worker.profileId });
-      navigate("/chat");
-    } catch {
-      toast.error("Gagal memulai chat");
-    }
-  };
-  const chat = () => gate(startChat);
+  const ajukan = () => gate(() => setReqOpen(true));
 
   if (loading) {
     return (
@@ -119,23 +110,21 @@ const WorkerProfile = () => {
           </div>
         </div>
 
-        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+        <div className="mt-5">
           <button
-            onClick={chat}
-            className="ring-focus flex flex-1 items-center justify-center gap-2 rounded-xl bg-forest py-3 font-bold text-white transition-colors hover:bg-ink"
+            onClick={ajukan}
+            className="ring-focus flex w-full items-center justify-center gap-2 rounded-xl bg-forest py-3 font-bold text-white transition-colors hover:bg-ink"
           >
-            <MessageSquareText className="h-5 w-5" aria-hidden="true" />
-            Chat sekarang
+            <Send className="h-5 w-5" aria-hidden="true" />
+            Ajukan Permintaan
           </button>
-          <button
-            onClick={chat}
-            className="ring-focus flex flex-1 items-center justify-center gap-2 rounded-xl border border-line py-3 font-bold text-ink transition-colors hover:border-forest hover:text-forest"
-          >
-            <CalendarCheck className="h-5 w-5" aria-hidden="true" />
-            Ajak booking
-          </button>
+          <p className="mt-2 text-center text-xs text-moss">
+            Kirim permintaan singkat, lalu tawar harga dan atur jadwal di chat.
+          </p>
         </div>
       </div>
+
+      <RequestModal open={reqOpen} onClose={() => setReqOpen(false)} worker={worker} />
 
       <div className="mt-5 grid gap-5 lg:grid-cols-3">
         <div className="space-y-5 lg:col-span-2">

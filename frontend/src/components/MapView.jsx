@@ -10,11 +10,8 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
-import { MessageSquareText, Star, BadgeCheck } from "lucide-react";
-import { toast } from "sonner";
+import { Send, Star, BadgeCheck } from "lucide-react";
 import { categoryMap, MANADO_CENTER } from "../data/workers";
-import { api } from "../lib/api";
-import { useAuthGate } from "../lib/auth";
 import Avatar from "./Avatar";
 
 // Pin harga (mockup): pil "Rp90rb"; yang terpilih jadi hijau tua & lebih menonjol.
@@ -83,17 +80,7 @@ function AutoResize() {
 const MapView = ({ workers, selectedId, onSelect }) => {
   const selected = workers.find((w) => w.id === selectedId) || null;
   const navigate = useNavigate();
-  const gate = useAuthGate();
   const markerRefs = useRef({});
-
-  const startChat = async (workerProfileId) => {
-    try {
-      await api.post("/chat/conversations", { workerProfileId });
-      navigate("/chat");
-    } catch {
-      toast.error("Gagal memulai chat");
-    }
-  };
 
   return (
     <MapContainer
@@ -164,11 +151,11 @@ const MapView = ({ workers, selectedId, onSelect }) => {
                 </div>
 
                 <button
-                  onClick={() => gate(() => startChat(w.profileId))}
+                  onClick={() => navigate(`/pekerja/${w.id}`)}
                   className="tp-cta mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-forest py-2.5 text-sm font-bold text-white hover:bg-ink"
                 >
-                  <MessageSquareText className="h-4 w-4" />
-                  Chat
+                  <Send className="h-4 w-4" />
+                  Ajukan Permintaan
                 </button>
               </div>
             </Popup>

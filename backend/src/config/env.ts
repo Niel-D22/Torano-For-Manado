@@ -39,6 +39,13 @@ const envSchema = z.object({
     .string()
     .min(1)
     .default("torano-dev-admin-secret-change-me"),
+
+  // Email transaksional (opsional). Bila RESEND_API_KEY kosong, email dilewati
+  // dengan aman dan hanya dicatat di log (in app notification tetap jalan).
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().default("Torano <onboarding@resend.dev>"),
+  // URL frontend untuk tautan di dalam email.
+  APP_URL: z.string().url().default("http://localhost:5173"),
 });
 
 const parseResult = envSchema.safeParse(process.env);
