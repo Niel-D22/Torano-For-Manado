@@ -10,3 +10,5 @@ build/
 .idea/
 coverage/
 .claude/
+.agents/
+backend/test.mts

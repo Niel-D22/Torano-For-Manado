@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment (JANGAN commit rahasia — pakai .env.example sebagai template)
+.env
+.env.*
+!.env.example
+
+# Logs & arsip
+*.log
+*.zip
+.env
+# OS / editor
+.DS_Store

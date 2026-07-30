@@ -1,30 +1,228 @@
 @import "tailwindcss";
 
-:root {
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
+/* ── Torano design tokens (diturunkan dari logo: hijau gotong-royong) ── */
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #111827;
-  background-color: #f9fafb;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+
+  --color-paper: #ffffff; /* latar halaman — putih (mengikuti BG hero baru) */
+  --color-cloud: #f4f5f3; /* permukaan lembut — abu-abu netral sangat muda */
+  --color-line: #e7e8e4; /* garis/border — netral, kontras lembut di atas putih */
+  --color-ink: #0d3b2e; /* Hijau Tua — teks utama, wordmark */
+  --color-moss: #6b7280; /* Abu-abu — teks sekunder */
+  --color-forest: #16a34a; /* Hijau — warna primer */
+  --color-leaf: #22c55e; /* hijau pendukung (hover/ikon) */
+  --color-lime: #a3e635; /* Hijau Muda — aksen energi */
+  --color-limesoft: #edf8d4;
+  --color-sun: #fbbf24; /* Kuning — optimisme, rating */
+
+  /* kode warna per kategori — tetap dalam palet brand (hijau/kuning/abu) */
+  --color-cat-art: #16a34a;
+  --color-cat-tukang: #ca8a04;
+  --color-cat-event: #0d3b2e;
+  --color-cat-montir: #6b7280;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #fef3c7 0%, #f3f4f6 100%);
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    min-width: 320px;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--color-lime);
+    color: var(--color-ink);
+  }
+  /* Cegah Chrome menimpa warna input saat autofill (kotak biru bawaan) */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--color-paper) inset;
+    -webkit-text-fill-color: var(--color-ink);
+    caret-color: var(--color-ink);
+    transition: background-color 9999s ease-in-out 0s;
+  }
 }
 
-#root {
-  min-height: 100vh;
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(100deg, #0d3b2e 0%, #16a34a 48%, #a3e635 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bg-brand {
+    background: linear-gradient(125deg, #0d3b2e 0%, #16a34a 55%, #22c55e 100%);
+  }
+  .ring-focus:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px #fff,
+      0 0 0 4px var(--color-leaf);
+  }
+  /* Sembunyikan scrollbar tapi tetap bisa di-scroll (daftar & baris kategori) */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-rise {
+  animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Toast (sonner) bertema Torano ── */
+[data-sonner-toaster] {
+  --normal-bg: #fff;
+  --normal-border: var(--color-line);
+  --normal-text: var(--color-ink);
+  --success-bg: #fff;
+  --success-border: var(--color-line);
+  --success-text: var(--color-ink);
+  --error-bg: #fff;
+  --error-border: var(--color-line);
+  --error-text: var(--color-ink);
+}
+.torano-toast {
+  font-family: "Manrope", ui-sans-serif, sans-serif !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--color-line) !important;
+  box-shadow: 0 20px 45px -20px rgba(13, 59, 46, 0.35) !important;
+  font-weight: 600 !important;
+}
+/* Warnai ikon sesuai tema: sukses hijau, error merah lembut */
+.torano-toast[data-type="success"] [data-icon] {
+  color: var(--color-forest);
+}
+.torano-toast[data-type="error"] [data-icon] {
+  color: #dc2626;
+}
+
+/* ── Marker pin peta (Leaflet divIcon) ── */
+.torano-pin .tp {
+  width: 100%;
+  height: 100%;
+  background: var(--pin);
+  border: 2.5px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 8px 16px -6px rgba(13, 59, 46, 0.55);
+  display: grid;
+  place-items: center;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.torano-pin .tp-body {
+  transform: rotate(45deg);
+  color: #fff;
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: -0.02em;
+}
+.torano-pin .tp-active {
+  box-shadow:
+    0 0 0 4px rgba(163, 230, 53, 0.6),
+    0 10px 18px -6px rgba(13, 59, 46, 0.55);
+  z-index: 1000;
+}
+
+/* ── Pin harga peta (gaya Google Maps): pil "Rp90rb" + ekor ── */
+.price-pin .pp {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 27px;
+  padding: 0 11px;
+  background: #fff;
+  border: 1.5px solid var(--color-forest);
+  border-radius: 9999px;
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  color: var(--color-ink);
+  white-space: nowrap;
+  box-shadow: 0 3px 8px -3px rgba(13, 59, 46, 0.3);
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+/* Ekor kecil di bawah pil (penunjuk lokasi) */
+.price-pin .pp::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  background: inherit;
+  border-right: inherit;
+  border-bottom: inherit;
+  transform: translateX(-50%) rotate(45deg);
+}
+.price-pin .pp-active {
+  background: var(--color-forest);
+  color: #fff;
+  border-color: var(--color-forest);
+  transform: scale(1.1);
+  box-shadow: 0 8px 18px -4px rgba(13, 59, 46, 0.5);
+  z-index: 1000;
+}
+
+/* ── Popup Leaflet disesuaikan dengan brand ── */
+.leaflet-popup-content-wrapper {
+  border-radius: 16px;
+  box-shadow: 0 24px 50px -22px rgba(13, 59, 46, 0.55);
+  border: 1px solid var(--color-line);
+}
+.leaflet-popup-content {
+  margin: 12px;
+  line-height: 1.4;
+}
+.leaflet-popup-content a.tp-cta {
+  color: #fff;
+  text-decoration: none;
+}
+.leaflet-container {
+  font-family: "Manrope", sans-serif;
+  background: #eef3e8;
+}
+/* Wajib: batalkan `max-width:100%` dari Tailwind preflight yang merusak tile Leaflet. */
+.leaflet-container img {
+  max-width: none !important;
 }

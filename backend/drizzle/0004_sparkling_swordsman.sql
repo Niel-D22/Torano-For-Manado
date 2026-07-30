@@ -1,0 +1,1 @@
+ALTER TABLE "worker_applications" ADD COLUMN "radius_km" integer;
