@@ -99,7 +99,7 @@ const Hero = () => (
             aria-hidden="true"
           />
           <p className="text-xs leading-snug text-ink">
-            <span className="font-bold">Saya menuju lokasi 🙏</span>
+            <span className="font-bold">Saya menuju lokasi</span>
             <br />
             <span className="text-moss">5 menit lagi sampai!</span>
           </p>

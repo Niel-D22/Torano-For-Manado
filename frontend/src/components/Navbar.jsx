@@ -1,7 +1,10 @@
-import { Link, NavLink } from "react-router-dom";
+import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Heart, MessageSquareText, Bell, ChevronDown } from "lucide-react";
+import { toast } from "sonner";
 import logo from "../assets/LOGO.png";
 import avatar from "../assets/avatar-nanda.jpg";
+import ConfirmDialog from "./ConfirmDialog";
 import { useAuth } from "../lib/auth";
 import { useLayout } from "../lib/layout";
 
@@ -18,8 +21,18 @@ const linkClass =
 const Navbar = () => {
   const { user, logout } = useAuth();
   const { wide } = useLayout();
+  const navigate = useNavigate();
+  const [confirmOut, setConfirmOut] = useState(false);
+
+  const keluar = async () => {
+    setConfirmOut(false);
+    await logout();
+    toast.success("Berhasil keluar");
+    navigate("/");
+  };
 
   return (
+    <>
     <header className="sticky top-0 z-40 border-b border-line bg-white">
       <div
         className={`mx-auto flex items-center justify-between px-4 py-3 sm:px-6 ${
@@ -88,7 +101,7 @@ const Navbar = () => {
                 <div className="my-1 h-px bg-line" />
                 <button
                   type="button"
-                  onClick={logout}
+                  onClick={() => setConfirmOut(true)}
                   className="block w-full px-4 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50"
                 >
                   Keluar
@@ -115,6 +128,18 @@ const Navbar = () => {
         )}
       </div>
     </header>
+
+    <ConfirmDialog
+      open={confirmOut}
+      title="Keluar dari akun?"
+      message="Kamu perlu masuk lagi untuk melanjutkan."
+      confirmLabel="Keluar"
+      cancelLabel="Batal"
+      danger
+      onConfirm={keluar}
+      onCancel={() => setConfirmOut(false)}
+    />
+    </>
   );
 };
 

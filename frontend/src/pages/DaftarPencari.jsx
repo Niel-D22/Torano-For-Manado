@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, User, Mail } from "lucide-react";
+import { toast } from "sonner";
 import logo from "../assets/LOGO.png";
 import AuthShell from "../components/auth/AuthShell";
 import { TextField, PasswordField } from "../components/auth/fields";
 import GoogleButton from "../components/auth/GoogleButton";
+import Spinner from "../components/Spinner";
 import { useAuth } from "../lib/auth";
 
 // Pendaftaran pencari kerja — cukup satu halaman, pakai email (bukan nomor HP).
@@ -14,29 +16,30 @@ const DaftarPencari = () => {
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
 
   const daftar = async (e) => {
     e.preventDefault();
-    setErr("");
     setBusy(true);
     try {
       await register({ email, password, fullName: nama, role: "customer" });
+      toast.success("Akun berhasil dibuat, selamat datang di Torano");
       navigate("/");
     } catch (e2) {
-      setErr(e2.message);
+      toast.error(e2.message);
     } finally {
       setBusy(false);
     }
   };
 
   const google = async () => {
-    setErr("");
+    setGoogleBusy(true);
     try {
       await loginWithGoogle();
     } catch (e2) {
-      setErr(e2.message);
+      toast.error(e2.message);
+      setGoogleBusy(false);
     }
   };
 
@@ -50,12 +53,6 @@ const DaftarPencari = () => {
         <p className="mt-1 text-center text-sm text-moss">
           Daftar untuk mulai cari atau terima pekerjaan
         </p>
-
-        {err && (
-          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600">
-            {err}
-          </p>
-        )}
 
         <form className="mt-5 space-y-3" onSubmit={daftar}>
           <TextField
@@ -103,8 +100,9 @@ const DaftarPencari = () => {
           <button
             type="submit"
             disabled={busy}
-            className="ring-focus h-11 w-full rounded-xl bg-ink text-sm font-bold text-white transition-colors hover:bg-forest disabled:opacity-60"
+            className="ring-focus flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-ink text-sm font-bold text-white transition-colors hover:bg-forest disabled:opacity-70"
           >
+            {busy && <Spinner />}
             {busy ? "Memproses…" : "Daftar"}
           </button>
         </form>
@@ -115,7 +113,7 @@ const DaftarPencari = () => {
           <span className="h-px flex-1 bg-line" />
         </div>
 
-        <GoogleButton label="Daftar dengan Google" onClick={google} />
+        <GoogleButton label="Daftar dengan Google" onClick={google} loading={googleBusy} />
 
         <p className="mt-4 text-center text-sm text-moss">
           Sudah punya akun?{" "}

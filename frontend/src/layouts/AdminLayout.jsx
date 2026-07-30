@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import ConfirmDialog from "../components/ConfirmDialog";
 import {
   LayoutDashboard,
   ShieldCheck,
@@ -32,9 +35,12 @@ const linkClass = ({ isActive }) =>
 const AdminLayout = () => {
   const navigate = useNavigate();
   const name = getAdminName();
+  const [confirmOut, setConfirmOut] = useState(false);
 
   const keluar = () => {
+    setConfirmOut(false);
     adminLogout();
+    toast.success("Berhasil keluar");
     navigate("/admin/login", { replace: true });
   };
 
@@ -75,7 +81,7 @@ const AdminLayout = () => {
           </div>
           <button
             type="button"
-            onClick={keluar}
+            onClick={() => setConfirmOut(true)}
             className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white"
           >
             <LogOut className="h-5 w-5 shrink-0" aria-hidden="true" />
@@ -120,6 +126,17 @@ const AdminLayout = () => {
           <Outlet />
         </main>
       </div>
+
+      <ConfirmDialog
+        open={confirmOut}
+        title="Keluar dari panel admin?"
+        message="Kamu perlu masuk lagi dengan kredensial admin."
+        confirmLabel="Keluar"
+        cancelLabel="Batal"
+        danger
+        onConfirm={keluar}
+        onCancel={() => setConfirmOut(false)}
+      />
     </div>
   );
 };

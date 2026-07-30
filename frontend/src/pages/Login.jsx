@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import logo from "../assets/LOGO.png";
 import bgLogin from "../assets/BG_HeroLandingPage.png";
+import Spinner from "../components/Spinner";
 import { useAuth } from "../lib/auth";
 
 // Ikon Google resmi (empat warna) — lucide tidak menyediakan logo merek
@@ -34,8 +36,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -46,30 +48,32 @@ const Login = () => {
   // (?next=) atau beranda. (Akun sama bisa dipakai untuk dua-duanya.)
   const masuk = async (e) => {
     e.preventDefault();
-    setErr("");
     setBusy(true);
     try {
       await login(email, password);
+      toast.success("Berhasil masuk");
       const dest = mode === "pekerja" ? "/mitra" : params.get("next") || "/";
       navigate(dest, { replace: true });
     } catch (e2) {
-      setErr(e2.message);
+      toast.error(e2.message);
     } finally {
       setBusy(false);
     }
   };
 
   const google = async () => {
-    setErr("");
+    setGoogleBusy(true);
     try {
-      await loginWithGoogle();
+      const dest = mode === "pekerja" ? "/mitra" : params.get("next") || "/";
+      await loginWithGoogle(dest); // mengalihkan ke Google
     } catch (e2) {
-      setErr(e2.message);
+      toast.error(e2.message);
+      setGoogleBusy(false);
     }
   };
 
   return (
-    <div className="relative flex h-screen items-center justify-center overflow-hidden bg-paper px-6 py-5">
+    <div className="relative flex min-h-screen items-center justify-center bg-paper px-6 py-6">
       {/* Lukisan cat air Manado — latar yang sama dengan hero landing page */}
       <img
         src={bgLogin}
@@ -78,15 +82,15 @@ const Login = () => {
         className="pointer-events-none absolute inset-0 h-full w-full object-cover object-bottom"
       />
 
-      {/* Kartu login — spacing kompak agar selalu muat setinggi layar */}
-      <div className="relative max-h-full w-full max-w-[520px] overflow-y-auto rounded-[24px] border border-line bg-white px-8 py-6 shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-12">
+      {/* Kartu login — lebar & kompak, tanpa scroll internal */}
+      <div className="relative w-full max-w-[560px] rounded-[24px] border border-line bg-white px-8 py-6 shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-12">
         <img
           src={logo}
           alt="Torano"
-          className="mx-auto w-[clamp(96px,13vh,140px)] max-w-full"
+          className="mx-auto w-[clamp(84px,10vh,116px)] max-w-full"
         />
 
-        <h1 className="mt-4 text-center text-2xl font-extrabold tracking-tight text-ink">
+        <h1 className="mt-3 text-center text-2xl font-extrabold tracking-tight text-ink">
           {mode === "pekerja" ? "Masuk sebagai Pekerja" : "Selamat datang kembali"}
         </h1>
         <p className="mt-1.5 text-center text-sm text-moss">
@@ -94,7 +98,7 @@ const Login = () => {
             ? "Kelola pekerjaan dan terima orderan sebagai mitra."
             : "Masuk untuk mulai cari pekerja terpercaya."}
         </p>
-        <div className="mt-3 text-center">
+        <div className="mt-2 text-center">
           <Link
             to="/login"
             className="ring-focus inline-flex items-center gap-1 rounded-lg text-sm font-semibold text-forest hover:underline"
@@ -104,13 +108,7 @@ const Login = () => {
           </Link>
         </div>
 
-        {err && (
-          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600">
-            {err}
-          </p>
-        )}
-
-        <form className="mt-6 space-y-4" onSubmit={masuk}>
+        <form className="mt-5 space-y-3.5" onSubmit={masuk}>
           <div>
             <label htmlFor="email" className="mb-1.5 block text-sm font-bold text-ink">
               Email
@@ -165,14 +163,15 @@ const Login = () => {
           <button
             type="submit"
             disabled={busy}
-            className="ring-focus h-12 w-full rounded-[14px] bg-ink text-sm font-bold text-white transition-colors hover:bg-forest disabled:opacity-60"
+            className="ring-focus flex h-12 w-full items-center justify-center gap-2 rounded-[14px] bg-ink text-sm font-bold text-white transition-colors hover:bg-forest disabled:opacity-70"
           >
+            {busy && <Spinner />}
             {busy ? "Memproses…" : "Masuk"}
           </button>
         </form>
 
         {/* Pemisah */}
-        <div className="mt-5 flex items-center gap-4" aria-hidden="true">
+        <div className="mt-4 flex items-center gap-4" aria-hidden="true">
           <span className="h-px flex-1 bg-line" />
           <span className="text-sm text-moss">atau</span>
           <span className="h-px flex-1 bg-line" />
@@ -181,13 +180,14 @@ const Login = () => {
         <button
           type="button"
           onClick={google}
-          className="ring-focus mt-5 flex h-12 w-full items-center justify-center gap-2.5 rounded-[14px] border border-line bg-white text-sm font-bold text-ink transition-colors hover:bg-paper"
+          disabled={googleBusy}
+          className="ring-focus mt-4 flex h-12 w-full items-center justify-center gap-2.5 rounded-[14px] border border-line bg-white text-sm font-bold text-ink transition-colors hover:bg-paper disabled:opacity-70"
         >
-          <GoogleIcon className="h-5 w-5" />
-          Masuk dengan Google
+          {googleBusy ? <Spinner className="h-5 w-5" /> : <GoogleIcon className="h-5 w-5" />}
+          {googleBusy ? "Mengalihkan…" : "Masuk dengan Google"}
         </button>
 
-        <p className="mt-6 text-center text-sm text-moss">
+        <p className="mt-4 text-center text-sm text-moss">
           Belum punya akun?{" "}
           <Link to={`/daftar/${mode}`} className="font-bold text-forest hover:underline">
             Daftar sekarang

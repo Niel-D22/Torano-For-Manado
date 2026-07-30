@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Lock, ShieldCheck, Eye, EyeOff } from "lucide-react";
+import { User, Lock, ShieldCheck, Eye, EyeOff, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import logo from "../../assets/LOGO.png";
 import { adminLogin } from "../../lib/adminApi";
 
@@ -9,18 +10,17 @@ const AdminLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
-  const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
-    setErr("");
     setBusy(true);
     try {
       await adminLogin(username, password);
+      toast.success("Selamat datang, Admin");
       navigate("/admin", { replace: true });
     } catch (e2) {
-      setErr(e2.response?.data?.error?.message || "Login gagal, coba lagi");
+      toast.error(e2.response?.data?.error?.message || "Login gagal, coba lagi");
     } finally {
       setBusy(false);
     }
@@ -45,12 +45,6 @@ const AdminLogin = () => {
             Kelola verifikasi mitra, transaksi, dan pengguna.
           </p>
         </div>
-
-        {err && (
-          <p className="mb-4 rounded-xl border border-red-400/40 bg-red-500/15 px-4 py-2.5 text-sm font-semibold text-red-200">
-            {err}
-          </p>
-        )}
 
         <form onSubmit={submit} className="space-y-3">
           <div className="relative">
@@ -88,8 +82,9 @@ const AdminLogin = () => {
           <button
             type="submit"
             disabled={busy}
-            className="ring-focus h-12 w-full rounded-xl bg-lime text-sm font-extrabold text-ink transition-colors hover:bg-white disabled:opacity-60"
+            className="ring-focus flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-lime text-sm font-extrabold text-ink transition-colors hover:bg-white disabled:opacity-70"
           >
+            {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             {busy ? "Memproses…" : "Masuk"}
           </button>
         </form>

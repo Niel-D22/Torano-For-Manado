@@ -29,9 +29,12 @@ const humanize = (msg = "") => {
 export const homeForRole = (role) =>
   role === "admin" ? "/admin" : role === "worker" ? "/mitra" : "/";
 
+const OAUTH_DEST_KEY = "torano_oauth_dest";
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Buat/ambil profil di backend berdasarkan sesi aktif; kembalikan profilnya.
   const fetchProfile = useCallback(async (session) => {
@@ -56,11 +59,19 @@ export const AuthProvider = ({ children }) => {
       .then(({ data }) => fetchProfile(data.session))
       .finally(() => setLoading(false));
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       fetchProfile(session);
+      // Setelah login Google kembali, arahkan ke tujuan sesuai peran yang dipilih.
+      if (event === "SIGNED_IN") {
+        const dest = sessionStorage.getItem(OAUTH_DEST_KEY);
+        if (dest) {
+          sessionStorage.removeItem(OAUTH_DEST_KEY);
+          navigate(dest, { replace: true });
+        }
+      }
     });
     return () => sub.subscription.unsubscribe();
-  }, [fetchProfile]);
+  }, [fetchProfile, navigate]);
 
   const login = useCallback(
     async (email, password) => {
@@ -88,12 +99,17 @@ export const AuthProvider = ({ children }) => {
     [fetchProfile],
   );
 
-  const loginWithGoogle = useCallback(async () => {
+  const loginWithGoogle = useCallback(async (dest = "/") => {
+    // Simpan tujuan (mis. /mitra) agar tak hilang saat redirect ke Google.
+    sessionStorage.setItem(OAUTH_DEST_KEY, dest);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: window.location.origin },
     });
-    if (error) throw new Error(humanize(error.message));
+    if (error) {
+      sessionStorage.removeItem(OAUTH_DEST_KEY);
+      throw new Error(humanize(error.message));
+    }
   }, []);
 
   const logout = useCallback(async () => {
@@ -122,7 +138,9 @@ export const useAuthGate = () => {
     (action) => {
       if (user) return action();
       const next = encodeURIComponent(location.pathname + location.search);
-      navigate(`/login?next=${next}`);
+      // Aksi tergerbang (chat/booking/favorit) itu sisi pencari → langsung ke
+      // form login pencari.
+      navigate(`/login/pencari?next=${next}`);
     },
     [user, navigate, location],
   );

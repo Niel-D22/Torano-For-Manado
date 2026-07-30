@@ -1,11 +1,20 @@
+import { Loader2 } from "lucide-react";
+
 // Tombol "lanjut dengan Google" + ikon merek resmi (lucide tak menyediakannya).
-const GoogleButton = ({ label = "Masuk dengan Google", onClick, disabled }) => (
+const GoogleButton = ({ label = "Masuk dengan Google", onClick, disabled, loading }) => (
   <button
     type="button"
     onClick={onClick}
-    disabled={disabled}
-    className="ring-focus flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-line bg-white text-sm font-bold text-ink transition-colors hover:bg-paper disabled:opacity-60"
+    disabled={disabled || loading}
+    className="ring-focus flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-line bg-white text-sm font-bold text-ink transition-colors hover:bg-paper disabled:opacity-70"
   >
+    {loading ? (
+      <>
+        <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+        Mengalihkan…
+      </>
+    ) : (
+      <>
     <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
       <path
         fill="#4285F4"
@@ -23,8 +32,10 @@ const GoogleButton = ({ label = "Masuk dengan Google", onClick, disabled }) => (
         fill="#EA4335"
         d="M12 4.77c1.76 0 3.35.61 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.27 6.61l4.01 3.11C6.22 6.88 8.87 4.77 12 4.77Z"
       />
-    </svg>
-    {label}
+        </svg>
+        {label}
+      </>
+    )}
   </button>
 );
 

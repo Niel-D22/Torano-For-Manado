@@ -36,7 +36,7 @@ const now = () =>
 const quickReplies = [
   "Bisa hari ini?",
   "Berapa lama pengerjaan?",
-  "Terima kasih 🙏",
+  "Terima kasih",
 ];
 
 const ChatRoom = () => {

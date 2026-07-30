@@ -48,7 +48,7 @@ const Dashboard = () => {
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
       <header>
         <h1 className="text-2xl font-extrabold tracking-tight text-ink">
-          Halo, {partner.name.split(" ")[0]} 👋
+          Halo, {partner.name.split(" ")[0]}
         </h1>
         <p className="mt-1 text-sm text-moss">
           Berikut ringkasan kerjamu hari ini.

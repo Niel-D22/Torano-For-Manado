@@ -103,6 +103,33 @@
   }
 }
 
+/* ── Toast (sonner) bertema Torano ── */
+[data-sonner-toaster] {
+  --normal-bg: #fff;
+  --normal-border: var(--color-line);
+  --normal-text: var(--color-ink);
+  --success-bg: #fff;
+  --success-border: var(--color-line);
+  --success-text: var(--color-ink);
+  --error-bg: #fff;
+  --error-border: var(--color-line);
+  --error-text: var(--color-ink);
+}
+.torano-toast {
+  font-family: "Manrope", ui-sans-serif, sans-serif !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--color-line) !important;
+  box-shadow: 0 20px 45px -20px rgba(13, 59, 46, 0.35) !important;
+  font-weight: 600 !important;
+}
+/* Warnai ikon sesuai tema: sukses hijau, error merah lembut */
+.torano-toast[data-type="success"] [data-icon] {
+  color: var(--color-forest);
+}
+.torano-toast[data-type="error"] [data-icon] {
+  color: #dc2626;
+}
+
 /* ── Marker pin peta (Leaflet divIcon) ── */
 .torano-pin .tp {
   width: 100%;

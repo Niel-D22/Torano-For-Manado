@@ -47,7 +47,7 @@ const MasukPilihPeran = () => {
             Masuk sebagai apa?
           </h1>
           <p className="mt-1.5 text-sm text-moss">
-            Satu akun bisa dua-duanya — pilih mau masuk ke mana dulu.
+            Satu akun bisa dua-duanya. Pilih mau masuk ke mana dulu.
           </p>
         </div>
 

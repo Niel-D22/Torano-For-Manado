@@ -4,7 +4,6 @@ import { Check, ArrowRight, ShieldCheck, Lock, Users } from "lucide-react";
 import ilustrasiCari from "../assets/PendaftaranPekerja/assetCariPekerjaan.png";
 import ilustrasiTerima from "../assets/PendaftaranPekerja/assetTerimaPekerjaan.png";
 import AuthShell from "../components/auth/AuthShell";
-import StepIndicator from "../components/auth/StepIndicator";
 
 const roles = [
   {
@@ -24,23 +23,28 @@ const roles = [
 ];
 
 const trust = [
-  { icon: ShieldCheck, title: "Aman & Terpercaya", desc: "Verifikasi ketat untuk semua pengguna" },
+  {
+    icon: ShieldCheck,
+    title: "Aman & Terpercaya",
+    desc: "Verifikasi ketat untuk semua pengguna",
+  },
   { icon: Lock, title: "Privasi Terjaga", desc: "Data kamu aman bersama kami" },
-  { icon: Users, title: "Komunitas Lokal", desc: "Dikenal warga, dipercaya bersama" },
+  {
+    icon: Users,
+    title: "Komunitas Lokal",
+    desc: "Dikenal warga, dipercaya bersama",
+  },
 ];
 
 const Daftar = () => {
   const [selected, setSelected] = useState("pekerja");
   const navigate = useNavigate();
 
-  const lanjut = () =>
-    navigate(roles.find((r) => r.id === selected).to);
+  const lanjut = () => navigate(roles.find((r) => r.id === selected).to);
 
   return (
     <AuthShell>
       <div className="relative w-full max-w-3xl rounded-[28px] border border-line bg-white px-6 py-6 shadow-[0_30px_70px_rgba(13,59,46,0.12)] sm:px-10">
-        <StepIndicator current={1} />
-
         <div className="mt-7 text-center">
           <h1 className="text-2xl font-extrabold tracking-tight text-ink">
             Mau pakai Torano sebagai apa?
@@ -85,11 +89,17 @@ const Daftar = () => {
                     }`}
                     aria-hidden="true"
                   >
-                    {active && <span className="h-2.5 w-2.5 rounded-full bg-forest" />}
+                    {active && (
+                      <span className="h-2.5 w-2.5 rounded-full bg-forest" />
+                    )}
                   </span>
                   <span>
-                    <span className="block font-extrabold text-ink">{role.title}</span>
-                    <span className="mt-0.5 block text-sm text-moss">{role.desc}</span>
+                    <span className="block font-extrabold text-ink">
+                      {role.title}
+                    </span>
+                    <span className="mt-0.5 block text-sm text-moss">
+                      {role.desc}
+                    </span>
                   </span>
                 </div>
               </button>
@@ -116,7 +126,10 @@ const Daftar = () => {
         <div className="mt-7 grid gap-5 border-t border-line pt-6 sm:grid-cols-3">
           {trust.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="flex items-start gap-3">
-              <Icon className="mt-0.5 h-5 w-5 shrink-0 text-forest" aria-hidden="true" />
+              <Icon
+                className="mt-0.5 h-5 w-5 shrink-0 text-forest"
+                aria-hidden="true"
+              />
               <div>
                 <p className="text-sm font-bold text-ink">{title}</p>
                 <p className="text-xs text-moss">{desc}</p>

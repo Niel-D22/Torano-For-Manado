@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
 import { Bell, ChevronDown } from "lucide-react";
+import { toast } from "sonner";
 import logo from "../assets/LOGO.png";
 import avatar from "../assets/avatar-nanda.jpg";
+import ConfirmDialog from "../components/ConfirmDialog";
 import { useAuth } from "../lib/auth";
 
 const nav = [
@@ -22,10 +24,13 @@ const WorkerLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [online, setOnline] = useState(true);
+  const [confirmOut, setConfirmOut] = useState(false);
 
   const keluar = async () => {
+    setConfirmOut(false);
     await logout();
-    navigate("/login", { replace: true });
+    toast.success("Berhasil keluar");
+    navigate("/", { replace: true });
   };
 
   return (
@@ -100,7 +105,7 @@ const WorkerLayout = () => {
                 </Link>
                 <button
                   type="button"
-                  onClick={keluar}
+                  onClick={() => setConfirmOut(true)}
                   className="block w-full px-4 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50"
                 >
                   Keluar
@@ -114,6 +119,17 @@ const WorkerLayout = () => {
       <main>
         <Outlet />
       </main>
+
+      <ConfirmDialog
+        open={confirmOut}
+        title="Keluar dari akun mitra?"
+        message="Kamu perlu masuk lagi untuk mengelola pekerjaan."
+        confirmLabel="Keluar"
+        cancelLabel="Batal"
+        danger
+        onConfirm={keluar}
+        onCancel={() => setConfirmOut(false)}
+      />
     </div>
   );
 };

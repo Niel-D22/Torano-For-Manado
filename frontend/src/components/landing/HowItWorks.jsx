@@ -60,7 +60,7 @@ const MiniChatCard = () => (
         Selamat pagi Bu, bisa bantu beres-beres rumah 3 jam hari ini?
       </p>
       <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-tr-md bg-forest px-3 py-2 text-white">
-        Bisa, Bu 🙏 Rp75.000 untuk 3 jam ya.
+        Bisa, Bu. Rp75.000 untuk 3 jam ya.
       </p>
       <div className="rounded-xl border border-sun/60 bg-sun/10 p-3">
         <div className="flex items-center justify-between">
@@ -89,7 +89,7 @@ const MiniReviewCard = () => (
       ))}
     </div>
     <p className="mt-3 rounded-xl border border-line bg-paper px-3 py-2 text-xs text-moss">
-      Pekerjaan rapi dan cepat, terima kasih Bu Siti 🙏
+      Pekerjaan rapi dan cepat, terima kasih Bu Siti.
     </p>
     <button
       type="button"
