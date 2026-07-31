@@ -58,6 +58,11 @@ export async function createRequest(
   if (!app || app.status !== "verified" || !app.profile) {
     throw new NotFoundError("Pekerja tidak ditemukan atau belum terverifikasi");
   }
+  if (app.isOnline === false) {
+    throw new ValidationError(
+      "Pekerja sedang libur dan tidak menerima permintaan saat ini",
+    );
+  }
 
   // Buka atau ambil percakapan yang sudah ada.
   await db

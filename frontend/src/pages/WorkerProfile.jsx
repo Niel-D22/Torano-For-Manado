@@ -111,16 +111,32 @@ const WorkerProfile = () => {
         </div>
 
         <div className="mt-5">
-          <button
-            onClick={ajukan}
-            className="ring-focus flex w-full items-center justify-center gap-2 rounded-xl bg-forest py-3 font-bold text-white transition-colors hover:bg-ink"
-          >
-            <Send className="h-5 w-5" aria-hidden="true" />
-            Ajukan Permintaan
-          </button>
-          <p className="mt-2 text-center text-xs text-moss">
-            Kirim permintaan singkat, lalu tawar harga dan atur jadwal di chat.
-          </p>
+          {worker.available === false ? (
+            <>
+              <button
+                disabled
+                className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-line bg-cloud py-3 font-bold text-moss"
+              >
+                Sedang tidak menerima pekerjaan
+              </button>
+              <p className="mt-2 text-center text-xs text-moss">
+                Pekerja ini sedang libur. Coba lagi nanti atau pilih pekerja lain.
+              </p>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={ajukan}
+                className="ring-focus flex w-full items-center justify-center gap-2 rounded-xl bg-forest py-3 font-bold text-white transition-colors hover:bg-ink"
+              >
+                <Send className="h-5 w-5" aria-hidden="true" />
+                Ajukan Permintaan
+              </button>
+              <p className="mt-2 text-center text-xs text-moss">
+                Kirim permintaan singkat, lalu tawar harga dan atur jadwal di chat.
+              </p>
+            </>
+          )}
         </div>
       </div>
 

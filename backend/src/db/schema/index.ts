@@ -10,6 +10,8 @@ export { bookings } from "./bookings.js";
 export { withdrawals } from "./withdrawals.js";
 export { conversations } from "./conversations.js";
 export { messages } from "./messages.js";
+export { payments } from "./payments.js";
+export { disputes } from "./disputes.js";
 
 // --- Relations ---
 export {

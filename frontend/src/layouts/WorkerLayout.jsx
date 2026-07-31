@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { toast } from "sonner";
@@ -7,6 +7,7 @@ import Avatar from "../components/Avatar";
 import NotificationBell from "../components/NotificationBell";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useAuth } from "../lib/auth";
+import { api } from "../lib/api";
 
 const nav = [
   { to: "/mitra", label: "Beranda", end: true },
@@ -26,7 +27,34 @@ const WorkerLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [online, setOnline] = useState(true);
+  const [busyOnline, setBusyOnline] = useState(false);
   const [confirmOut, setConfirmOut] = useState(false);
+
+  // Ambil status "open to work" tersimpan saat masuk area mitra.
+  useEffect(() => {
+    api
+      .get("/worker/me")
+      .then((r) => {
+        const app = r.data.data.application;
+        if (app) setOnline(app.isOnline !== false);
+      })
+      .catch(() => {});
+  }, []);
+
+  const toggleOnline = async () => {
+    const next = !online;
+    setOnline(next); // optimistis
+    setBusyOnline(true);
+    try {
+      await api.patch("/worker/me/availability", { online: next });
+      toast.success(next ? "Kamu online, menerima pekerjaan" : "Kamu sedang libur");
+    } catch {
+      setOnline(!next); // kembalikan bila gagal
+      toast.error("Gagal mengubah status");
+    } finally {
+      setBusyOnline(false);
+    }
+  };
 
   const keluar = async () => {
     setConfirmOut(false);
@@ -63,16 +91,18 @@ const WorkerLayout = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
-              onClick={() => setOnline((v) => !v)}
+              onClick={toggleOnline}
+              disabled={busyOnline}
               aria-pressed={online}
-              className={`flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${
+              title="Ubah status ketersediaan"
+              className={`flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition-colors disabled:opacity-60 ${
                 online
                   ? "border-limesoft bg-limesoft/60 text-forest"
                   : "border-line bg-white text-moss"
               }`}
             >
               <span className={`h-2 w-2 rounded-full ${online ? "bg-forest" : "bg-moss"}`} />
-              {online ? "Menerima pekerjaan" : "Sedang libur"}
+              {online ? "Online, menerima kerja" : "Sedang libur"}
             </button>
 
             <NotificationBell chatPath="/mitra/pesan" />

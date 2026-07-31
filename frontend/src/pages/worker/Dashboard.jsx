@@ -43,6 +43,15 @@ const Dashboard = () => {
   const load = () => api.get("/worker/me/dashboard").then((r) => setData(r.data.data));
   useEffect(() => {
     load().finally(() => setLoading(false));
+    // Segarkan berkala + saat tab kembali fokus, agar permintaan baru langsung
+    // muncul tanpa perlu memuat ulang halaman.
+    const t = setInterval(load, 15000);
+    const onFocus = () => load();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(t);
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
 
   const setStatus = async (id, status) => {
@@ -119,7 +128,13 @@ const Dashboard = () => {
                       <p className="font-bold text-ink">{r.jobTitle}</p>
                       <p className="mt-0.5 text-sm text-moss">{r.customerName}</p>
                     </div>
-                    <span className="shrink-0 font-extrabold text-forest">{rupiah(r.price)}</span>
+                    {r.price != null ? (
+                      <span className="shrink-0 font-extrabold text-forest">{rupiah(r.price)}</span>
+                    ) : (
+                      <span className="shrink-0 rounded-full bg-sun/20 px-2.5 py-1 text-xs font-bold text-[#8a6a00]">
+                        Nego di chat
+                      </span>
+                    )}
                   </div>
                   {r.area && (
                     <p className="mt-2 flex items-center gap-1.5 text-sm text-moss">
@@ -127,10 +142,11 @@ const Dashboard = () => {
                       {r.area}
                     </p>
                   )}
+                  {r.note && <p className="mt-2 text-sm text-moss">{r.note}</p>}
                   <div className="mt-3 flex gap-2">
                     <button
                       onClick={() => setStatus(r.id, "declined")}
-                      className="ring-focus flex-1 rounded-xl border border-line py-2.5 text-sm font-semibold text-moss transition-colors hover:border-moss/50"
+                      className="ring-focus rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-moss transition-colors hover:border-moss/50"
                     >
                       Tolak
                     </button>
@@ -140,6 +156,13 @@ const Dashboard = () => {
                     >
                       Terima
                     </button>
+                    <Link
+                      to="/mitra/pesan"
+                      className="ring-focus flex items-center justify-center gap-1.5 rounded-xl border border-forest px-4 py-2.5 text-sm font-semibold text-forest transition-colors hover:bg-limesoft/40"
+                    >
+                      <MessageSquareText className="h-4 w-4" aria-hidden="true" />
+                      Chat
+                    </Link>
                   </div>
                 </article>
               ))}

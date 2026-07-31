@@ -105,6 +105,20 @@ export const AuthProvider = ({ children }) => {
     return fetchProfile(data.session);
   }, [fetchProfile]);
 
+  // Kirim email tautan pemulihan kata sandi (alur bawaan Supabase).
+  const requestPasswordReset = useCallback(async (email) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + "/reset-sandi",
+    });
+    if (error) throw new Error(humanize(error.message));
+  }, []);
+
+  // Setel kata sandi baru (dipanggil di halaman reset setelah tautan diklik).
+  const updatePassword = useCallback(async (password) => {
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) throw new Error(humanize(error.message));
+  }, []);
+
   const loginWithGoogle = useCallback(async (dest = "/") => {
     // Simpan tujuan (mis. /mitra) agar tak hilang saat redirect ke Google.
     sessionStorage.setItem(OAUTH_DEST_KEY, dest);
@@ -125,7 +139,17 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, register, loginWithGoogle, logout, refresh }}
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        loginWithGoogle,
+        logout,
+        refresh,
+        requestPasswordReset,
+        updatePassword,
+      }}
     >
       {children}
     </AuthContext.Provider>

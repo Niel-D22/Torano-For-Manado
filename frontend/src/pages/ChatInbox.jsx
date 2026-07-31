@@ -1,14 +1,28 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Send, MessageSquareText, Search, ArrowLeft } from "lucide-react";
-// Send juga dipakai untuk menandai kartu pesan sistem "Permintaan".
+import {
+  Send,
+  MessageSquareText,
+  Search,
+  ArrowLeft,
+  Tag,
+  Wallet,
+  Plus,
+  ShieldCheck,
+  Check,
+  X,
+} from "lucide-react";
 import { api } from "../lib/api";
 import { supabase } from "../lib/supabase";
+import { loadSnap } from "../lib/snap";
 import Spinner from "../components/Spinner";
 import Avatar from "../components/Avatar";
+import DisputeModal from "../components/DisputeModal";
 
 const jam = (iso) =>
   iso ? new Date(iso).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "";
+
+const rp = (n) => "Rp" + Number(n || 0).toLocaleString("id-ID");
 
 // Normalisasi baris realtime (snake_case) ke bentuk API (camelCase).
 const norm = (r) => ({
@@ -35,7 +49,17 @@ const ChatInbox = () => {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [showOffer, setShowOffer] = useState(false);
+  const [offerAmount, setOfferAmount] = useState("");
+  const [offerNote, setOfferNote] = useState("");
+  const [disputePaymentId, setDisputePaymentId] = useState(null);
   const scrollRef = useRef(null);
+
+  const reloadThread = useCallback(async () => {
+    if (!activeId) return;
+    const r = await api.get(`/chat/conversations/${activeId}/messages`);
+    setThread(r.data.data);
+  }, [activeId]);
 
   useEffect(() => {
     api
@@ -50,7 +74,10 @@ const ChatInbox = () => {
   useEffect(() => {
     if (!activeId) return;
     setThread(null);
-    api.get(`/chat/conversations/${activeId}/messages`).then((r) => setThread(r.data.data));
+    let alive = true;
+    api
+      .get(`/chat/conversations/${activeId}/messages`)
+      .then((r) => alive && setThread(r.data.data));
 
     const channel = supabase
       .channel(`msg-${activeId}`)
@@ -59,6 +86,12 @@ const ChatInbox = () => {
         { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${activeId}` },
         (payload) => {
           const m = norm(payload.new);
+          // Kartu penawaran/pembayaran berubah lewat update payload, jadi muat
+          // ulang thread agar status ikut tersinkron, bukan sekadar menambah.
+          if (m.type === "offer" || m.type === "payment" || m.type === "system") {
+            reloadThread();
+            return;
+          }
           setThread((t) =>
             t && t.conversation.id === activeId && !t.messages.find((x) => x.id === m.id)
               ? { ...t, messages: [...t.messages, m] }
@@ -68,8 +101,11 @@ const ChatInbox = () => {
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
-  }, [activeId]);
+    return () => {
+      alive = false;
+      supabase.removeChannel(channel);
+    };
+  }, [activeId, reloadThread]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -97,6 +133,75 @@ const ChatInbox = () => {
     }
   };
 
+  const sendOffer = async () => {
+    const amt = Number(offerAmount);
+    if (!amt || amt < 1000) {
+      toast.error("Masukkan harga minimal Rp1.000");
+      return;
+    }
+    try {
+      await api.post("/payments/offer", {
+        conversationId: activeId,
+        amount: amt,
+        note: offerNote.trim() || undefined,
+      });
+      setShowOffer(false);
+      setOfferAmount("");
+      setOfferNote("");
+      reloadThread();
+    } catch {
+      toast.error("Gagal mengirim penawaran");
+    }
+  };
+
+  const respondOffer = async (messageId, action) => {
+    try {
+      await api.post(`/payments/offer/${messageId}/respond`, { action });
+      if (action === "accept") toast.success("Penawaran diterima");
+      reloadThread();
+    } catch (e) {
+      toast.error(e.response?.data?.error?.message || "Gagal memproses penawaran");
+    }
+  };
+
+  const confirmPay = async (paymentId) => {
+    try {
+      const { data } = await api.post(`/payments/${paymentId}/confirm`);
+      if (data.data.status === "held")
+        toast.success("Pembayaran berhasil. Dana ditahan Torano.");
+    } catch {
+      /* diamkan, muat ulang di bawah */
+    } finally {
+      reloadThread();
+    }
+  };
+
+  const pay = async (paymentId) => {
+    try {
+      const { data } = await api.post(`/payments/${paymentId}/snap`);
+      const { token, clientKey, isProduction } = data.data;
+      const snap = await loadSnap(clientKey, isProduction);
+      snap.pay(token, {
+        onSuccess: () => confirmPay(paymentId),
+        onPending: () => confirmPay(paymentId),
+        onError: () => toast.error("Pembayaran gagal"),
+        onClose: () => {},
+      });
+    } catch (e) {
+      toast.error(e.response?.data?.error?.message || "Gagal memulai pembayaran");
+    }
+  };
+
+  const release = async (paymentId) => {
+    try {
+      await api.post(`/payments/${paymentId}/release`);
+      toast.success("Dana dilepas ke pekerja");
+      reloadThread();
+    } catch (e) {
+      toast.error(e.response?.data?.error?.message || "Gagal melepas dana");
+    }
+  };
+
   if (loading) {
     return (
       <div className="grid place-items-center py-24 text-moss">
@@ -108,12 +213,13 @@ const ChatInbox = () => {
   const active = convos.find((c) => c.id === activeId);
   const other = thread?.conversation?.other;
   const meId = thread?.conversation?.meId;
+  const iAmCustomer = thread?.conversation?.iAmCustomer;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="grid h-[calc(100vh-9rem)] overflow-hidden rounded-2xl border border-line bg-white lg:grid-cols-[340px_1fr]">
+      <div className="grid h-[calc(100vh-9rem)] overflow-hidden rounded-2xl border border-line bg-white md:grid-cols-[300px_1fr]">
         {/* Daftar percakapan */}
-        <aside className={`flex flex-col border-r border-line ${activeId ? "hidden lg:flex" : "flex"}`}>
+        <aside className={`flex flex-col border-r border-line ${activeId ? "hidden md:flex" : "flex"}`}>
           <div className="border-b border-line p-4">
             <h1 className="text-lg font-extrabold text-ink">Pesan</h1>
             <div className="mt-3 flex items-center gap-2 rounded-xl border border-line bg-paper px-3">
@@ -157,7 +263,7 @@ const ChatInbox = () => {
         </aside>
 
         {/* Ruang chat */}
-        <section className={`flex flex-col ${activeId ? "flex" : "hidden lg:flex"}`}>
+        <section className={`flex flex-col ${activeId ? "flex" : "hidden md:flex"}`}>
           {!active ? (
             <div className="grid flex-1 place-items-center text-center text-moss">
               <div>
@@ -170,7 +276,7 @@ const ChatInbox = () => {
               <header className="flex items-center gap-3 border-b border-line px-4 py-3">
                 <button
                   onClick={() => setActiveId(null)}
-                  className="rounded-lg p-1.5 text-moss hover:bg-cloud lg:hidden"
+                  className="rounded-lg p-1.5 text-moss hover:bg-cloud md:hidden"
                   aria-label="Kembali"
                 >
                   <ArrowLeft className="h-5 w-5" aria-hidden="true" />
@@ -189,7 +295,8 @@ const ChatInbox = () => {
                 </div>
               </header>
 
-              <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-paper px-4 py-4">
+              <div ref={scrollRef} className="flex-1 overflow-y-auto bg-paper px-4 py-4">
+                <div className="mx-auto flex w-full max-w-2xl flex-col gap-3">
                 {!thread ? (
                   <div className="grid place-items-center py-10">
                     <Spinner className="h-6 w-6 text-forest" />
@@ -197,6 +304,132 @@ const ChatInbox = () => {
                 ) : (
                   thread.messages.map((m) => {
                     const mine = m.senderProfileId === meId;
+
+                    if (m.type === "offer") {
+                      const p = m.payload || {};
+                      const st = p.status;
+                      return (
+                        <div key={m.id} className="flex justify-center">
+                          <div className="w-full max-w-xs rounded-2xl border border-line bg-white p-4 shadow-sm">
+                            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-moss">
+                              <Tag className="h-3.5 w-3.5" aria-hidden="true" /> Penawaran harga
+                            </p>
+                            <p className="mt-1 text-2xl font-extrabold text-forest">{rp(p.amount)}</p>
+                            {p.note && <p className="mt-1 text-sm text-moss">{p.note}</p>}
+                            {st === "pending" ? (
+                              mine ? (
+                                <p className="mt-3 text-xs text-moss">Menunggu jawaban lawan bicara...</p>
+                              ) : (
+                                <div className="mt-3 flex gap-2">
+                                  <button
+                                    onClick={() => respondOffer(m.id, "accept")}
+                                    className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-forest py-2 text-sm font-bold text-white hover:bg-ink"
+                                  >
+                                    <Check className="h-4 w-4" /> Terima
+                                  </button>
+                                  <button
+                                    onClick={() => respondOffer(m.id, "decline")}
+                                    className="flex flex-1 items-center justify-center gap-1 rounded-xl border border-line py-2 text-sm font-bold text-moss hover:text-ink"
+                                  >
+                                    <X className="h-4 w-4" /> Tolak
+                                  </button>
+                                </div>
+                              )
+                            ) : (
+                              <span
+                                className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-bold ${
+                                  st === "accepted"
+                                    ? "bg-limesoft text-forest"
+                                    : "bg-red-50 text-red-600"
+                                }`}
+                              >
+                                {st === "accepted" ? "Disepakati" : "Ditolak"}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    if (m.type === "payment") {
+                      const p = m.payload || {};
+                      const st = p.status;
+                      return (
+                        <div key={m.id} className="flex justify-center">
+                          <div className="w-full max-w-xs rounded-2xl border border-forest/30 bg-white p-4 shadow-sm">
+                            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-moss">
+                              <Wallet className="h-3.5 w-3.5" aria-hidden="true" /> Pembayaran aman (escrow)
+                            </p>
+                            <p className="mt-1 text-2xl font-extrabold text-ink">{rp(p.amount)}</p>
+                            <div className="mt-2 space-y-1 border-t border-line pt-2 text-xs text-moss">
+                              <div className="flex justify-between">
+                                <span>Diterima pekerja</span>
+                                <span className="font-semibold text-ink">{rp(p.workerAmount)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Biaya layanan Torano</span>
+                                <span>{rp(p.platformFee)}</span>
+                              </div>
+                            </div>
+
+                            {st === "pending" &&
+                              (iAmCustomer ? (
+                                <button
+                                  onClick={() => pay(p.paymentId)}
+                                  className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-forest py-2.5 text-sm font-bold text-white hover:bg-ink"
+                                >
+                                  <Wallet className="h-4 w-4" /> Bayar dengan QRIS
+                                </button>
+                              ) : (
+                                <p className="mt-3 text-xs text-moss">Menunggu pembayaran dari pencari.</p>
+                              ))}
+
+                            {st === "held" && (
+                              <>
+                                <p className="mt-3 flex items-center gap-1.5 rounded-lg bg-limesoft/50 px-2 py-1.5 text-xs font-semibold text-forest">
+                                  <ShieldCheck className="h-4 w-4" /> Dana ditahan Torano
+                                </p>
+                                {iAmCustomer ? (
+                                  <button
+                                    onClick={() => release(p.paymentId)}
+                                    className="mt-2 w-full rounded-xl border border-forest py-2.5 text-sm font-bold text-forest hover:bg-limesoft/40"
+                                  >
+                                    Pekerjaan selesai, lepas dana
+                                  </button>
+                                ) : (
+                                  <p className="mt-2 text-xs text-moss">Menunggu pencari mengonfirmasi selesai.</p>
+                                )}
+                                <button
+                                  onClick={() => setDisputePaymentId(p.paymentId)}
+                                  className="mt-2 w-full rounded-xl py-2 text-xs font-semibold text-red-600 hover:bg-red-50"
+                                >
+                                  Ada masalah? Laporkan sengketa
+                                </button>
+                              </>
+                            )}
+
+                            {st === "disputed" && (
+                              <p className="mt-3 flex items-center gap-1.5 rounded-lg bg-sun/15 px-2 py-1.5 text-xs font-semibold text-[#8a6a00]">
+                                <ShieldCheck className="h-4 w-4" /> Sedang disengketakan, menunggu admin
+                              </p>
+                            )}
+
+                            {st === "released" && (
+                              <p className="mt-3 flex items-center gap-1.5 rounded-lg bg-limesoft/50 px-2 py-1.5 text-xs font-semibold text-forest">
+                                <Check className="h-4 w-4" /> Dana dilepas ke pekerja
+                              </p>
+                            )}
+
+                            {st === "refunded" && (
+                              <p className="mt-3 flex items-center gap-1.5 rounded-lg bg-red-50 px-2 py-1.5 text-xs font-semibold text-red-600">
+                                <Check className="h-4 w-4" /> Dana dikembalikan ke pencari
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+
                     if (m.type === "system") {
                       return (
                         <div key={m.id} className="flex justify-center">
@@ -228,10 +461,51 @@ const ChatInbox = () => {
                     );
                   })
                 )}
+                </div>
               </div>
 
+              {/* Panel penawaran harga */}
+              {showOffer && (
+                <div className="mx-auto mt-3 w-[calc(100%-2rem)] max-w-2xl rounded-2xl border border-forest/30 bg-limesoft/20 p-3">
+                  <p className="mb-2 flex items-center gap-1.5 text-sm font-bold text-forest">
+                    <Tag className="h-4 w-4" /> Kirim penawaran harga
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-moss">Rp</span>
+                    <input
+                      type="number"
+                      min="1000"
+                      value={offerAmount}
+                      onChange={(e) => setOfferAmount(e.target.value)}
+                      placeholder="150000"
+                      className="ring-focus h-10 w-36 rounded-xl border border-line bg-white px-3 text-sm focus:outline-none"
+                    />
+                    <input
+                      value={offerNote}
+                      onChange={(e) => setOfferNote(e.target.value)}
+                      placeholder="Catatan (opsional)"
+                      className="ring-focus h-10 flex-1 rounded-xl border border-line bg-white px-3 text-sm focus:outline-none"
+                    />
+                  </div>
+                  <div className="mt-2 flex justify-end gap-2">
+                    <button
+                      onClick={() => setShowOffer(false)}
+                      className="rounded-lg px-3 py-1.5 text-sm font-semibold text-moss hover:text-ink"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      onClick={sendOffer}
+                      className="rounded-lg bg-forest px-4 py-1.5 text-sm font-bold text-white hover:bg-ink"
+                    >
+                      Kirim
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Balasan cepat */}
-              <div className="flex flex-wrap gap-2 border-t border-line px-4 pt-3">
+              <div className="mx-auto flex w-full max-w-2xl flex-wrap gap-2 border-t border-line px-4 pt-3">
                 {quickReplies.map((q) => (
                   <button
                     key={q}
@@ -248,8 +522,20 @@ const ChatInbox = () => {
                   e.preventDefault();
                   send();
                 }}
-                className="flex items-center gap-2 p-4"
+                className="mx-auto flex w-full max-w-2xl items-center gap-2 p-4"
               >
+                <button
+                  type="button"
+                  onClick={() => setShowOffer((v) => !v)}
+                  aria-label="Kirim penawaran harga"
+                  className={`ring-focus grid h-12 w-12 shrink-0 place-items-center rounded-full border transition-colors ${
+                    showOffer
+                      ? "border-forest bg-limesoft/50 text-forest"
+                      : "border-line text-moss hover:border-forest hover:text-forest"
+                  }`}
+                >
+                  <Plus className="h-5 w-5" aria-hidden="true" />
+                </button>
                 <input
                   value={text}
                   onChange={(e) => setText(e.target.value)}
@@ -269,6 +555,13 @@ const ChatInbox = () => {
           )}
         </section>
       </div>
+
+      <DisputeModal
+        open={!!disputePaymentId}
+        paymentId={disputePaymentId}
+        onClose={() => setDisputePaymentId(null)}
+        onDone={reloadThread}
+      />
     </div>
   );
 };

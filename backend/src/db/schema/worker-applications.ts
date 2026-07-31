@@ -8,6 +8,7 @@ import {
   date,
   jsonb,
   timestamp,
+  boolean,
   index,
   check,
 } from "drizzle-orm/pg-core";
@@ -64,6 +65,8 @@ export const workerApplications = pgTable(
     radiusKm: integer("radius_km"),
     profilePhotoUrl: text("profile_photo_url"),
     selfiePhotoUrl: text("selfie_photo_url"),
+    // Status "open to work": pekerja bisa online (menerima) atau libur.
+    isOnline: boolean("is_online").notNull().default(true),
     // draft -> submitted -> verified | rejected (divalidasi di layer aplikasi)
     status: varchar("status", { length: 30 }).notNull().default("draft"),
     // Jejak keputusan admin saat verifikasi.

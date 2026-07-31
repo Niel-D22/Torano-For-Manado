@@ -10,6 +10,7 @@ import {
   reviews,
   bookings,
   withdrawals,
+  payments,
 } from "../db/schema/index.js";
 import { sendSuccess, sendList } from "../shared/http/index.js";
 import { AppError, NotFoundError } from "../shared/errors/index.js";
@@ -50,6 +51,21 @@ export async function getMe(req: Request, res: Response): Promise<void> {
 }
 
 const toNum = (v: unknown) => Number(v ?? 0);
+
+// PATCH /api/worker/me/availability — pekerja mengatur status "open to work".
+export async function setAvailability(req: Request, res: Response): Promise<void> {
+  const app = await db.query.workerApplications.findFirst({
+    where: eq(workerApplications.profileId, req.profile!.id),
+  });
+  if (!app) throw new NotFoundError("Data pekerja tidak ditemukan");
+  const { online } = req.body as { online: boolean };
+  const [updated] = await db
+    .update(workerApplications)
+    .set({ isOnline: Boolean(online) })
+    .where(eq(workerApplications.id, app.id))
+    .returning();
+  sendSuccess(res, { isOnline: updated?.isOnline ?? false });
+}
 
 // GET /api/worker/me/dashboard — ringkasan Beranda (statistik + permintaan + jadwal hari ini).
 export async function getDashboard(req: Request, res: Response): Promise<void> {
@@ -191,42 +207,60 @@ export async function getEarnings(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  const [completed, wds] = await Promise.all([
+  const [completed, wds, released] = await Promise.all([
     db
       .select()
       .from(bookings)
       .where(and(eq(bookings.workerApplicationId, app.id), eq(bookings.status, "completed"))),
     db.select().from(withdrawals).where(eq(withdrawals.workerApplicationId, app.id)),
+    db
+      .select()
+      .from(payments)
+      .where(and(eq(payments.workerProfileId, req.profile!.id), eq(payments.status, "released"))),
   ]);
 
-  const totalEarned = completed.reduce((s, b) => s + toNum(b.price), 0);
+  // Kredit dari booking (satuan ribuan) + dari escrow yang dilepas (rupiah penuh,
+  // dikonversi ke ribuan agar seragam dengan tampilan lain).
+  const completedCredits = completed.map((b) => ({
+    id: `c-${b.id}`,
+    type: "credit" as const,
+    title: b.jobTitle,
+    sub: b.customerName,
+    amount: toNum(b.price),
+    date: b.createdAt as Date | string,
+    status: "Selesai",
+  }));
+  const releasedCredits = released.map((p) => ({
+    id: `p-${p.id}`,
+    type: "credit" as const,
+    title: "Pembayaran pekerjaan",
+    sub: "Escrow Torano",
+    amount: Math.round(toNum(p.workerAmount) / 1000),
+    date: (p.releasedAt ?? p.createdAt) as Date | string,
+    status: "Diterima",
+  }));
+  const credits = [...completedCredits, ...releasedCredits];
+
+  const totalEarned = credits.reduce((s, c) => s + c.amount, 0);
   const totalWithdrawn = wds.reduce((s, w) => s + toNum(w.amount), 0);
   const now = Date.now();
   const inRange = (d: Date | string, ms: number) => new Date(d).getTime() >= now - ms;
-  const thisWeek = completed
-    .filter((b) => inRange(b.createdAt, 7 * 86400000))
-    .reduce((s, b) => s + toNum(b.price), 0);
-  const thisMonth = completed
-    .filter((b) => inRange(b.createdAt, 30 * 86400000))
-    .reduce((s, b) => s + toNum(b.price), 0);
+  const thisWeek = credits
+    .filter((c) => inRange(c.date, 7 * 86400000))
+    .reduce((s, c) => s + c.amount, 0);
+  const thisMonth = credits
+    .filter((c) => inRange(c.date, 30 * 86400000))
+    .reduce((s, c) => s + c.amount, 0);
 
   const transactions = [
-    ...completed.map((b) => ({
-      id: `c-${b.id}`,
-      type: "credit" as const,
-      title: b.jobTitle,
-      sub: b.customerName,
-      amount: toNum(b.price),
-      date: b.createdAt,
-      status: "Selesai",
-    })),
+    ...credits,
     ...wds.map((w) => ({
       id: `w-${w.id}`,
       type: "debit" as const,
       title: "Penarikan dana",
       sub: null,
       amount: toNum(w.amount),
-      date: w.createdAt,
+      date: w.createdAt as Date | string,
       status: w.status,
     })),
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

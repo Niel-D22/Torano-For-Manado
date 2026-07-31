@@ -16,10 +16,14 @@ import Soon from "../pages/worker/Soon";
 import AdminLayout from "../layouts/AdminLayout";
 import AdminHome from "../pages/admin/AdminHome";
 import AdminVerifikasi from "../pages/admin/AdminVerifikasi";
+import AdminPengguna from "../pages/admin/AdminPengguna";
+import AdminSengketa from "../pages/admin/AdminSengketa";
 import AdminLogin from "../pages/admin/AdminLogin";
 import ProtectedRoute from "../components/ProtectedRoute";
 import AdminProtected from "../components/AdminProtected";
 import Login from "../pages/Login";
+import LupaSandi from "../pages/LupaSandi";
+import ResetSandi from "../pages/ResetSandi";
 import MasukPilihPeran from "../pages/MasukPilihPeran";
 import Daftar from "../pages/Daftar";
 import DaftarPencari from "../pages/DaftarPencari";
@@ -31,6 +35,8 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/login" element={<MasukPilihPeran />} />
       <Route path="/login/:mode" element={<Login />} />
+      <Route path="/lupa-sandi" element={<LupaSandi />} />
+      <Route path="/reset-sandi" element={<ResetSandi />} />
       <Route path="/daftar" element={<Daftar />} />
       <Route path="/daftar/pencari" element={<DaftarPencari />} />
       <Route path="/daftar/pekerja" element={<DaftarPekerja />} />
@@ -96,8 +102,8 @@ const AppRoutes = () => {
         <Route index element={<AdminHome />} />
         <Route path="verifikasi" element={<AdminVerifikasi />} />
         <Route path="transaksi" element={<Soon title="Transaksi" />} />
-        <Route path="sengketa" element={<Soon title="Sengketa" />} />
-        <Route path="pengguna" element={<Soon title="Pengguna" />} />
+        <Route path="sengketa" element={<AdminSengketa />} />
+        <Route path="pengguna" element={<AdminPengguna />} />
         <Route path="pengaturan" element={<Soon title="Pengaturan" />} />
       </Route>
     </Routes>

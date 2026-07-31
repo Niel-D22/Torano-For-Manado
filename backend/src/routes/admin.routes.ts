@@ -10,6 +10,18 @@ import {
   updateReference,
 } from "../controllers/admin.controller.js";
 import {
+  listUsers,
+  getUserDetail,
+  setUserStatus,
+} from "../controllers/admin-users.controller.js";
+import {
+  listDisputes,
+  getDispute,
+  reviewDispute,
+  resolveDispute,
+} from "../controllers/disputes.controller.js";
+import { resolveDisputeSchema } from "../validators/dispute.validator.js";
+import {
   adminLoginSchema,
   rejectSchema,
   updateReferenceSchema,
@@ -36,6 +48,21 @@ router.patch(
   "/references/:id",
   validate("body", updateReferenceSchema),
   updateReference,
+);
+
+// Pengguna (pelanggan & mitra)
+router.get("/users", listUsers);
+router.get("/users/:id/detail", getUserDetail);
+router.patch("/users/:profileId/status", setUserStatus);
+
+// Sengketa
+router.get("/disputes", listDisputes);
+router.get("/disputes/:id", getDispute);
+router.patch("/disputes/:id/review", reviewDispute);
+router.patch(
+  "/disputes/:id/resolve",
+  validate("body", resolveDisputeSchema),
+  resolveDispute,
 );
 
 export default router;

@@ -84,6 +84,9 @@ export async function getMessages(req: Request, res: Response): Promise<void> {
     conversation: {
       id,
       meId: me,
+      iAmCustomer: c!.customerProfileId === me,
+      customerProfileId: c!.customerProfileId,
+      workerProfileId: c!.workerProfileId,
       other: { id: other?.id, name: other?.fullName, avatarUrl: other?.avatarUrl },
     },
     messages: items,

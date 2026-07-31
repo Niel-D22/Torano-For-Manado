@@ -46,6 +46,16 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().default("Torano <onboarding@resend.dev>"),
   // URL frontend untuk tautan di dalam email.
   APP_URL: z.string().url().default("http://localhost:5173"),
+
+  // Midtrans (payment gateway). Sandbox untuk lomba: kunci diawali "SB-Mid-".
+  MIDTRANS_SERVER_KEY: z.string().optional(),
+  MIDTRANS_CLIENT_KEY: z.string().optional(),
+  MIDTRANS_IS_PRODUCTION: z
+    .string()
+    .default("false")
+    .transform((v) => v === "true"),
+  // Komisi platform dalam persen (dipotong saat dana dilepas ke pekerja).
+  PLATFORM_FEE_PCT: z.coerce.number().min(0).max(50).default(12),
 });
 
 const parseResult = envSchema.safeParse(process.env);

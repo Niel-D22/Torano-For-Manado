@@ -154,7 +154,7 @@ const Login = () => {
               </button>
             </div>
             <div className="mt-2 text-right">
-              <Link to="/login" className="text-sm font-semibold text-forest hover:underline">
+              <Link to="/lupa-sandi" className="text-sm font-semibold text-forest hover:underline">
                 Lupa kata sandi?
               </Link>
             </div>

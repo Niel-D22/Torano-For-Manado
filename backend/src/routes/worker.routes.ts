@@ -4,6 +4,7 @@ import { requireAuth } from "../middleware/require-auth.js";
 import {
   getMe,
   getDashboard,
+  setAvailability,
   getBookings,
   updateBookingStatus,
   getReviews,
@@ -34,6 +35,7 @@ router.use(requireAuth);
 
 router.get("/me", getMe);
 router.get("/me/dashboard", getDashboard);
+router.patch("/me/availability", setAvailability);
 router.get("/me/bookings", getBookings);
 router.patch(
   "/me/bookings/:id/status",

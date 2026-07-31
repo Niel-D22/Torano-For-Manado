@@ -46,7 +46,7 @@ const toCard = (a: any) => {
     priceMin: a.fixedRate != null ? Number(a.fixedRate) : null,
     priceMax: a.rateMax != null ? Number(a.rateMax) : null,
     trust: ref ? `${ref.name} · ${ref.relationship}` : "Mitra terverifikasi Torano",
-    available: true,
+    available: a.isOnline ?? true,
     experienceYears: a.experienceYears ?? null,
     references: a.references ?? [],
     portfolios: a.portfolios ?? [],
