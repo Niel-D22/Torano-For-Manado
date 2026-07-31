@@ -1,5 +1,6 @@
 # SRS — Ruang Lingkup Sistem
-## Torano (Bakudapa) — Platform Penghubung Pekerja Informal Manado
+
+## Torano — Platform Penghubung Pekerja Informal Manado
 
 **Versi:** 0.1 (draft) · **Tanggal:** 9 Juli 2026
 
@@ -11,17 +12,17 @@ Torano adalah platform web yang menghubungkan **pencari jasa** (warga/rumah tang
 dengan **pekerja informal** di Manado: ART & bersih rumah, tukang harian,
 kru acara & adat, serta montir panggilan. Sistem menyediakan pencarian
 berbasis kategori dan lokasi (peta), profil pekerja dengan reputasi berbasis
-komunitas (*trust lokal*, ulasan, rating), negosiasi harga lewat chat, dan
+komunitas (_trust lokal_, ulasan, rating), negosiasi harga lewat chat, dan
 pembayaran melalui payment gateway.
 
 ### 1.1 Aktor Sistem
 
-| Aktor | Deskripsi |
-|---|---|
-| **Pencari Jasa (Customer)** | Warga yang mencari dan memesan jasa pekerja informal. |
-| **Mitra Pekerja (Partner)** | Pekerja informal yang menawarkan jasa, menerima/menolak permintaan kerja. |
-| **Sistem Pembayaran (eksternal)** | Payment gateway (Midtrans) untuk memproses pembayaran. |
-| **Admin** *(opsional/fase lanjut)* | Verifikasi mitra dan moderasi konten. |
+| Aktor                              | Deskripsi                                                                 |
+| ---------------------------------- | ------------------------------------------------------------------------- |
+| **Pencari Jasa (Customer)**        | Warga yang mencari dan memesan jasa pekerja informal.                     |
+| **Mitra Pekerja (Partner)**        | Pekerja informal yang menawarkan jasa, menerima/menolak permintaan kerja. |
+| **Sistem Pembayaran (eksternal)**  | Payment gateway (Midtrans) untuk memproses pembayaran.                    |
+| **Admin** _(opsional/fase lanjut)_ | Verifikasi mitra dan moderasi konten.                                     |
 
 ---
 
@@ -109,7 +110,7 @@ pembayaran melalui payment gateway.
    status pesanan berubah menjadi "dibayar"
 ```
 
-### 2.5 Alur SOS / Permintaan Cepat *(terlihat di dashboard mitra — opsional)*
+### 2.5 Alur SOS / Permintaan Cepat _(terlihat di dashboard mitra — opsional)_
 
 ```
 1. Customer membuat permintaan mendesak
@@ -150,16 +151,16 @@ pembayaran melalui payment gateway.
 
 ### 3.3 Batasan Teknis (Technical Constraints)
 
-| Aspek | Batasan |
-|---|---|
-| Frontend | React 18 + Vite + Tailwind CSS + React Router (SPA) |
-| Backend | Node.js + Express (REST API) |
-| Database & Auth | Supabase (PostgreSQL) |
-| Peta | OpenStreetMap + Leaflet (gratis, tanpa API key berbayar) |
-| Pembayaran | Midtrans Snap — **sandbox only** |
+| Aspek            | Batasan                                                      |
+| ---------------- | ------------------------------------------------------------ |
+| Frontend         | React 18 + Vite + Tailwind CSS + React Router (SPA)          |
+| Backend          | Node.js + Express (REST API)                                 |
+| Database & Auth  | Supabase (PostgreSQL)                                        |
+| Peta             | OpenStreetMap + Leaflet (gratis, tanpa API key berbayar)     |
+| Pembayaran       | Midtrans Snap — **sandbox only**                             |
 | Browser dukungan | Browser modern (Chrome, Edge, Firefox, Safari versi terbaru) |
-| Perangkat | Responsif 360px–1440px; dioptimalkan untuk ponsel |
-| Koneksi | Membutuhkan koneksi internet; tidak ada mode offline |
+| Perangkat        | Responsif 360px–1440px; dioptimalkan untuk ponsel            |
+| Koneksi          | Membutuhkan koneksi internet; tidak ada mode offline         |
 
 ### 3.4 Asumsi & Ketergantungan
 
@@ -172,16 +173,17 @@ pembayaran melalui payment gateway.
 
 ## 4. Status Implementasi Saat Ini (per 9 Juli 2026)
 
-| Komponen | Status |
-|---|---|
-| UI Frontend (9 halaman: Home, Cari, Peta, Profil Pekerja, Inbox, Chat Room, Dashboard Mitra, Login, 404) | ✅ Selesai (prototipe, data dummy) |
-| Chat + negosiasi + bagikan lokasi | ✅ UI selesai — data lokal (belum persist / belum real-time) |
-| Pembayaran Midtrans | ⚠️ Mock UI saja — belum terhubung Midtrans sandbox |
-| Login / Auth | ⚠️ UI saja — belum terhubung Supabase Auth |
-| Backend API | ⚠️ Skeleton — baru endpoint health check |
-| Database (Supabase) | ❌ Skema belum dibuat |
+| Komponen                                                                                                 | Status                                                       |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| UI Frontend (9 halaman: Home, Cari, Peta, Profil Pekerja, Inbox, Chat Room, Dashboard Mitra, Login, 404) | ✅ Selesai (prototipe, data dummy)                           |
+| Chat + negosiasi + bagikan lokasi                                                                        | ✅ UI selesai — data lokal (belum persist / belum real-time) |
+| Pembayaran Midtrans                                                                                      | ⚠️ Mock UI saja — belum terhubung Midtrans sandbox           |
+| Login / Auth                                                                                             | ⚠️ UI saja — belum terhubung Supabase Auth                   |
+| Backend API                                                                                              | ⚠️ Skeleton — baru endpoint health check                     |
+| Database (Supabase)                                                                                      | ❌ Skema belum dibuat                                        |
 
 ### Prioritas lanjutan yang disarankan
+
 1. Desain skema database (users, workers, categories, conversations, messages, offers, orders, payments, reviews).
 2. Auth Supabase (registrasi + login nomor HP, peran customer/mitra).
 3. API pekerja (list, detail, filter) → ganti data dummy frontend.

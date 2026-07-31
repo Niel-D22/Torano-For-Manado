@@ -1,558 +1,405 @@
-<div style="display:flex; justify-content: center">
-  <img src="frontend/src/assets/laptop.png" alt="Torano Preview" width="60%" height="100%" />
-</div>
-<div align="center"/>
+<p align="center">
+  <img src="frontend/src/assets/laptop.png" alt="Pratinjau Torano" width="720" />
+</p>
 
-# Torano
+<h1 align="center">Torano</h1>
 
-**Platform layanan jasa lokal yang mempertemukan pelanggan dengan pekerja informal terverifikasi.**
+<p align="center">
+  Platform web untuk menghubungkan warga Manado dengan pekerja informal terverifikasi — ART, tukang, kru acara, dan montir.
+</p>
 
-[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
-[![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-7-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](#-license)
+<p align="center">
+  <a href="#tentang-proyek">Tentang</a> ·
+  <a href="#fitur">Fitur</a> ·
+  <a href="#arsitektur--diagram">Arsitektur</a> ·
+  <a href="#tech-stack">Tech Stack</a> ·
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#dokumentasi">Dokumentasi</a>
+</p>
 
-</div>
-
-<br/>
-
-## 📖 Daftar Isi
-
-- [📌 Tentang Project](#-tentang-project)
-- [✨ Features](#-features)
-- [🧩 Tech Stack](#-tech-stack)
-- [🚀 Installation](#-installation)
-- [🔐 Environment Variable](#-environment-variable)
-- [▶️ Running](#️-running)
-- [📁 Folder Structure](#-folder-structure)
-- [📡 API Documentation](#-api-documentation)
-- [🤝 Contribution](#-contribution)
-- [📄 License](#-license)
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white" alt="React 18" />
+  <img src="https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white" alt="Express 5" />
+  <img src="https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Supabase-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL via Supabase" />
+</p>
 
 ---
 
-## 📌 Tentang Project
+## Daftar Isi
 
-**Torano** adalah aplikasi web marketplace jasa lokal yang membantu pelanggan menemukan pekerja informal seperti ART, montir, teknisi, dan tenaga acara. Pekerja dapat mendaftar, melengkapi data verifikasi, menerima pekerjaan, berkomunikasi melalui chat, memantau jadwal, melihat ulasan, serta mengelola penghasilan.
-
-Project ini terdiri dari dua aplikasi:
-
-| Folder | Deskripsi |
-|---|---|
-| 🎨 `frontend/` | Antarmuka pengguna berbasis **React** dan **Vite**. |
-| ⚙️ `backend/` | REST API berbasis **Express**, **TypeScript**, **Drizzle ORM**, dan **PostgreSQL (Supabase)**. |
-
----
-
-## ✨ Features
-
-<details open>
-<summary><b>🧑‍💻 Customer</b></summary>
-
-- 🔐 Registrasi dan login menggunakan email/password atau Google OAuth.
-- 🔍 Pencarian pekerja berdasarkan kategori dan informasi layanan.
-- 🗺️ Tampilan daftar serta peta lokasi pekerja.
-- 👤 Detail profil pekerja terverifikasi.
-- 💬 Chat langsung dengan pekerja.
-- 🧾 Profil akun pelanggan.
-- 🔔 Notifikasi aktivitas chat, pekerjaan, dan ulasan.
-
-</details>
-
-<details>
-<summary><b>🧰 Worker</b></summary>
-
-- 📝 Pendaftaran sebagai mitra pekerja.
-- 🪪 Pengisian data diri, keahlian, wilayah layanan, tarif, foto, dan lokasi.
-- 🖼️ Pengelolaan portofolio, referensi, dan rekening pencairan.
-- ✅ Pengajuan verifikasi kepada admin.
-- 📊 Dashboard ringkasan aktivitas.
-- 📅 Pengelolaan jadwal dan status pekerjaan.
-- ⭐ Riwayat ulasan pelanggan.
-- 💰 Ringkasan penghasilan dan pengajuan penarikan dana.
-
-</details>
-
-<details>
-<summary><b>🛡️ Admin</b></summary>
-
-- 🔑 Login admin menggunakan sesi terpisah.
-- 📋 Melihat daftar pengajuan pekerja.
-- 🔎 Memeriksa detail identitas, portofolio, referensi, dan rekening pekerja.
-- ✔️ Menyetujui atau menolak pengajuan pekerja.
-- 🔄 Memperbarui status pemeriksaan referensi.
-
-</details>
-
-<details>
-<summary><b>🏗️ Platform</b></summary>
-
-- 🔐 Supabase Auth untuk autentikasi pengguna.
-- 🗂️ Supabase Storage untuk unggahan gambar.
-- ⚡ Supabase Realtime untuk pembaruan chat.
-- 🧪 Validasi request menggunakan Zod.
-- 📝 Structured logging dan request ID.
-- 🚨 Global error handling.
-- 🗃️ Database migration menggunakan Drizzle Kit.
-- 🛑 Graceful shutdown pada server backend.
-
-</details>
+- [Tentang Proyek](#tentang-proyek)
+- [Fitur](#fitur)
+- [Arsitektur & Diagram](#arsitektur--diagram)
+- [Tech Stack](#tech-stack)
+- [Struktur Folder](#struktur-folder)
+- [Quick Start](#quick-start)
+- [Environment Variable](#environment-variable)
+- [Menjalankan Aplikasi](#menjalankan-aplikasi)
+- [API Overview](#api-overview)
+- [Batasan & Ruang Lingkup](#batasan--ruang-lingkup)
+- [Dokumentasi](#dokumentasi)
+- [Tim](#tim)
 
 ---
 
-## 🧩 Tech Stack
+## Tentang Proyek
 
-<table>
-<tr>
-<td valign="top" width="33%">
+**Torano** adalah platform jasa lokal berbasis web yang mempertemukan **pencari jasa** dengan **mitra pekerja informal** di Kota Manado. Pelanggan dapat mencari pekerja berdasarkan kategori dan lokasi, melihat profil beserta ulasan, bernegosiasi lewat chat, lalu membayar melalui gateway pembayaran dengan mekanisme **escrow** (dana ditahan sistem sampai pekerjaan selesai).
 
-### 🎨 Frontend
-- React 18
-- Vite
-- React Router
-- Tailwind CSS
-- Axios
-- Supabase JS Client
-- Framer Motion
-- Leaflet & React Leaflet
-- Lucide React
-- Sonner
+Proyek ini terdiri dari dua bagian:
 
-</td>
-<td valign="top" width="33%">
+| Folder      | Peran                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------- |
+| `frontend/` | Antarmuka pengguna (React + Vite), responsif mobile-first, dapat di-install sebagai PWA |
+| `backend/`  | REST API (Express + TypeScript + Drizzle ORM) terhubung ke PostgreSQL di Supabase       |
 
-### ⚙️ Backend
-- Node.js
-- Express 5
-- TypeScript
-- Drizzle ORM
-- PostgreSQL (Supabase)
-- Supabase Auth, Storage, Realtime
-- Zod
-- Pino & Pino HTTP
-- postgres.js
+**Empat kategori layanan utama:**
 
-</td>
-<td valign="top" width="33%">
-
-### 🗄️ Database
-Tabel utama:
-- `profiles`
-- `categories`
-- `worker_applications`
-- `worker_portfolios`
-- `worker_references`
-- `payout_accounts`
-- `bookings`
-- `reviews`
-- `withdrawals`
-- `conversations`
-- `messages`
-
-</td>
-</tr>
-</table>
+| Kategori           | Contoh pekerjaan                           |
+| ------------------ | ------------------------------------------ |
+| ART & Bersih Rumah | Pembersih rumah, laundry, setrika, memasak |
+| Tukang Harian      | Bangunan, cat, kayu, las, perbaikan        |
+| Kru Acara & Adat   | Dekorasi, sound system, MC, foto & video   |
+| Montir Panggilan   | Servis motor, mobil, kelistrikan           |
 
 ---
 
-## 🚀 Installation
+## Fitur
 
-### ✅ Prerequisites
+### Pencari Jasa (Customer)
 
-Pastikan perangkat sudah memiliki:
+- Registrasi & login via **email/password** atau **Google OAuth** (Supabase Auth)
+- Pencarian pekerja berdasarkan kategori, kata kunci, dan jarak
+- Tampilan daftar dan **peta sebaran pekerja** (OpenStreetMap + Leaflet)
+- Profil pekerja terverifikasi (skill, tarif, rating, ulasan, lokasi)
+- Chat 1-lawan-1 dengan pekerja, termasuk **penawaran harga** di dalam chat
+- Pembayaran via **Midtrans Snap** (mode sandbox) dengan escrow
+- Permintaan pekerjaan langsung ke pekerja
+- Rating & ulasan setelah pekerjaan selesai
+- Pelaporan pekerja dan kotak saran
+- Notifikasi aktivitas (chat, pekerjaan, ulasan)
+- Profil akun pelanggan
 
-- 🟢 Node.js versi modern, disarankan Node.js 20 atau lebih baru.
-- 📦 npm.
-- ☁️ Project Supabase aktif.
-- 🔗 PostgreSQL database URL dari Supabase.
+### Mitra Pekerja (Worker)
 
-### 1️⃣ Clone repository
+- Pendaftaran mitra melalui wizard (data diri, keahlian, wilayah, tarif, foto, lokasi)
+- Pengelolaan portofolio, referensi, dan rekening pencairan
+- Pengajuan verifikasi ke admin
+- Dashboard ringkasan aktivitas
+- Pengaturan ketersediaan (tersedia / tidak tersedia)
+- Jadwal & manajemen status pekerjaan
+- Chat dengan pelanggan dan negosiasi harga
+- Riwayat ulasan dan ringkasan penghasilan
+- Pengajuan penarikan dana
+
+### Admin
+
+- Login terpisah (username/password, bukan Supabase Auth)
+- Dashboard analitik (transaksi, escrow, pengguna)
+- Verifikasi pengajuan mitra (setujui / tolak)
+- Manajemen pengguna (aktif/nonaktif)
+- Monitoring transaksi & pemrosesan penarikan dana
+- Penanganan sengketa (dispute)
+- Moderasi laporan dari pengguna
+- Pengaturan platform
+
+### Platform
+
+- Supabase Auth, Storage (unggahan gambar), dan Realtime (chat)
+- Validasi request dengan Zod
+- Structured logging (Pino) dan request ID
+- Web Push & prompt instalasi PWA
+- Email transaksional via Resend (opsional)
+- Migrasi database dengan Drizzle Kit
+
+---
+
+## Arsitektur & Diagram
+
+### Arsitektur Sistem
+
+Diagram berikut menunjukkan hubungan antar komponen: browser pengguna, frontend React, backend Express, serta layanan Supabase dan Midtrans.
+
+<p align="center">
+  <img src="docs/ArsitekturSystem.png" alt="Diagram Arsitektur Sistem Torano" width="900" />
+</p>
+
+### Diagram Use Case
+
+Diagram use case menggambarkan interaksi aktor utama — **Pencari Jasa**, **Mitra Pekerja**, **Admin**, dan **Sistem Pembayaran (Midtrans)** — dengan sistem Torano.
+
+<p align="center">
+  <img src="docs/Usecase%20Diagram.png" alt="Diagram Use Case Torano" width="900" />
+</p>
+
+### Alur Request Backend
+
+```text
+HTTP Request
+  → Route
+  → Middleware (auth / validasi)
+  → Controller
+  → Drizzle ORM
+  → PostgreSQL (Supabase)
+  → Response JSON terstandar
+```
+
+---
+
+## Tech Stack
+
+| Lapisan             | Teknologi                                                                           |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| **Frontend**        | React 18, Vite, React Router, Tailwind CSS 4, Framer Motion, Leaflet, Axios, Sonner |
+| **Backend**         | Node.js, Express 5, TypeScript, Drizzle ORM, Zod, Pino                              |
+| **Database & Auth** | PostgreSQL, Supabase (Auth, Storage, Realtime)                                      |
+| **Pembayaran**      | Midtrans Snap (sandbox)                                                             |
+| **Peta**            | OpenStreetMap + Leaflet                                                             |
+| **Email**           | Resend (opsional)                                                                   |
+
+**Tabel database utama:** `profiles`, `categories`, `worker_applications`, `worker_portfolios`, `worker_references`, `payout_accounts`, `bookings`, `reviews`, `payments`, `withdrawals`, `conversations`, `messages`, `disputes`, `reports`, `push_subscriptions`, `app_settings`
+
+Skema relasi lengkap tersedia di [`docs/erd-torano.drawio`](docs/erd-torano.drawio) (buka dengan [draw.io](https://app.diagrams.net/)).
+
+---
+
+## Struktur Folder
+
+```text
+torano/
+├── docs/                        # Diagram arsitektur, use case, ERD, SRS
+├── backend/
+│   ├── drizzle/                 # File migrasi
+│   ├── src/
+│   │   ├── config/              # Environment, database, Supabase
+│   │   ├── controllers/         # Handler bisnis per fitur
+│   │   ├── db/schema/           # Definisi tabel Drizzle
+│   │   ├── middleware/          # Auth, logging, error handler
+│   │   ├── routes/              # Endpoint Express
+│   │   ├── shared/              # Logger, Midtrans, email, push
+│   │   └── validators/          # Schema Zod
+│   └── server.ts
+├── frontend/
+│   ├── public/                  # PWA manifest, service worker, ikon
+│   └── src/
+│       ├── assets/              # Gambar & ilustrasi UI
+│       ├── components/          # Komponen reusable & landing
+│       ├── layouts/             # Layout customer, worker, admin
+│       ├── lib/                 # API client, auth, Supabase
+│       ├── pages/               # Halaman per peran
+│       └── routes/              # React Router
+└── README.md
+```
+
+---
+
+## Quick Start
+
+### Prasyarat
+
+- Node.js 20+
+- npm
+- Proyek Supabase aktif (PostgreSQL, Auth, Storage)
+
+### 1. Clone & install
 
 ```bash
 git clone <repository-url>
 cd torano
+
+cd backend && npm install
+cd ../frontend && npm install
 ```
 
-### 2️⃣ Install backend dependencies
+### 2. Konfigurasi environment
+
+```bash
+# Backend
+cp backend/.env.example backend/.env
+
+# Frontend
+cp frontend/.env.example frontend/.env
+```
+
+Isi `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, dan kredensial admin. Lihat [Environment Variable](#environment-variable) untuk detail.
+
+### 3. Siapkan database
 
 ```bash
 cd backend
-npm install
-```
-
-### 3️⃣ Install frontend dependencies
-
-Buka terminal lain dari root project:
-
-```bash
-cd frontend
-npm install
-```
-
-### 4️⃣ Configure Supabase
-
-Di dashboard Supabase:
-
-1. Aktifkan autentikasi email/password.
-2. Aktifkan Google OAuth bila fitur login Google digunakan.
-3. Tambahkan redirect URL frontend, misalnya `http://localhost:5173`.
-4. Siapkan bucket Storage bernama `torano` untuk unggahan gambar.
-5. Pastikan tabel `messages` tersedia untuk Supabase Realtime.
-
-### 5️⃣ Prepare database
-
-Dari folder `backend`:
-
-```bash
 npm run db:migrate
 npm run db:seed
+npm run db:setup-storage    # bucket Supabase Storage
+npm run db:setup-realtime   # enable Realtime untuk chat
 ```
 
-Script database tambahan yang tersedia:
+> Jalankan migrasi dan seed **hanya** pada database development. Periksa `DATABASE_URL` sebelum menjalankan.
 
-```bash
-npm run db:seed:workers
-npm run db:seed:demo
-npm run db:make-admin
-npm run db:setup-storage
-npm run db:setup-realtime
-npm run db:studio
-```
+### 4. Jalankan
 
-> ⚠️ **Perhatian:** Jalankan migration dan seed hanya pada database development yang benar. Periksa `DATABASE_URL` sebelum menjalankannya. Database production bukan arena eksperimen spontan.
-
----
-
-## 🔐 Environment Variable
-
-### ⚙️ Backend
-
-Buat file `backend/.env` berdasarkan `backend/.env.example`:
-
-```env
-NODE_ENV=development
-PORT=5000
-
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
-
-SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
-
-CORS_ORIGIN=http://localhost:5173
-
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=CHANGE_WITH_A_STRONG_PASSWORD
-ADMIN_SECRET=CHANGE_WITH_A_LONG_RANDOM_SECRET
-```
-
-| Variable | Required | Description |
-|---|:---:|---|
-| `NODE_ENV` | ❌ | Environment aplikasi: `development`, `test`, atau `production`. |
-| `PORT` | ❌ | Port backend. Default `5000`. |
-| `DATABASE_URL` | ✅ | Connection string PostgreSQL. |
-| `SUPABASE_URL` | ✅ | URL project Supabase. |
-| `SUPABASE_ANON_KEY` | ✅ | Supabase anonymous key. |
-| `CORS_ORIGIN` | ✅ | Origin frontend yang diizinkan mengakses backend. |
-| `ADMIN_USERNAME` | ❌ | Username login admin. |
-| `ADMIN_PASSWORD` | ❌ | Password login admin. Wajib diganti untuk deployment. |
-| `ADMIN_SECRET` | ❌ | Secret penandatangan token sesi admin. Wajib diganti untuk deployment. |
-
-### 🎨 Frontend
-
-Buat file `frontend/.env` berdasarkan `frontend/.env.example`:
-
-```env
-VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
-VITE_API_BASE_URL=http://localhost:5000/api
-```
-
-> ⚠️ Variable dengan prefix `VITE_` tersedia di browser. Jangan menaruh service-role key, password database, atau secret admin di frontend.
-
----
-
-## ▶️ Running
-
-### 🔧 Development mode
-
-Jalankan backend:
+Terminal 1 — backend (`http://localhost:5000`):
 
 ```bash
 cd backend
 npm run dev
 ```
 
-Backend tersedia di:
-
-```text
-http://localhost:5000
-```
-
-Jalankan frontend pada terminal terpisah:
+Terminal 2 — frontend (`http://localhost:5173`):
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Frontend biasanya tersedia di:
+---
 
-```text
-http://localhost:5173
+## Environment Variable
+
+### Backend (`backend/.env`)
+
+| Variable                 | Wajib | Keterangan                                              |
+| ------------------------ | :---: | ------------------------------------------------------- |
+| `DATABASE_URL`           |  ✅   | Connection string PostgreSQL (Supabase)                 |
+| `SUPABASE_URL`           |  ✅   | URL proyek Supabase                                     |
+| `SUPABASE_ANON_KEY`      |  ✅   | Supabase anonymous key                                  |
+| `CORS_ORIGIN`            |  ✅   | Origin frontend, pisahkan dengan koma                   |
+| `APP_URL`                |  ❌   | URL frontend untuk tautan email                         |
+| `ADMIN_USERNAME`         |  ❌   | Username login admin                                    |
+| `ADMIN_PASSWORD`         |  ❌   | Password login admin                                    |
+| `ADMIN_SECRET`           |  ❌   | Secret penandatangan token sesi admin                   |
+| `MIDTRANS_SERVER_KEY`    |  ❌   | Kunci server Midtrans (sandbox: `SB-Mid-server-...`)    |
+| `MIDTRANS_CLIENT_KEY`    |  ❌   | Kunci client Midtrans                                   |
+| `MIDTRANS_IS_PRODUCTION` |  ❌   | `false` untuk sandbox                                   |
+| `RESEND_API_KEY`         |  ❌   | API key Resend (email opsional)                         |
+| `VAPID_PUBLIC_KEY`       |  ❌   | Web Push (generate: `npx web-push generate-vapid-keys`) |
+| `VAPID_PRIVATE_KEY`      |  ❌   | Web Push private key                                    |
+
+### Frontend (`frontend/.env`)
+
+| Variable                 | Wajib | Keterangan                                       |
+| ------------------------ | :---: | ------------------------------------------------ |
+| `VITE_SUPABASE_URL`      |  ✅   | URL proyek Supabase                              |
+| `VITE_SUPABASE_ANON_KEY` |  ✅   | Supabase anonymous key                           |
+| `VITE_API_BASE_URL`      |  ✅   | Base URL API, contoh `http://localhost:5000/api` |
+
+> Variabel `VITE_*` tersedia di browser. Jangan masukkan service-role key, password database, atau secret admin ke frontend.
+
+---
+
+## Menjalankan Aplikasi
+
+### Development
+
+```bash
+# Backend
+cd backend && npm run dev
+
+# Frontend (terminal terpisah)
+cd frontend && npm run dev
 ```
 
-### 📦 Production build
+### Production build
 
-**Backend:**
+```bash
+# Backend
+cd backend
+npm run typecheck && npm run build && npm start
+
+# Frontend
+cd frontend
+npm run build && npm run preview
+```
+
+### Script database tambahan
 
 ```bash
 cd backend
-npm run typecheck
-npm run build
-npm start
-```
-
-**Frontend:**
-
-```bash
-cd frontend
-npm run build
-npm run preview
+npm run db:seed:workers     # Seed data pekerja
+npm run db:seed:demo        # Seed akun demo
+npm run db:make-admin       # Buat akun admin
+npm run db:studio           # Drizzle Studio (GUI database)
 ```
 
 ---
 
-## 📁 Folder Structure
+## API Overview
 
-```text
-torano/
-├── backend/
-│   ├── drizzle/                 # File migration Drizzle
-│   ├── db/
-│   │   └── schema.sql           # Referensi schema SQL lama
-│   ├── src/
-│   │   ├── config/              # Environment, database, dan Supabase client
-│   │   ├── controllers/         # Handler request dan proses fitur
-│   │   ├── db/
-│   │   │   ├── schema/          # Definisi tabel dan relasi Drizzle
-│   │   │   └── seed*.ts         # Seed dan setup database
-│   │   ├── middleware/          # Auth, admin session, logging, dan error handler
-│   │   ├── routes/              # Definisi endpoint Express
-│   │   ├── shared/              # Error, HTTP response, logger, dan validation helper
-│   │   ├── validators/          # Schema validasi Zod per fitur
-│   │   └── app.ts               # Konfigurasi utama Express
-│   ├── server.ts                # Bootstrap dan lifecycle HTTP server
-│   ├── drizzle.config.ts        # Konfigurasi Drizzle Kit
-│   ├── package.json
-│   └── tsconfig.json
-│
-├── frontend/
-│   ├── public/                  # Asset publik
-│   ├── src/
-│   │   ├── assets/              # Logo, gambar, dan asset UI
-│   │   ├── components/          # Komponen reusable
-│   │   ├── data/                # Data statis pendukung UI
-│   │   ├── layouts/             # Layout customer, worker, dan admin
-│   │   ├── lib/                 # API client, auth, Supabase, dan upload helper
-│   │   ├── pages/               # Halaman customer dan autentikasi
-│   │   │   ├── admin/           # Halaman admin
-│   │   │   └── worker/          # Halaman area mitra
-│   │   ├── routes/              # Konfigurasi React Router
-│   │   ├── App.jsx
-│   │   └── main.jsx             # Entry point React
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-│
-└── README.md
+Base URL development: `http://localhost:5000/api`
+
+Endpoint dengan **Auth** membutuhkan header `Authorization: Bearer <supabase_access_token>`.  
+Endpoint **Admin** membutuhkan token dari `POST /admin/login`.
+
+| Modul            | Prefix           | Contoh endpoint                                            |
+| ---------------- | ---------------- | ---------------------------------------------------------- |
+| Health           | `/health`        | `GET /health`, `GET /health/database`                      |
+| Auth             | `/auth`          | `POST /register`, `POST /login`, `GET /me`                 |
+| Kategori         | `/categories`    | `GET /`                                                    |
+| Pekerja (publik) | `/workers`       | `GET /`, `GET /:id`                                        |
+| Area pekerja     | `/worker`        | `GET /me/dashboard`, `PATCH /me/bookings/:id/status`       |
+| Chat             | `/chat`          | `GET /conversations`, `POST /conversations/:id/messages`   |
+| Pembayaran       | `/payments`      | `POST /offer`, `POST /:id/snap`, `POST /:id/release`       |
+| Permintaan       | `/requests`      | `POST /`                                                   |
+| Ulasan           | `/reviews`       | `POST /`                                                   |
+| Sengketa         | `/disputes`      | `POST /`                                                   |
+| Laporan          | `/reports`       | `POST /`, `GET /me`                                        |
+| Feedback         | `/feedback`      | `POST /`                                                   |
+| Notifikasi       | `/notifications` | `GET /`                                                    |
+| Push             | `/push`          | `POST /subscribe`                                          |
+| Admin            | `/admin`         | `GET /dashboard`, `PATCH /worker-applications/:id/approve` |
+
+**Format respons sukses:**
+
+```json
+{ "success": true, "data": {} }
 ```
 
-### 🔄 Backend request flow
-
-```text
-Request
-  → Route
-  → Authentication/validation middleware
-  → Controller
-  → Drizzle ORM
-  → PostgreSQL
-  → Standardized response
-```
-
-> 💡 Saat ini controller backend berinteraksi langsung dengan Drizzle ORM. Jika project bertambah besar, pemisahan bertahap ke `services/` dan `repositories/` dapat dilakukan agar business logic dan query database tidak menumpuk di controller.
-
----
-
-## 📡 API Documentation
-
-Base URL development:
-
-```text
-http://localhost:5000/api
-```
-
-🔒 Endpoint dengan tanda **Auth** membutuhkan header:
-
-```http
-Authorization: Bearer <supabase_access_token>
-```
-
-🛡️ Endpoint dengan tanda **Admin** membutuhkan token dari endpoint login admin.
-
-### ❤️ Health
-
-| Method | Endpoint | Access | Description |
-|---|---|:---:|---|
-| `GET` | `/health` | 🌐 Public | Memeriksa kondisi aplikasi. |
-| `GET` | `/health/database` | 🌐 Public | Memeriksa koneksi database. |
-
-### 🔑 Authentication and Profile
-
-| Method | Endpoint | Access | Description |
-|---|---|:---:|---|
-| `POST` | `/auth/register` | 🌐 Public | Mendaftarkan pengguna melalui backend. |
-| `POST` | `/auth/login` | 🌐 Public | Login pengguna melalui backend. |
-| `POST` | `/auth/sync` | 🔒 Auth | Membuat atau menyinkronkan profile internal dari sesi Supabase. |
-| `GET` | `/auth/me` | 🔒 Auth | Mengambil profile pengguna saat ini. |
-| `PATCH` | `/auth/profile` | 🔒 Auth | Memperbarui profile pengguna. |
-
-### 🏷️ Categories
-
-| Method | Endpoint | Access | Description |
-|---|---|:---:|---|
-| `GET` | `/categories` | 🌐 Public | Mengambil kategori pekerjaan aktif. |
-
-### 👷 Public Workers
-
-| Method | Endpoint | Access | Description |
-|---|---|:---:|---|
-| `GET` | `/workers` | 🌐 Public | Mengambil daftar pekerja berstatus `verified`. |
-| `GET` | `/workers/:id` | 🌐 Public | Mengambil detail pekerja terverifikasi. |
-
-### 🧰 Worker Area
-
-| Method | Endpoint | Access | Description |
-|---|---|:---:|---|
-| `GET` | `/worker/me` | 🔒 Auth | Mengambil data pekerja dan application milik pengguna. |
-| `GET` | `/worker/me/dashboard` | 🔒 Auth | Mengambil ringkasan dashboard pekerja. |
-| `GET` | `/worker/me/bookings` | 🔒 Auth | Mengambil daftar pekerjaan pekerja. |
-| `PATCH` | `/worker/me/bookings/:id/status` | 🔒 Auth | Memperbarui status pekerjaan. |
-| `GET` | `/worker/me/reviews` | 🔒 Auth | Mengambil ulasan pekerja. |
-| `GET` | `/worker/me/earnings` | 🔒 Auth | Mengambil ringkasan penghasilan dan penarikan. |
-| `POST` | `/worker/me/withdrawals` | 🔒 Auth | Mengajukan penarikan dana. |
-| `PATCH` | `/worker/me/application` | 🔒 Auth | Membuat atau memperbarui draft application pekerja. |
-| `POST` | `/worker/me/application/submit` | 🔒 Auth | Mengirim application untuk ditinjau admin. |
-| `POST` | `/worker/me/references` | 🔒 Auth | Menambahkan referensi pekerja. |
-| `DELETE` | `/worker/me/references/:id` | 🔒 Auth | Menghapus referensi pekerja. |
-| `POST` | `/worker/me/portfolios` | 🔒 Auth | Menambahkan portofolio pekerja. |
-| `DELETE` | `/worker/me/portfolios/:id` | 🔒 Auth | Menghapus portofolio pekerja. |
-| `POST` | `/worker/me/payout-accounts` | 🔒 Auth | Menambahkan rekening pencairan. |
-| `DELETE` | `/worker/me/payout-accounts/:id` | 🔒 Auth | Menghapus rekening pencairan. |
-
-### 💬 Chat
-
-| Method | Endpoint | Access | Description |
-|---|---|:---:|---|
-| `GET` | `/chat/conversations` | 🔒 Auth | Mengambil percakapan pengguna. |
-| `POST` | `/chat/conversations` | 🔒 Auth | Membuat atau mengambil percakapan dengan pekerja. |
-| `GET` | `/chat/conversations/:id/messages` | 🔒 Auth | Mengambil pesan dalam percakapan. |
-| `POST` | `/chat/conversations/:id/messages` | 🔒 Auth | Mengirim pesan. |
-
-### 🔔 Notifications
-
-| Method | Endpoint | Access | Description |
-|---|---|:---:|---|
-| `GET` | `/notifications` | 🔒 Auth | Mengambil notifikasi pengguna. |
-
-### 🛡️ Admin
-
-| Method | Endpoint | Access | Description |
-|---|---|:---:|---|
-| `POST` | `/admin/login` | 🌐 Public | Login admin menggunakan username dan password. |
-| `GET` | `/admin/me` | 🛡️ Admin | Memeriksa sesi admin saat ini. |
-| `GET` | `/admin/worker-applications` | 🛡️ Admin | Mengambil daftar application pekerja. |
-| `GET` | `/admin/worker-applications/:id` | 🛡️ Admin | Mengambil detail application pekerja. |
-| `PATCH` | `/admin/worker-applications/:id/approve` | 🛡️ Admin | Menyetujui application pekerja. |
-| `PATCH` | `/admin/worker-applications/:id/reject` | 🛡️ Admin | Menolak application pekerja. |
-| `PATCH` | `/admin/references/:id` | 🛡️ Admin | Memperbarui status pemeriksaan referensi. |
-
-### 📦 Standard response format
-
-**✅ Successful response:**
+**Format respons error:**
 
 ```json
 {
-   "success": true,
-   "data": {}
+  "success": false,
+  "error": { "code": "VALIDATION_ERROR", "message": "...", "details": [] },
+  "requestId": "uuid"
 }
 ```
 
-**📋 List response:**
-
-```json
-{
-   "success": true,
-   "data": [],
-   "meta": {
-      "total": 0
-   }
-}
-```
-
-**❌ Error response:**
-
-```json
-{
-   "success": false,
-   "error": {
-      "code": "VALIDATION_ERROR",
-      "message": "Request data is invalid",
-      "details": []
-   },
-   "requestId": "request-uuid"
-}
-```
+Definisi lengkap setiap endpoint ada di folder [`backend/src/routes/`](backend/src/routes/).
 
 ---
 
-## 📄 License
+## Batasan & Ruang Lingkup
 
-Project ini dilisensikan menggunakan **MIT License**.
+Hal-hal berikut **sengaja di luar cakupan** proyek ini:
 
-<details>
-<summary>📜 Lihat teks lisensi lengkap</summary>
+| Batasan               | Keterangan                                              |
+| --------------------- | ------------------------------------------------------- |
+| Aplikasi native       | Hanya web responsif + PWA, bukan Android/iOS native     |
+| Pembayaran produksi   | Midtrans **sandbox** — tanpa penarikan dana riil        |
+| Autentikasi nomor HP  | Login via email/password & Google, bukan OTP SMS        |
+| Live tracking         | Lokasi pekerja statis, bukan pelacakan GPS real-time    |
+| Panggilan suara/video | Komunikasi hanya lewat chat teks                        |
+| Permintaan SOS        | Fitur broadcast pekerjaan mendesak belum diimplementasi |
+| Multi-kota            | Fokus Kota Manado dan sekitarnya                        |
+| Multi-bahasa          | Antarmuka Bahasa Indonesia saja                         |
 
-```text
-MIT License
-
-Copyright (c) 2026 Torano
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
-</details>
-
-<div align="center">
+Detail ruang lingkup sistem (SRS) tersedia di [`docs/SRS-ruang-lingkup.md`](docs/SRS-ruang-lingkup.md).
 
 ---
 
-Made with ❤️ by **LASALLE VIBERS**
+## Dokumentasi
 
-</div>
+| File                                                     | Isi                                     |
+| -------------------------------------------------------- | --------------------------------------- |
+| [`docs/ArsitekturSystem.png`](docs/ArsitekturSystem.png) | Diagram arsitektur sistem               |
+| [`docs/Usecase Diagram.png`](docs/Usecase%20Diagram.png) | Diagram use case UML                    |
+| [`docs/erd-torano.drawio`](docs/erd-torano.drawio)       | Entity Relationship Diagram (draw.io)   |
+| [`docs/SRS-ruang-lingkup.md`](docs/SRS-ruang-lingkup.md) | Spesifikasi ruang lingkup & alur bisnis |
+
+---
+
+## Tim
+
+<p align="center"><strong>LASALLE VIBERS</strong></p>
+
+<p align="center">Proyek lomba — VETERNITY BERAKSI</p>
