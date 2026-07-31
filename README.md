@@ -1,5 +1,7 @@
-<div align="center">
-  <img src="frontend/src/assets/Logo_torano_noBG.png" alt="Torano Logo" width="180" />
+<div style="display:flex; justify-content: center">
+  <img src="frontend/src/assets/laptop.png" alt="Torano Preview" width="60%" height="100%" />
+</div>
+<div align="center"/>
 
 # Torano
 
@@ -481,8 +483,8 @@ Authorization: Bearer <supabase_access_token>
 
 ```json
 {
-  "success": true,
-  "data": {}
+   "success": true,
+   "data": {}
 }
 ```
 
@@ -490,11 +492,11 @@ Authorization: Bearer <supabase_access_token>
 
 ```json
 {
-  "success": true,
-  "data": [],
-  "meta": {
-    "total": 0
-  }
+   "success": true,
+   "data": [],
+   "meta": {
+      "total": 0
+   }
 }
 ```
 
@@ -502,60 +504,15 @@ Authorization: Bearer <supabase_access_token>
 
 ```json
 {
-  "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Request data is invalid",
-    "details": []
-  },
-  "requestId": "request-uuid"
+   "success": false,
+   "error": {
+      "code": "VALIDATION_ERROR",
+      "message": "Request data is invalid",
+      "details": []
+   },
+   "requestId": "request-uuid"
 }
 ```
-
----
-
-## 🤝 Contribution
-
-1. 🍴 Fork repository.
-2. 🌿 Buat branch dari branch utama:
-
-   ```bash
-   git checkout -b feature/nama-fitur
-   ```
-
-3. 📦 Install dependency dan buat konfigurasi environment lokal.
-4. 📐 Ikuti struktur dan konvensi project yang sudah tersedia.
-5. 🚫 Jangan commit `.env`, access token, password, atau secret.
-6. ✅ Jalankan pemeriksaan sebelum commit:
-
-   ```bash
-   cd backend
-   npm run typecheck
-   npm run build
-
-   cd ../frontend
-   npm run build
-   ```
-
-7. 📝 Gunakan commit message yang jelas:
-
-   ```bash
-   git commit -m "feat: add customer booking endpoint"
-   ```
-
-8. ⬆️ Push branch dan buat Pull Request.
-9. 📄 Jelaskan perubahan, cara pengujian, migration baru, dan risiko yang relevan pada deskripsi Pull Request.
-
-### 🏷️ Suggested commit convention
-
-| Prefix | Keterangan |
-|---|---|
-| `feat:` | ✨ fitur baru |
-| `fix:` | 🐛 perbaikan bug |
-| `refactor:` | ♻️ perubahan struktur tanpa mengubah perilaku |
-| `docs:` | 📚 perubahan dokumentasi |
-| `test:` | 🧪 penambahan atau perbaikan test |
-| `chore:` | 🔧 maintenance dan konfigurasi |
 
 ---
 
