@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Bell, MessageSquareText, CalendarCheck, Star, BellRing } from "lucide-react";
 import { api } from "../lib/api";
 import { canNotify, notifyPermission, requestNotify, showNotify } from "../lib/webNotify";
+import { subscribeToPush } from "../lib/push";
 
 const ICONS = {
   message: MessageSquareText,
@@ -63,7 +64,10 @@ const NotificationBell = ({ chatPath = "/chat" }) => {
   const enableNotify = async () => {
     const p = await requestNotify();
     setPerm(p);
-    if (p === "granted") showNotify("Notifikasi Torano aktif", "Kamu akan diberi tahu di sini.");
+    if (p === "granted") {
+      subscribeToPush(); // langganan push agar muncul walau aplikasi tertutup
+      showNotify("Notifikasi Torano aktif", "Kamu akan diberi tahu di sini.");
+    }
   };
 
   useEffect(() => {

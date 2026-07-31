@@ -7,6 +7,7 @@ import WorkerProfile from "../pages/WorkerProfile";
 import ProfilPencari from "../pages/ProfilPencari";
 import CaraKerja from "../pages/CaraKerja";
 import Keamanan from "../pages/Keamanan";
+import TentangKami from "../pages/TentangKami";
 import ChatInbox from "../pages/ChatInbox";
 import WorkerLayout from "../layouts/WorkerLayout";
 import Dashboard from "../pages/worker/Dashboard";
@@ -51,6 +52,7 @@ const AppRoutes = () => {
         <Route path="/peta" element={<MapPage />} />
         <Route path="/cara-kerja" element={<CaraKerja />} />
         <Route path="/keamanan" element={<Keamanan />} />
+        <Route path="/tentang" element={<TentangKami />} />
         <Route path="/pekerja/:id" element={<WorkerProfile />} />
         <Route
           path="/akun"

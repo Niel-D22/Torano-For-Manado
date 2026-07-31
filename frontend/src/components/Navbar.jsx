@@ -10,10 +10,10 @@ import { useAuth } from "../lib/auth";
 import { useLayout } from "../lib/layout";
 
 const navItems = [
-  { to: "/cari", label: "Cari Pekerja" },
+  { to: "/", label: "Beranda" },
+  { to: "/cari", label: "Kategori" },
   { to: "/cara-kerja", label: "Cara Kerja" },
-  { to: "/keamanan", label: "Keamanan" },
-  { to: "/cara-kerja", label: "Bantuan" },
+  { to: "/daftar/pekerja", label: "Jadi Pekerja" },
 ];
 
 const linkClass =
@@ -110,7 +110,7 @@ const Navbar = () => {
           <div className="flex items-center gap-2">
             <Link
               to="/login"
-              className="hidden rounded-xl px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-cloud sm:block"
+              className="hidden rounded-xl border border-line px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-cloud sm:block"
             >
               Masuk
             </Link>
@@ -118,7 +118,7 @@ const Navbar = () => {
               to="/daftar"
               className="ring-focus rounded-xl bg-forest px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-ink"
             >
-              Bergabung
+              Daftar
             </Link>
           </div>
         )}

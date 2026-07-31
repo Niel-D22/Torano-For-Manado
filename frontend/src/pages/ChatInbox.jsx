@@ -254,8 +254,8 @@ const ChatInbox = () => {
   const iAmCustomer = thread?.conversation?.iAmCustomer;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div className="grid h-[calc(100vh-9rem)] overflow-hidden rounded-2xl border border-line bg-white md:grid-cols-[300px_1fr]">
+    <div className="mx-auto max-w-7xl sm:px-6 sm:py-6">
+      <div className="grid h-[calc(100dvh-4rem)] overflow-hidden bg-white sm:h-[calc(100dvh-7rem)] sm:rounded-2xl sm:border sm:border-line md:grid-cols-[300px_1fr]">
         {/* Daftar percakapan */}
         <aside className={`flex flex-col border-r border-line ${activeId ? "hidden md:flex" : "flex"}`}>
           <div className="border-b border-line p-4">
@@ -301,7 +301,7 @@ const ChatInbox = () => {
         </aside>
 
         {/* Ruang chat */}
-        <section className={`flex flex-col ${activeId ? "flex" : "hidden md:flex"}`}>
+        <section className={`flex min-w-0 flex-col overflow-hidden ${activeId ? "flex" : "hidden md:flex"}`}>
           {!active ? (
             <div className="grid flex-1 place-items-center text-center text-moss">
               <div>
@@ -333,7 +333,7 @@ const ChatInbox = () => {
                 </div>
               </header>
 
-              <div ref={scrollRef} className="flex-1 overflow-y-auto bg-paper px-4 py-4">
+              <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto bg-paper px-4 py-4">
                 <div className="mx-auto flex w-full max-w-2xl flex-col gap-3">
                 {!thread ? (
                   <div className="grid place-items-center py-10">
@@ -547,7 +547,7 @@ const ChatInbox = () => {
 
               {/* Panel penawaran harga */}
               {showOffer && (
-                <div className="mx-auto mt-3 w-[calc(100%-2rem)] max-w-2xl rounded-2xl border border-forest/30 bg-limesoft/20 p-3">
+                <div className="mx-auto mt-3 w-[calc(100%-2rem)] max-w-2xl shrink-0 rounded-2xl border border-forest/30 bg-limesoft/20 p-3">
                   <p className="mb-2 flex items-center gap-1.5 text-sm font-bold text-forest">
                     <Tag className="h-4 w-4" /> Kirim penawaran harga
                   </p>
@@ -585,25 +585,27 @@ const ChatInbox = () => {
                 </div>
               )}
 
-              {/* Balasan cepat */}
-              <div className="mx-auto flex w-full max-w-2xl flex-wrap gap-2 border-t border-line px-4 pt-3">
-                {quickReplies.map((q) => (
-                  <button
-                    key={q}
-                    onClick={() => send(q)}
-                    className="rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-moss transition-colors hover:border-forest hover:text-forest"
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
+              {/* Balasan cepat (sembunyi saat panel penawaran terbuka; gulir horizontal di mobile) */}
+              {!showOffer && (
+                <div className="mx-auto flex w-full max-w-2xl shrink-0 gap-2 overflow-x-auto border-t border-line px-4 pt-3 [scrollbar-width:none]">
+                  {quickReplies.map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => send(q)}
+                      className="shrink-0 whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-moss transition-colors hover:border-forest hover:text-forest"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   send();
                 }}
-                className="mx-auto flex w-full max-w-2xl items-center gap-2 p-4"
+                className="mx-auto flex w-full max-w-2xl shrink-0 items-center gap-2 p-4"
               >
                 <button
                   type="button"

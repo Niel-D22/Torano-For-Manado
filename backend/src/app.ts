@@ -24,9 +24,14 @@ const app = express();
 // --- Core middleware ---
 app.use(requestIdMiddleware);
 app.use(requestLogger);
+// Daftar origin yang diizinkan (dev + produksi), dipisah koma di CORS_ORIGIN.
+const allowedOrigins = env.CORS_ORIGIN.split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 app.use(
   cors({
-    origin: env.CORS_ORIGIN,
+    origin: (origin, cb) => cb(null, !origin || allowedOrigins.includes(origin)),
+    credentials: true,
   }),
 );
 app.use(express.json());

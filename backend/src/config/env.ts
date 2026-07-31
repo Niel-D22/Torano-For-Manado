@@ -28,9 +28,9 @@ const envSchema = z.object({
     .string()
     .min(1, "SUPABASE_ANON_KEY is required"),
 
-  CORS_ORIGIN: z
-    .string()
-    .url("CORS_ORIGIN must be a valid URL"),
+  // Satu atau beberapa origin yang diizinkan, dipisah koma.
+  // Contoh: "http://localhost:5173,https://torano.netlify.app"
+  CORS_ORIGIN: z.string().min(1).default("http://localhost:5173"),
 
   // Kredensial admin panel (login username/password terpisah dari Supabase).
   ADMIN_USERNAME: z.string().min(1).default("admin"),

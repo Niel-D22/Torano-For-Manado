@@ -7,9 +7,10 @@
 
 import bgHero from "../../assets/BG_HeroLandingPage.png";
 
-import heroTukang from "../../assets/landing/hero-tukang.jpg";
-import heroArt from "../../assets/landing/hero-art.jpg";
-import heroMontir from "../../assets/landing/hero-montir.jpg";
+// Ilustrasi cat air hero (senada latar), digenerate AI.
+import heroArt from "../../assets/landing/Hero/Hero1.png";
+import heroTukang from "../../assets/landing/Hero/Hero2.png";
+import heroMontir from "../../assets/landing/Hero/Hero3.png";
 import catArt from "../../assets/landing/cat-art.jpg";
 import catTukang from "../../assets/landing/cat-tukang.jpg";
 import catEvent from "../../assets/landing/cat-event.jpg";
