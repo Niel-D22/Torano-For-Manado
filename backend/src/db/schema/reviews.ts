@@ -21,6 +21,8 @@ export const reviews = pgTable(
       .references(() => workerApplications.id, { onDelete: "cascade" }),
     reviewerName: varchar("reviewer_name", { length: 255 }).notNull(),
     reviewerAvatar: text("reviewer_avatar"),
+    reviewerProfileId: uuid("reviewer_profile_id"),
+    paymentId: uuid("payment_id"),
     rating: integer("rating").notNull(),
     comment: text("comment"),
     photos: text("photos").array(),

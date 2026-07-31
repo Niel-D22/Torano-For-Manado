@@ -4,6 +4,7 @@ import { db } from "../config/database.js";
 import { conversations, messages } from "../db/schema/index.js";
 import { sendSuccess, sendList } from "../shared/http/index.js";
 import { NotFoundError, AuthorizationError } from "../shared/errors/index.js";
+import { sendPushToProfile } from "../shared/push/index.js";
 
 async function assertParticipant(conversationId: string, profileId: string) {
   const c = await db.query.conversations.findFirst({
@@ -96,7 +97,8 @@ export async function getMessages(req: Request, res: Response): Promise<void> {
 // POST /api/chat/conversations/:id/messages
 export async function sendMessage(req: Request, res: Response): Promise<void> {
   const id = req.params["id"] as string;
-  await assertParticipant(id, req.profile!.id);
+  const c = await assertParticipant(id, req.profile!.id);
+  const me = req.profile!.id;
   const { type = "text", body, payload } = req.body as {
     type?: string;
     body?: string;
@@ -107,7 +109,7 @@ export async function sendMessage(req: Request, res: Response): Promise<void> {
     .insert(messages)
     .values({
       conversationId: id,
-      senderProfileId: req.profile!.id,
+      senderProfileId: me,
       type,
       body: body ?? null,
       payload: payload ?? null,
@@ -118,6 +120,15 @@ export async function sendMessage(req: Request, res: Response): Promise<void> {
     .update(conversations)
     .set({ lastMessage: preview(type, body), lastMessageAt: new Date() })
     .where(eq(conversations.id, id));
+
+  // Push ke lawan bicara (muncul walau aplikasi tertutup).
+  const recipient = c.customerProfileId === me ? c.workerProfileId : c.customerProfileId;
+  const url = recipient === c.workerProfileId ? "/mitra/pesan" : "/chat";
+  void sendPushToProfile(recipient, {
+    title: `Pesan dari ${req.profile!.fullName ?? "pengguna"}`,
+    body: preview(type, body),
+    url,
+  });
 
   sendSuccess(res, { message: msg }, { statusCode: 201 });
 }

@@ -6,12 +6,13 @@ import { useAuthGate } from "../lib/auth";
 import Avatar from "./Avatar";
 
 const catIcons = { art: Sparkles, tukang: Hammer, event: Users, montir: Wrench };
+const FALLBACK_CAT = { label: "Jasa lainnya", color: "#0d3b2e" };
 
 // Kartu pekerja — layout horizontal (foto kiri, detail kanan) mengikuti mockup.
 // Dipakai di halaman Cari & sidebar Peta (onSelect/selected untuk sorotan peta).
 const WorkerCard = ({ worker, style, selected = false, onSelect, compact = false }) => {
-  const cat = categoryMap[worker.category];
-  const CatIcon = catIcons[worker.category];
+  const cat = categoryMap[worker.category] || FALLBACK_CAT;
+  const CatIcon = catIcons[worker.category] || Sparkles;
   const navigate = useNavigate();
   const gate = useAuthGate();
   const [fav, setFav] = useState(false);
@@ -81,7 +82,7 @@ const WorkerCard = ({ worker, style, selected = false, onSelect, compact = false
             </span>
           )}
           <p className="mt-1.5 text-[15px] font-extrabold leading-tight text-forest">
-            Rp{worker.priceMin}–{worker.priceMax}rb
+            {worker.priceMin != null ? `Rp${worker.priceMin}${worker.priceMax ? `–${worker.priceMax}` : ""}rb` : "Nego"}
             <span className="text-xs font-semibold text-moss">/jam</span>
           </p>
           <p className="mt-2 flex max-w-[112px] items-start justify-end gap-1 text-[11px] leading-tight text-moss">
@@ -163,7 +164,7 @@ const WorkerCard = ({ worker, style, selected = false, onSelect, compact = false
           </p>
 
           <p className="mt-1.5 font-extrabold text-forest">
-            Rp{worker.priceMin}–{worker.priceMax}rb
+            {worker.priceMin != null ? `Rp${worker.priceMin}${worker.priceMax ? `–${worker.priceMax}` : ""}rb` : "Nego"}
             <span className="text-sm font-semibold text-moss"> / jam</span>
           </p>
 

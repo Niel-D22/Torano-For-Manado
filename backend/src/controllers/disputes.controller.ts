@@ -276,10 +276,27 @@ export async function resolveDispute(req: Request, res: Response): Promise<void>
 
   // Terapkan ke pembayaran.
   if (d.paymentId) {
-    const payStatus = resolution === "refund" ? "refunded" : "released";
-    const stamp = resolution === "refund" ? { refundedAt: new Date() } : { releasedAt: new Date() };
-    await db.update(payments).set({ status: payStatus, ...stamp }).where(eq(payments.id, d.paymentId));
-    await updatePaymentCard(d.paymentId, payStatus);
+    if (resolution === "refund") {
+      await db
+        .update(payments)
+        .set({ status: "refunded", refundedAt: new Date() })
+        .where(eq(payments.id, d.paymentId));
+      await updatePaymentCard(d.paymentId, "refunded");
+    } else if (resolution === "split") {
+      // Bagi dua: separuh ke mitra, separuh kembali ke pelanggan.
+      const half = Math.round(toNum(d.amount) / 2);
+      await db
+        .update(payments)
+        .set({ status: "released", workerAmount: String(half), releasedAt: new Date() })
+        .where(eq(payments.id, d.paymentId));
+      await updatePaymentCard(d.paymentId, "released");
+    } else {
+      await db
+        .update(payments)
+        .set({ status: "released", releasedAt: new Date() })
+        .where(eq(payments.id, d.paymentId));
+      await updatePaymentCard(d.paymentId, "released");
+    }
   }
 
   await db

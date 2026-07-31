@@ -12,6 +12,7 @@ export { conversations } from "./conversations.js";
 export { messages } from "./messages.js";
 export { payments } from "./payments.js";
 export { disputes } from "./disputes.js";
+export { pushSubscriptions } from "./push-subscriptions.js";
 
 // --- Relations ---
 export {

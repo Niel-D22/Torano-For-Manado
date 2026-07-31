@@ -10,8 +10,16 @@ import { useLayout } from "../lib/layout";
 
 const SearchResults = () => {
   const [params] = useSearchParams();
+  const savedCoords = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("torano_coords") || "null");
+    } catch {
+      return null;
+    }
+  })();
   const [f, setF] = useState({
-    lokasi: "Wanea, Manado",
+    lokasi: savedCoords ? "Titik lokasi saya" : "Wanea, Manado",
+    coords: savedCoords,
     q: params.get("q") || "",
     cat: params.get("kat") || "",
     jarak: "",
@@ -20,11 +28,18 @@ const SearchResults = () => {
   });
   const up = (patch) => setF((v) => ({ ...v, ...patch }));
 
-  // Pekerja terverifikasi dari database (bukan lagi data statis).
+  // Simpan titik lokasi pencari agar melekat antar kunjungan.
+  useEffect(() => {
+    if (f.coords) localStorage.setItem("torano_coords", JSON.stringify(f.coords));
+    else localStorage.removeItem("torano_coords");
+  }, [f.coords]);
+
+  // Pekerja terverifikasi dari database (jarak dihitung dari titik lokasi pencari).
   const [workers, setWorkers] = useState([]);
   useEffect(() => {
-    api.get("/workers").then((r) => setWorkers(r.data.data)).catch(() => setWorkers([]));
-  }, []);
+    const qs = f.coords ? `?lat=${f.coords.lat}&lng=${f.coords.lng}` : "";
+    api.get(`/workers${qs}`).then((r) => setWorkers(r.data.data)).catch(() => setWorkers([]));
+  }, [f.coords]);
 
   // null = mode grid; berisi id = mode split (peta terbuka di kanan).
   const [selectedId, setSelectedId] = useState(null);
@@ -160,7 +175,7 @@ const SearchResults = () => {
               exit={{ x: "100%" }}
               transition={{ type: "tween", duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
             >
-              <MapView workers={results} selectedId={selectedId} onSelect={setSelectedId} />
+              <MapView workers={results} selectedId={selectedId} onSelect={setSelectedId} origin={f.coords} />
 
               {/* Bilah kategori mengambang di atas peta (mengikuti referensi) */}
               <div className="no-scrollbar absolute inset-x-0 top-0 z-[1000] flex gap-2 overflow-x-auto px-4 py-3">

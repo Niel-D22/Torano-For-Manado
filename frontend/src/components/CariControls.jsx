@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   Search,
   MapPin,
@@ -12,8 +12,10 @@ import {
   ArrowUpDown,
   ChevronDown,
   ChevronRight,
+  LocateFixed,
 } from "lucide-react";
 import { categories } from "../data/workers";
+import LokasiPickerModal from "./LokasiPickerModal";
 
 const catIcons = { art: Sparkles, tukang: Hammer, event: Users, montir: Wrench };
 
@@ -123,6 +125,7 @@ const FilterSelect = ({ icon: Icon, prefix, value, onChange, options, grow }) =>
 // selain itu = mode grid (kategori & filter satu baris).
 const CariControls = ({ f, up, variant = "full" }) => {
   const panel = variant === "panel";
+  const [pickOpen, setPickOpen] = useState(false);
   return (
     <div>
       <div className="flex flex-col gap-2 rounded-2xl border border-line bg-white p-2 shadow-[0_20px_50px_-40px_rgba(13,59,46,0.5)] sm:flex-row sm:items-center">
@@ -130,21 +133,40 @@ const CariControls = ({ f, up, variant = "full" }) => {
           <MapPin className="h-5 w-5 shrink-0 text-forest" aria-hidden="true" />
           <input
             value={f.lokasi}
-            onChange={(e) => up({ lokasi: e.target.value })}
+            onChange={(e) => up({ lokasi: e.target.value, coords: null })}
             aria-label="Lokasi"
             className="w-full py-2.5 font-semibold text-ink focus:outline-none"
           />
           {f.lokasi && (
             <button
               type="button"
-              onClick={() => up({ lokasi: "" })}
+              onClick={() => up({ lokasi: "", coords: null })}
               aria-label="Hapus lokasi"
               className="ring-focus rounded-full p-1 text-moss hover:bg-cloud"
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
           )}
+          <button
+            type="button"
+            onClick={() => setPickOpen(true)}
+            aria-label="Tandai lokasi di peta"
+            title="Tandai lokasi di peta"
+            className={`ring-focus rounded-full p-1.5 transition-colors ${
+              f.coords ? "bg-limesoft text-forest" : "text-moss hover:bg-cloud hover:text-forest"
+            }`}
+          >
+            <LocateFixed className="h-4 w-4" aria-hidden="true" />
+          </button>
         </div>
+        <LokasiPickerModal
+          open={pickOpen}
+          initial={f.coords}
+          onClose={() => setPickOpen(false)}
+          onPick={({ lat, lng, label }) =>
+            up({ coords: { lat, lng }, lokasi: label || "Titik lokasi saya" })
+          }
+        />
         <span className="hidden h-8 w-px bg-line sm:block" aria-hidden="true" />
         <div className="flex flex-1 items-center gap-2 px-3">
           <Search className="h-5 w-5 shrink-0 text-moss" aria-hidden="true" />

@@ -14,6 +14,8 @@ import notificationsRoutes from "./routes/notifications.routes.js";
 import requestsRoutes from "./routes/requests.routes.js";
 import paymentsRoutes from "./routes/payments.routes.js";
 import disputesRoutes from "./routes/disputes.routes.js";
+import reviewsRoutes from "./routes/reviews.routes.js";
+import pushRoutes from "./routes/push.routes.js";
 import errorHandler from "./middleware/errorHandler.js";
 import notFoundHandler from "./middleware/notFoundHandler.js";
 
@@ -41,6 +43,8 @@ app.use("/api/notifications", notificationsRoutes);
 app.use("/api/requests", requestsRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/disputes", disputesRoutes);
+app.use("/api/reviews", reviewsRoutes);
+app.use("/api/push", pushRoutes);
 
 // --- Fallback for unmatched routes ---
 app.use(notFoundHandler);

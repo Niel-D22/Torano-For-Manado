@@ -10,13 +10,24 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
-import { Send, Star, BadgeCheck } from "lucide-react";
+import { Send, Star, BadgeCheck, MapPin } from "lucide-react";
 import { categoryMap, MANADO_CENTER } from "../data/workers";
 import Avatar from "./Avatar";
 
+// Penanda titik lokasi pencari ("Anda di sini").
+const originIcon = L.divIcon({
+  className: "origin-pin",
+  html: `<div style="display:flex;flex-direction:column;align-items:center">
+      <span style="background:#2f80ed;color:#fff;font:700 11px/1 sans-serif;padding:4px 8px;border-radius:9999px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)">Anda</span>
+      <span style="width:14px;height:14px;background:#2f80ed;border:3px solid #fff;border-radius:9999px;margin-top:3px;box-shadow:0 2px 6px rgba(0,0,0,.3)"></span>
+    </div>`,
+  iconSize: [50, 40],
+  iconAnchor: [25, 40],
+});
+
 // Pin harga (mockup): pil "Rp90rb"; yang terpilih jadi hijau tua & lebih menonjol.
 const makeIcon = (worker, active) => {
-  const label = `Rp${worker.priceMin}rb`;
+  const label = worker.priceMin != null ? `Rp${worker.priceMin}rb` : "Nego";
   return L.divIcon({
     className: "price-pin",
     html: `<div class="pp${active ? " pp-active" : ""}">${label}</div>`,
@@ -77,7 +88,7 @@ function AutoResize() {
   return null;
 }
 
-const MapView = ({ workers, selectedId, onSelect }) => {
+const MapView = ({ workers, selectedId, onSelect, origin }) => {
   const selected = workers.find((w) => w.id === selectedId) || null;
   const navigate = useNavigate();
   const markerRefs = useRef({});
@@ -102,8 +113,10 @@ const MapView = ({ workers, selectedId, onSelect }) => {
       <AutoResize />
       <SelectSync selected={selected} workers={workers} markerRefs={markerRefs} />
 
+      {origin && <Marker position={[origin.lat, origin.lng]} icon={originIcon} />}
+
       {workers.map((w) => {
-        const cat = categoryMap[w.category];
+        const cat = categoryMap[w.category] || { label: "Jasa lainnya", color: "#0d3b2e" };
         return (
           <Marker
             key={w.id}
@@ -143,8 +156,13 @@ const MapView = ({ workers, selectedId, onSelect }) => {
                       <span className="font-bold text-ink">{(w.rating ?? 0).toFixed(1)}</span>
                       ({w.jobs} jobs)
                     </p>
+                    <p className="mt-1 flex items-center gap-1 text-xs text-moss">
+                      <MapPin className="h-3.5 w-3.5 text-forest" />
+                      <span className="font-semibold text-ink">{(w.distanceKm ?? 0).toFixed(1)} km</span>
+                      {origin ? "dari titikmu" : "dari pusat Manado"}
+                    </p>
                     <p className="mt-1 text-sm font-extrabold text-forest">
-                      Rp{w.priceMin}–{w.priceMax}rb
+                      {w.priceMin != null ? `Rp${w.priceMin}${w.priceMax ? `–${w.priceMax}` : ""}rb` : "Nego"}
                       <span className="text-xs font-semibold text-moss">/jam</span>
                     </p>
                   </div>

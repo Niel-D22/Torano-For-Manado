@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { adminApi } from "../../lib/adminApi";
 import Spinner from "../../components/Spinner";
-import avatarFallback from "../../assets/avatar-nanda.jpg";
+import Avatar from "../../components/Avatar";
 
 const rejectReasons = [
   "Foto verifikasi tidak jelas",
@@ -157,10 +157,11 @@ const AdminVerifikasi = () => {
                         active ? "bg-limesoft/40" : "hover:bg-cloud"
                       }`}
                     >
-                      <img
-                        src={w.avatarUrl || avatarFallback}
-                        alt=""
-                        className="h-12 w-12 shrink-0 rounded-xl object-cover"
+                      <Avatar
+                        src={w.avatarUrl}
+                        name={w.fullName || w.name}
+                        className="h-12 w-12 shrink-0"
+                        square
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
@@ -210,11 +211,17 @@ const AdminVerifikasi = () => {
                   <span className="absolute left-2 top-2 rounded-lg bg-black/50 px-2 py-1 text-xs font-semibold text-white">
                     Foto verifikasi
                   </span>
-                  <img
-                    src={detail.selfiePhotoUrl || detail.profilePhotoUrl || avatarFallback}
-                    alt=""
-                    className="aspect-[4/5] w-full rounded-xl object-cover"
-                  />
+                  {detail.selfiePhotoUrl || detail.profilePhotoUrl ? (
+                    <img
+                      src={detail.selfiePhotoUrl || detail.profilePhotoUrl}
+                      alt=""
+                      className="aspect-[4/5] w-full rounded-xl object-cover"
+                    />
+                  ) : (
+                    <div className="grid aspect-[4/5] w-full place-items-center rounded-xl border border-dashed border-line bg-paper text-center text-sm text-moss">
+                      Belum ada foto verifikasi
+                    </div>
+                  )}
                 </div>
                 <div>
                   <h2 className="flex items-center gap-2 text-2xl font-extrabold text-ink">

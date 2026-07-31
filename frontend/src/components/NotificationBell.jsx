@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, MessageSquareText, CalendarCheck, Star } from "lucide-react";
+import { Bell, MessageSquareText, CalendarCheck, Star, BellRing } from "lucide-react";
 import { api } from "../lib/api";
+import { canNotify, notifyPermission, requestNotify, showNotify } from "../lib/webNotify";
 
 const ICONS = {
   message: MessageSquareText,
@@ -28,22 +29,48 @@ const NotificationBell = ({ chatPath = "/chat" }) => {
   const [items, setItems] = useState([]);
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
+  const [perm, setPerm] = useState(notifyPermission());
   const navigate = useNavigate();
   const ref = useRef(null);
+  const seenIds = useRef(null); // set id yang sudah pernah dilihat
+  const firstLoad = useRef(true);
 
   const load = () =>
     api
       .get("/notifications")
       .then((r) => {
-        setItems(r.data.data.items);
-        setCount(r.data.data.unreadCount);
+        const data = r.data.data;
+        setItems(data.items);
+        setCount(data.unreadCount);
+        // Munculkan notifikasi perangkat untuk item baru yang belum pernah dilihat.
+        const ids = new Set(data.items.map((i) => i.id));
+        if (!firstLoad.current && seenIds.current) {
+          const fresh = data.items.filter((i) => i.unread && !seenIds.current.has(i.id));
+          if (fresh.length > 0) {
+            const top = fresh[0];
+            showNotify(
+              top.title,
+              top.body,
+              () => navigate(top.type === "message" ? chatPath : top.link),
+            );
+          }
+        }
+        seenIds.current = ids;
+        firstLoad.current = false;
       })
       .catch(() => {});
+
+  const enableNotify = async () => {
+    const p = await requestNotify();
+    setPerm(p);
+    if (p === "granted") showNotify("Notifikasi Torano aktif", "Kamu akan diberi tahu di sini.");
+  };
 
   useEffect(() => {
     load();
     const t = setInterval(load, 30000); // segarkan berkala
     return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Tutup saat klik di luar.
@@ -90,6 +117,15 @@ const NotificationBell = ({ chatPath = "/chat" }) => {
               </span>
             )}
           </div>
+          {canNotify() && perm === "default" && (
+            <button
+              onClick={enableNotify}
+              className="flex w-full items-center gap-2 border-b border-line bg-limesoft/30 px-4 py-2.5 text-left text-sm font-semibold text-forest hover:bg-limesoft/50"
+            >
+              <BellRing className="h-4 w-4 shrink-0" aria-hidden="true" />
+              Aktifkan notifikasi di perangkat ini
+            </button>
+          )}
           <div className="max-h-96 overflow-y-auto">
             {items.length === 0 ? (
               <div className="grid place-items-center gap-2 px-4 py-10 text-center text-sm text-moss">

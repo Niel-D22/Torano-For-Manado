@@ -308,7 +308,7 @@ export async function createWithdrawal(req: Request, res: Response): Promise<voi
       workerApplicationId: app.id,
       payoutAccountId: payoutAccountId ?? null,
       amount: String(amount),
-      status: "paid",
+      status: "requested",
     })
     .returning();
 

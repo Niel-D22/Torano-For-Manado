@@ -22,6 +22,11 @@ import {
 } from "../controllers/disputes.controller.js";
 import { resolveDisputeSchema } from "../validators/dispute.validator.js";
 import {
+  getAdminDashboard,
+  listTransactions,
+  processWithdrawal,
+} from "../controllers/admin-analytics.controller.js";
+import {
   adminLoginSchema,
   rejectSchema,
   updateReferenceSchema,
@@ -36,6 +41,9 @@ router.post("/login", validate("body", adminLoginSchema), adminLogin);
 router.use(requireAdminSession);
 
 router.get("/me", adminMe);
+router.get("/dashboard", getAdminDashboard);
+router.get("/transactions", listTransactions);
+router.patch("/withdrawals/:id/process", processWithdrawal);
 router.get("/worker-applications", listApplications);
 router.get("/worker-applications/:id", getApplication);
 router.patch("/worker-applications/:id/approve", approveApplication);

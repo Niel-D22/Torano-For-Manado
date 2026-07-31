@@ -14,6 +14,7 @@ import {
   ValidationError,
 } from "../shared/errors/index.js";
 import { sendEmail, emailShell } from "../shared/email/index.js";
+import { sendPushToProfile } from "../shared/push/index.js";
 import { env } from "../config/env.js";
 import type { CreateRequestInput } from "../validators/request.validator.js";
 
@@ -111,6 +112,13 @@ export async function createRequest(
     .update(conversations)
     .set({ lastMessage: `Permintaan: ${jobTitle}`, lastMessageAt: new Date() })
     .where(eq(conversations.id, convo.id));
+
+  // Push ke pekerja (muncul walau aplikasi tertutup).
+  void sendPushToProfile(workerProfileId, {
+    title: "Permintaan pekerjaan baru",
+    body: `${me.fullName ?? "Pencari"}: ${jobTitle}`,
+    url: "/mitra/pesan",
+  });
 
   // Email ke pekerja (non blocking).
   if (app.profile.email) {

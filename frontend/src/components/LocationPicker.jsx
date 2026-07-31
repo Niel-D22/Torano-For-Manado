@@ -10,6 +10,7 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MANADO_CENTER } from "../data/workers";
+import { MANADO_LEAFLET_BOUNDS, inManado } from "../lib/geo";
 
 // Pin hijau (divIcon, tanpa aset gambar agar aman dengan bundler).
 const pinIcon = L.divIcon({
@@ -29,7 +30,12 @@ function Resizer() {
 }
 
 function Clicker({ onPick }) {
-  useMapEvents({ click: (e) => onPick(e.latlng.lat, e.latlng.lng) });
+  // Hanya terima titik di dalam area Manado.
+  useMapEvents({
+    click: (e) => {
+      if (inManado(e.latlng.lat, e.latlng.lng)) onPick(e.latlng.lat, e.latlng.lng);
+    },
+  });
   return null;
 }
 
@@ -48,6 +54,9 @@ const LocationPicker = ({
     <MapContainer
       center={center}
       zoom={13}
+      minZoom={11}
+      maxBounds={MANADO_LEAFLET_BOUNDS}
+      maxBoundsViscosity={1}
       scrollWheelZoom={false}
       dragging={interactive}
       className={`${className} rounded-xl border border-line`}
@@ -70,7 +79,7 @@ const LocationPicker = ({
                 ? {
                     dragend: (e) => {
                       const p = e.target.getLatLng();
-                      onChange(p.lat, p.lng);
+                      if (inManado(p.lat, p.lng)) onChange(p.lat, p.lng);
                     },
                   }
                 : {}

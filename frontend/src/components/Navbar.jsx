@@ -11,9 +11,9 @@ import { useLayout } from "../lib/layout";
 
 const navItems = [
   { to: "/cari", label: "Cari Pekerja" },
-  { to: "/", label: "Cara Kerja" },
-  { to: "/", label: "Keamanan" },
-  { to: "/", label: "Bantuan" },
+  { to: "/cara-kerja", label: "Cara Kerja" },
+  { to: "/keamanan", label: "Keamanan" },
+  { to: "/cara-kerja", label: "Bantuan" },
 ];
 
 const linkClass =

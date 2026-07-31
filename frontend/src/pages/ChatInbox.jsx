@@ -11,6 +11,8 @@ import {
   ShieldCheck,
   Check,
   X,
+  MapPin,
+  Star,
 } from "lucide-react";
 import { api } from "../lib/api";
 import { supabase } from "../lib/supabase";
@@ -18,6 +20,7 @@ import { loadSnap } from "../lib/snap";
 import Spinner from "../components/Spinner";
 import Avatar from "../components/Avatar";
 import DisputeModal from "../components/DisputeModal";
+import ReviewModal from "../components/ReviewModal";
 
 const jam = (iso) =>
   iso ? new Date(iso).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "";
@@ -53,6 +56,8 @@ const ChatInbox = () => {
   const [offerAmount, setOfferAmount] = useState("");
   const [offerNote, setOfferNote] = useState("");
   const [disputePaymentId, setDisputePaymentId] = useState(null);
+  const [reviewPaymentId, setReviewPaymentId] = useState(null);
+  const [sharingLoc, setSharingLoc] = useState(false);
   const scrollRef = useRef(null);
 
   const reloadThread = useCallback(async () => {
@@ -131,6 +136,39 @@ const ChatInbox = () => {
     } finally {
       setSending(false);
     }
+  };
+
+  const shareLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Perangkat tidak mendukung lokasi");
+      return;
+    }
+    setSharingLoc(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const { data } = await api.post(`/chat/conversations/${activeId}/messages`, {
+            type: "location",
+            body: "Lokasi dibagikan",
+            payload: { lat: latitude, lng: longitude },
+          });
+          const m = data.data.message;
+          setThread((t) =>
+            t && !t.messages.find((x) => x.id === m.id) ? { ...t, messages: [...t.messages, m] } : t,
+          );
+        } catch {
+          toast.error("Gagal membagikan lokasi");
+        } finally {
+          setSharingLoc(false);
+        }
+      },
+      () => {
+        toast.error("Izin lokasi ditolak");
+        setSharingLoc(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
   };
 
   const sendOffer = async () => {
@@ -415,9 +453,24 @@ const ChatInbox = () => {
                             )}
 
                             {st === "released" && (
-                              <p className="mt-3 flex items-center gap-1.5 rounded-lg bg-limesoft/50 px-2 py-1.5 text-xs font-semibold text-forest">
-                                <Check className="h-4 w-4" /> Dana dilepas ke pekerja
-                              </p>
+                              <>
+                                <p className="mt-3 flex items-center gap-1.5 rounded-lg bg-limesoft/50 px-2 py-1.5 text-xs font-semibold text-forest">
+                                  <Check className="h-4 w-4" /> Dana dilepas ke pekerja
+                                </p>
+                                {iAmCustomer &&
+                                  (p.reviewed ? (
+                                    <p className="mt-2 flex items-center justify-center gap-1 text-xs font-semibold text-moss">
+                                      <Star className="h-3.5 w-3.5 fill-sun text-sun" /> Sudah kamu ulas
+                                    </p>
+                                  ) : (
+                                    <button
+                                      onClick={() => setReviewPaymentId(p.paymentId)}
+                                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-forest py-2 text-sm font-bold text-forest hover:bg-limesoft/40"
+                                    >
+                                      <Star className="h-4 w-4" /> Beri ulasan
+                                    </button>
+                                  ))}
+                              </>
                             )}
 
                             {st === "refunded" && (
@@ -426,6 +479,34 @@ const ChatInbox = () => {
                               </p>
                             )}
                           </div>
+                        </div>
+                      );
+                    }
+
+                    if (m.type === "location") {
+                      const p = m.payload || {};
+                      const maps = `https://www.google.com/maps?q=${p.lat},${p.lng}`;
+                      return (
+                        <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+                          <a
+                            href={maps}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="w-full max-w-[240px] overflow-hidden rounded-2xl border border-line bg-white transition-colors hover:border-forest"
+                          >
+                            <div className="grid h-24 place-items-center bg-limesoft/40">
+                              <MapPin className="h-8 w-8 text-forest" aria-hidden="true" />
+                            </div>
+                            <div className="p-3">
+                              <p className="flex items-center gap-1.5 text-sm font-bold text-ink">
+                                <MapPin className="h-4 w-4 text-forest" /> Lokasi dibagikan
+                              </p>
+                              <p className="mt-0.5 truncate text-xs text-moss">
+                                {Number(p.lat).toFixed(5)}, {Number(p.lng).toFixed(5)}
+                              </p>
+                              <p className="mt-1 text-xs font-semibold text-forest">Buka di peta</p>
+                            </div>
+                          </a>
                         </div>
                       );
                     }
@@ -536,6 +617,15 @@ const ChatInbox = () => {
                 >
                   <Plus className="h-5 w-5" aria-hidden="true" />
                 </button>
+                <button
+                  type="button"
+                  onClick={shareLocation}
+                  disabled={sharingLoc}
+                  aria-label="Bagikan lokasi"
+                  className="ring-focus grid h-12 w-12 shrink-0 place-items-center rounded-full border border-line text-moss transition-colors hover:border-forest hover:text-forest disabled:opacity-60"
+                >
+                  {sharingLoc ? <Spinner className="h-5 w-5" /> : <MapPin className="h-5 w-5" aria-hidden="true" />}
+                </button>
                 <input
                   value={text}
                   onChange={(e) => setText(e.target.value)}
@@ -560,6 +650,13 @@ const ChatInbox = () => {
         open={!!disputePaymentId}
         paymentId={disputePaymentId}
         onClose={() => setDisputePaymentId(null)}
+        onDone={reloadThread}
+      />
+      <ReviewModal
+        open={!!reviewPaymentId}
+        paymentId={reviewPaymentId}
+        workerName={other?.name}
+        onClose={() => setReviewPaymentId(null)}
         onDone={reloadThread}
       />
     </div>

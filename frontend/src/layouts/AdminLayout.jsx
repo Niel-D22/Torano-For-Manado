@@ -13,7 +13,7 @@ import {
   LogOut,
 } from "lucide-react";
 import logo from "../assets/LOGO.png";
-import avatar from "../assets/avatar-nanda.jpg";
+import Avatar from "../components/Avatar";
 import { adminLogout, getAdminName } from "../lib/adminApi";
 
 const nav = [
@@ -69,11 +69,7 @@ const AdminLayout = () => {
 
         <div className="border-t border-white/10 px-3 py-4">
           <div className="flex items-center gap-3 px-2 py-1.5">
-            <img
-              src={avatar}
-              alt=""
-              className="h-9 w-9 rounded-full object-cover ring-1 ring-white/20"
-            />
+            <Avatar name={name} className="h-9 w-9 ring-1 ring-white/20" textClass="text-xs" />
             <div className="min-w-0">
               <p className="truncate text-sm font-bold text-white">{name}</p>
               <p className="truncate text-xs text-white/60">Administrator</p>
@@ -110,11 +106,7 @@ const AdminLayout = () => {
               </span>
             </button>
             <div className="flex items-center gap-2">
-              <img
-                src={avatar}
-                alt=""
-                className="h-8 w-8 rounded-full object-cover ring-1 ring-line"
-              />
+              <Avatar name={name} className="h-8 w-8 ring-1 ring-line" textClass="text-xs" />
               <span className="hidden text-sm font-semibold text-ink sm:inline">
                 {name.split(" ")[0]}
               </span>

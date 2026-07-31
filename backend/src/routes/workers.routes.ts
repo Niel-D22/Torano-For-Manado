@@ -19,7 +19,7 @@ const haversine = (aLat: number, aLng: number, bLat: number, bLng: number) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const toCard = (a: any) => {
+const toCard = (a: any, origin = MANADO) => {
   const lat = a.latitude != null ? Number(a.latitude) : null;
   const lng = a.longitude != null ? Number(a.longitude) : null;
   const ref = a.references?.[0];
@@ -39,7 +39,7 @@ const toCard = (a: any) => {
     lng,
     distanceKm:
       lat != null && lng != null
-        ? Math.round(haversine(MANADO.lat, MANADO.lng, lat, lng) * 10) / 10
+        ? Math.round(haversine(origin.lat, origin.lng, lat, lng) * 10) / 10
         : 0,
     rating: a.ratingAvg != null ? Number(a.ratingAvg) : null,
     jobs: a.jobsCompleted ?? 0,
@@ -57,12 +57,17 @@ const toCard = (a: any) => {
 const router = express.Router();
 
 // GET /api/workers — daftar pekerja terverifikasi (publik).
-router.get("/", async (_req, res) => {
+// Menerima ?lat=&lng= (titik lokasi pencari) untuk jarak yang akurat.
+router.get("/", async (req, res) => {
+  const qlat = Number(req.query["lat"]);
+  const qlng = Number(req.query["lng"]);
+  const origin =
+    Number.isFinite(qlat) && Number.isFinite(qlng) ? { lat: qlat, lng: qlng } : MANADO;
   const rows = await db.query.workerApplications.findMany({
     where: eq(workerApplications.status, "verified"),
     with: { profile: true, category: true, references: true },
   });
-  sendList(res, rows.map(toCard), { total: rows.length });
+  sendList(res, rows.map((r) => toCard(r, origin)), { total: rows.length });
 });
 
 // GET /api/workers/:id — detail publik satu pekerja terverifikasi.

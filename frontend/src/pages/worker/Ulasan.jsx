@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Star, MessageSquareQuote } from "lucide-react";
 import { api } from "../../lib/api";
 import Spinner from "../../components/Spinner";
-import avatarFallback from "../../assets/avatar-nanda.jpg";
+import Avatar from "../../components/Avatar";
 
 const Stars = ({ value, size = "h-4 w-4" }) => (
   <span className="inline-flex items-center gap-0.5" aria-label={`${value} dari 5`}>
@@ -94,11 +94,7 @@ const Ulasan = () => {
             items.map((r) => (
               <article key={r.id} className="rounded-2xl border border-line bg-white p-5">
                 <div className="flex items-start gap-3">
-                  <img
-                    src={r.reviewerAvatar || avatarFallback}
-                    alt=""
-                    className="h-11 w-11 rounded-full object-cover"
-                  />
+                  <Avatar src={r.reviewerAvatar} name={r.reviewerName} className="h-11 w-11" />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
                       <p className="font-bold text-ink">{r.reviewerName}</p>

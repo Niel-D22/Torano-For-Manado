@@ -56,6 +56,11 @@ const envSchema = z.object({
     .transform((v) => v === "true"),
   // Komisi platform dalam persen (dipotong saat dana dilepas ke pekerja).
   PLATFORM_FEE_PCT: z.coerce.number().min(0).max(50).default(12),
+
+  // Web Push (PWA). Opsional: bila kosong, push dilewati dengan aman.
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().default("mailto:admin@torano.app"),
 });
 
 const parseResult = envSchema.safeParse(process.env);
