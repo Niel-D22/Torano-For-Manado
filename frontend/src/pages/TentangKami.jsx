@@ -73,13 +73,13 @@ const TEAM = [
     name: "Ahmad R. Wael",
     role: "Anggota Tim",
     photo: ahmad,
-    desc: "Mengembangkan sistem backend, integrasi, dan arsitektur aplikasi.",
+    desc: "Merancang UI/UX yang intuitif dan pengalaman yang menyenangkan.",
   },
   {
     name: "Marcois Makalew",
     role: "Anggota Tim",
     photo: marco,
-    desc: "Merancang UI/UX yang intuitif dan pengalaman yang menyenangkan.",
+    desc: "Mengembangkan sistem backend, integrasi, dan arsitektur aplikasi.",
   },
 ];
 
