@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { AnimatedOutlet } from "../components/PageTransition";
 import { ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import logo from "../assets/LOGO.png";
@@ -127,6 +128,9 @@ const WorkerLayout = () => {
                 <Link to="/mitra/profil" className="block px-4 py-2 text-sm text-ink hover:bg-cloud">
                   Profil Saya
                 </Link>
+                <Link to="/mitra/bantuan" className="block px-4 py-2 text-sm text-ink hover:bg-cloud">
+                  Bantuan & Lapor
+                </Link>
                 <button
                   type="button"
                   onClick={() => setConfirmOut(true)}
@@ -141,7 +145,7 @@ const WorkerLayout = () => {
       </header>
 
       <main>
-        <Outlet />
+        <AnimatedOutlet />
       </main>
 
       <ConfirmDialog

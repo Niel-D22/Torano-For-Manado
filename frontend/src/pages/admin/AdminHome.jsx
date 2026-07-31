@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { adminApi, getAdminName } from "../../lib/adminApi";
 import Avatar from "../../components/Avatar";
-import Spinner from "../../components/Spinner";
+import { DashboardSkeleton } from "../../components/Skeletons";
 
 const rupiahCompact = (n) => {
   const v = Number(n || 0);
@@ -137,9 +137,7 @@ const AdminHome = () => {
 
   if (loading) {
     return (
-      <div className="grid place-items-center py-24">
-        <Spinner className="h-8 w-8 text-forest" />
-      </div>
+      <DashboardSkeleton />
     );
   }
   if (!data) return <div className="p-8 text-moss">Gagal memuat dashboard.</div>;

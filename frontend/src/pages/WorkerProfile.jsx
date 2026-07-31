@@ -11,7 +11,7 @@ import {
 import { api } from "../lib/api";
 import { useAuthGate } from "../lib/auth";
 import Avatar from "../components/Avatar";
-import Spinner from "../components/Spinner";
+import { WorkerProfileSkeleton } from "../components/Skeletons";
 import RequestModal from "../components/RequestModal";
 import { categoryMap } from "../data/workers";
 
@@ -46,13 +46,7 @@ const WorkerProfile = () => {
 
   const ajukan = () => gate(() => setReqOpen(true));
 
-  if (loading) {
-    return (
-      <div className="grid place-items-center py-24 text-moss">
-        <Spinner className="h-8 w-8" />
-      </div>
-    );
-  }
+  if (loading) return <WorkerProfileSkeleton />;
 
   if (!worker) {
     return (

@@ -8,6 +8,7 @@ import ProfilPencari from "../pages/ProfilPencari";
 import CaraKerja from "../pages/CaraKerja";
 import Keamanan from "../pages/Keamanan";
 import TentangKami from "../pages/TentangKami";
+import Bantuan from "../pages/Bantuan";
 import ChatInbox from "../pages/ChatInbox";
 import WorkerLayout from "../layouts/WorkerLayout";
 import Dashboard from "../pages/worker/Dashboard";
@@ -22,6 +23,7 @@ import AdminVerifikasi from "../pages/admin/AdminVerifikasi";
 import AdminPengguna from "../pages/admin/AdminPengguna";
 import AdminSengketa from "../pages/admin/AdminSengketa";
 import AdminTransaksi from "../pages/admin/AdminTransaksi";
+import AdminLaporan from "../pages/admin/AdminLaporan";
 import AdminPengaturan from "../pages/admin/AdminPengaturan";
 import AdminLogin from "../pages/admin/AdminLogin";
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -63,6 +65,14 @@ const AppRoutes = () => {
           }
         />
         <Route
+          path="/bantuan"
+          element={
+            <ProtectedRoute>
+              <Bantuan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/chat"
           element={
             <ProtectedRoute>
@@ -95,6 +105,7 @@ const AppRoutes = () => {
         <Route path="penghasilan" element={<Penghasilan />} />
         <Route path="ulasan" element={<Ulasan />} />
         <Route path="profil" element={<ProfilSaya />} />
+        <Route path="bantuan" element={<Bantuan />} />
       </Route>
 
       {/* ── Area admin — login username/password terpisah ── */}
@@ -111,6 +122,7 @@ const AppRoutes = () => {
         <Route path="verifikasi" element={<AdminVerifikasi />} />
         <Route path="transaksi" element={<AdminTransaksi />} />
         <Route path="sengketa" element={<AdminSengketa />} />
+        <Route path="laporan" element={<AdminLaporan />} />
         <Route path="pengguna" element={<AdminPengguna />} />
         <Route path="pengaturan" element={<AdminPengaturan />} />
       </Route>

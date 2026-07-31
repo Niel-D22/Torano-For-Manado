@@ -13,6 +13,8 @@ export { messages } from "./messages.js";
 export { payments } from "./payments.js";
 export { disputes } from "./disputes.js";
 export { pushSubscriptions } from "./push-subscriptions.js";
+export { appSettings } from "./app-settings.js";
+export { reports } from "./reports.js";
 
 // --- Relations ---
 export {

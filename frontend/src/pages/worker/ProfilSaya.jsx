@@ -24,6 +24,7 @@ import { api } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
+import { ListSkeleton } from "../../components/Skeletons";
 import ImageUpload from "../../components/ImageUpload";
 import LocationPicker from "../../components/LocationPicker";
 
@@ -216,9 +217,7 @@ const ProfilSaya = () => {
 
   if (loading) {
     return (
-      <div className="grid place-items-center py-24 text-moss">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <ListSkeleton count={6} />
     );
   }
 

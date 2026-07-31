@@ -44,6 +44,8 @@ const envSchema = z.object({
   // dengan aman dan hanya dicatat di log (in app notification tetap jalan).
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default("Torano <onboarding@resend.dev>"),
+  // Tujuan kotak saran (tidak ditampilkan di frontend).
+  FEEDBACK_TO: z.string().default("danielwarouw01@gmail.com"),
   // URL frontend untuk tautan di dalam email.
   APP_URL: z.string().url().default("http://localhost:5173"),
 

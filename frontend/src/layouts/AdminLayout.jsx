@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { NavLink, Link, Outlet, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import ConfirmDialog from "../components/ConfirmDialog";
+import { AnimatedOutlet } from "../components/PageTransition";
 import {
   LayoutDashboard,
   ShieldCheck,
@@ -9,21 +10,119 @@ import {
   Scale,
   Users,
   Settings,
+  Flag,
   Bell,
   LogOut,
 } from "lucide-react";
 import logo from "../assets/LOGO.png";
 import Avatar from "../components/Avatar";
-import { adminLogout, getAdminName } from "../lib/adminApi";
+import { adminApi, adminLogout, getAdminName } from "../lib/adminApi";
 
 const nav = [
   { to: "/admin", label: "Dashboard", Icon: LayoutDashboard, end: true },
   { to: "/admin/verifikasi", label: "Verifikasi Mitra", Icon: ShieldCheck },
   { to: "/admin/transaksi", label: "Transaksi", Icon: Receipt },
   { to: "/admin/sengketa", label: "Sengketa", Icon: Scale },
+  { to: "/admin/laporan", label: "Laporan", Icon: Flag },
   { to: "/admin/pengguna", label: "Pengguna", Icon: Users },
   { to: "/admin/pengaturan", label: "Pengaturan", Icon: Settings },
 ];
+
+const sejak = (d) => {
+  const s = Math.floor((Date.now() - new Date(d).getTime()) / 1000);
+  if (s < 60) return "baru saja";
+  if (s < 3600) return `${Math.floor(s / 60)} mnt lalu`;
+  if (s < 86400) return `${Math.floor(s / 3600)} jam lalu`;
+  return `${Math.floor(s / 86400)} hari lalu`;
+};
+
+// Lonceng notifikasi admin: menarik data agregat dari /admin/notifications.
+const NotifBell = () => {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([]);
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+
+  const load = async () => {
+    try {
+      const { data } = await adminApi.get("/admin/notifications");
+      setItems(data.data.items || []);
+      setCount(data.data.unreadCount || 0);
+    } catch {
+      /* diamkan; lonceng opsional */
+    }
+  };
+
+  useEffect(() => {
+    load();
+    const t = setInterval(load, 60000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const onDoc = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  const go = (link) => {
+    setOpen(false);
+    navigate(link);
+  };
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        aria-label="Notifikasi"
+        onClick={() => setOpen((v) => !v)}
+        className="ring-focus relative rounded-lg p-2 text-ink/90 hover:bg-cloud hover:text-ink"
+      >
+        <Bell className="h-5 w-5" aria-hidden="true" />
+        {count > 0 && (
+          <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-forest px-1 text-[10px] font-bold text-white">
+            {count > 9 ? "9+" : count}
+          </span>
+        )}
+      </button>
+
+      {open && (
+        <div className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-line bg-white shadow-xl">
+          <div className="flex items-center justify-between border-b border-line px-4 py-3">
+            <p className="text-sm font-extrabold text-ink">Notifikasi</p>
+            <span className="rounded-full bg-cloud px-2 py-0.5 text-xs font-bold text-moss">
+              {count} baru
+            </span>
+          </div>
+          <div className="max-h-96 overflow-y-auto">
+            {items.length === 0 ? (
+              <p className="px-4 py-8 text-center text-sm text-moss">Tidak ada notifikasi.</p>
+            ) : (
+              items.map((n) => (
+                <button
+                  key={n.id}
+                  type="button"
+                  onClick={() => go(n.link)}
+                  className="flex w-full items-start gap-3 border-b border-line/60 px-4 py-3 text-left transition-colors hover:bg-cloud/60 last:border-0"
+                >
+                  <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-forest" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-ink">{n.title}</p>
+                    <p className="truncate text-xs text-moss">{n.body}</p>
+                    <p className="mt-0.5 text-[11px] text-slate">{sejak(n.at)}</p>
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const linkClass = ({ isActive }) =>
   `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
@@ -95,16 +194,7 @@ const AdminLayout = () => {
           </Link>
 
           <div className="ml-auto flex items-center gap-3">
-            <button
-              type="button"
-              aria-label="Notifikasi"
-              className="ring-focus relative rounded-lg p-2 text-ink/90 hover:bg-cloud hover:text-ink"
-            >
-              <Bell className="h-5 w-5" aria-hidden="true" />
-              <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-forest px-1 text-[10px] font-bold text-white">
-                8
-              </span>
-            </button>
+            <NotifBell />
             <div className="flex items-center gap-2">
               <Avatar name={name} className="h-8 w-8 ring-1 ring-line" textClass="text-xs" />
               <span className="hidden text-sm font-semibold text-ink sm:inline">
@@ -115,7 +205,7 @@ const AdminLayout = () => {
         </header>
 
         <main>
-          <Outlet />
+          <AnimatedOutlet />
         </main>
       </div>
 

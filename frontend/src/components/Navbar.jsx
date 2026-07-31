@@ -11,9 +11,9 @@ import { useLayout } from "../lib/layout";
 
 const navItems = [
   { to: "/", label: "Beranda" },
-  { to: "/cari", label: "Kategori" },
+  { to: "/cari", label: "Cari Pekerja" },
   { to: "/cara-kerja", label: "Cara Kerja" },
-  { to: "/daftar/pekerja", label: "Jadi Pekerja" },
+  { to: "/tentang", label: "Tentang Kami" },
 ];
 
 const linkClass =
@@ -91,8 +91,8 @@ const Navbar = () => {
                 <Link to="/chat" className="block px-4 py-2 text-sm text-ink hover:bg-cloud">
                   Pesanan Saya
                 </Link>
-                <Link to="/cari" className="block px-4 py-2 text-sm text-ink hover:bg-cloud">
-                  Favorit
+                <Link to="/bantuan" className="block px-4 py-2 text-sm text-ink hover:bg-cloud">
+                  Bantuan & Lapor
                 </Link>
                 <div className="my-1 h-px bg-line" />
                 <button

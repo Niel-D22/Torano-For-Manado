@@ -66,6 +66,29 @@ const AdminTransaksi = () => {
     });
   }, [data, tab, q]);
 
+  const exportCSV = () => {
+    const rows = filtered;
+    if (rows.length === 0) return toast.error("Tidak ada transaksi untuk diekspor");
+    const head = ["ID Transaksi", "Pelanggan", "Mitra", "Pekerjaan", "Jumlah", "Biaya Layanan", "Diterima Pekerja", "Status", "Tanggal"];
+    const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const lines = [head.map(esc).join(",")];
+    rows.forEach((t) =>
+      lines.push(
+        [t.code, t.customer.name, t.worker.name, t.jobTitle, t.amount, t.fee, t.workerAmount, t.status, tglJam(t.date)]
+          .map(esc)
+          .join(","),
+      ),
+    );
+    const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `transaksi-torano-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`${rows.length} transaksi diekspor`);
+  };
+
   const processWithdrawal = async (id) => {
     try {
       await adminApi.patch(`/admin/withdrawals/${id}/process`);
@@ -125,10 +148,10 @@ const AdminTransaksi = () => {
               />
             </div>
             <button
-              onClick={() => toast.info("Ekspor tersedia pada versi berikutnya")}
+              onClick={exportCSV}
               className="flex h-10 items-center gap-1.5 rounded-xl border border-line px-3 text-sm font-semibold text-ink hover:bg-cloud"
             >
-              <Download className="h-4 w-4" /> Export
+              <Download className="h-4 w-4" /> Export CSV
             </button>
           </div>
 

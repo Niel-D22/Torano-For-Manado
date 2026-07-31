@@ -18,6 +18,7 @@ import { api } from "../lib/api";
 import { supabase } from "../lib/supabase";
 import { loadSnap } from "../lib/snap";
 import Spinner from "../components/Spinner";
+import { ChatSkeleton } from "../components/Skeletons";
 import Avatar from "../components/Avatar";
 import DisputeModal from "../components/DisputeModal";
 import ReviewModal from "../components/ReviewModal";
@@ -240,13 +241,7 @@ const ChatInbox = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="grid place-items-center py-24 text-moss">
-        <Spinner className="h-8 w-8" />
-      </div>
-    );
-  }
+  if (loading) return <ChatSkeleton />;
 
   const active = convos.find((c) => c.id === activeId);
   const other = thread?.conversation?.other;

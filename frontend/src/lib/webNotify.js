@@ -15,8 +15,11 @@ export async function requestNotify() {
 
 export function showNotify(title, body, onClick) {
   if (!canNotify() || Notification.permission !== "granted") return;
+  // Jangan ganggu saat pengguna sedang aktif melihat aplikasi (push service
+  // worker yang menangani saat tab tertutup/di belakang).
+  if (typeof document !== "undefined" && document.visibilityState === "visible") return;
   try {
-    const n = new Notification(title, { body, icon: "/favicon.svg", badge: "/favicon.svg" });
+    const n = new Notification(title, { body, icon: "/icon-192.png", badge: "/icon-192.png" });
     if (onClick) {
       n.onclick = () => {
         window.focus();

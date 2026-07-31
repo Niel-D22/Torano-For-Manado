@@ -13,7 +13,7 @@ import {
   Inbox,
 } from "lucide-react";
 import { api } from "../../lib/api";
-import Spinner from "../../components/Spinner";
+import { DashboardSkeleton } from "../../components/Skeletons";
 
 const rupiah = (rb) => "Rp" + (Number(rb || 0) * 1000).toLocaleString("id-ID");
 const jam = (iso) =>
@@ -64,13 +64,7 @@ const Dashboard = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="grid place-items-center py-24 text-moss">
-        <Spinner className="h-8 w-8" />
-      </div>
-    );
-  }
+  if (loading) return <DashboardSkeleton />;
 
   const { profile, stats, incoming = [], today = [] } = data || {};
 

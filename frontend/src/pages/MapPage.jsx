@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import MapView from "../components/MapView";
-import { categories, categoryMap, workers } from "../data/workers";
+import { categories } from "../data/workers";
+import { api } from "../lib/api";
 import { ArrowIcon, PinIcon } from "../components/icons";
 
 const MapPage = () => {
@@ -12,15 +13,21 @@ const MapPage = () => {
   const [activeCat, setActiveCat] = useState(katParam);
   const [selectedId, setSelectedId] = useState(null);
 
+  // Pekerja terverifikasi dari database (bukan data statis).
+  const [workers, setWorkers] = useState([]);
+  useEffect(() => {
+    api.get("/workers").then((r) => setWorkers(r.data.data)).catch(() => setWorkers([]));
+  }, []);
+
   const results = useMemo(
     () =>
       workers.filter((w) => {
         const matchCat = activeCat ? w.category === activeCat : true;
-        const haystack = `${w.name} ${w.skill} ${w.area}`.toLowerCase();
+        const haystack = `${w.name} ${w.skill || ""} ${w.area || ""}`.toLowerCase();
         const matchQ = q ? haystack.includes(q.toLowerCase()) : true;
         return matchCat && matchQ;
       }),
-    [activeCat, q],
+    [activeCat, q, workers],
   );
 
   const backHref = () => {

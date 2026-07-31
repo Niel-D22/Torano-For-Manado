@@ -10,6 +10,7 @@ import {
   withdrawals,
   disputes,
   messages,
+  reports,
 } from "../db/schema/index.js";
 import { sendSuccess, sendList } from "../shared/http/index.js";
 import { NotFoundError } from "../shared/errors/index.js";
@@ -264,6 +265,59 @@ export async function listTransactions(req: Request, res: Response): Promise<voi
     withdrawalRequests,
     weekly,
   });
+}
+
+// GET /api/admin/notifications — hal yang perlu ditindak admin.
+export async function getAdminNotifications(_req: Request, res: Response): Promise<void> {
+  const [apps, disp, wds, reps] = await Promise.all([
+    db.query.workerApplications.findMany({ with: { profile: true, category: true } }),
+    db.select().from(disputes).orderBy(desc(disputes.createdAt)),
+    db.select().from(withdrawals).orderBy(desc(withdrawals.createdAt)),
+    db.select().from(reports).orderBy(desc(reports.createdAt)),
+  ]);
+
+  const items: Array<Record<string, unknown>> = [];
+  const submitted = apps.filter((a) => a.status === "submitted");
+  for (const a of submitted)
+    items.push({
+      id: `verif-${a.id}`,
+      type: "verify",
+      title: "Mitra menunggu verifikasi",
+      body: `${a.profile?.fullName ?? "Mitra"} (${a.category?.name ?? "mitra"})`,
+      at: a.createdAt,
+      link: "/admin/verifikasi",
+    });
+  for (const d of disp.filter((x) => x.status !== "resolved"))
+    items.push({
+      id: `disp-${d.id}`,
+      type: "dispute",
+      title: "Sengketa perlu ditinjau",
+      body: `${d.code} - ${d.jobTitle ?? ""}`,
+      at: d.createdAt,
+      link: "/admin/sengketa",
+    });
+  const appName = new Map(apps.map((a) => [a.id, a.profile?.fullName ?? "Mitra"]));
+  for (const w of wds.filter((x) => x.status === "requested"))
+    items.push({
+      id: `wd-${w.id}`,
+      type: "withdraw",
+      title: "Permintaan pencairan",
+      body: `${appName.get(w.workerApplicationId) ?? "Mitra"} - Rp${(toNum(w.amount) * 1000).toLocaleString("id-ID")}`,
+      at: w.createdAt,
+      link: "/admin/transaksi",
+    });
+  for (const r of reps.filter((x) => x.status === "open"))
+    items.push({
+      id: `rep-${r.id}`,
+      type: "report",
+      title: "Laporan pengguna baru",
+      body: `${r.reporterName ?? "Pengguna"}: ${r.subject ?? ""}`,
+      at: r.createdAt,
+      link: "/admin/laporan",
+    });
+
+  items.sort((a, b) => new Date(b["at"] as string).getTime() - new Date(a["at"] as string).getTime());
+  sendSuccess(res, { items: items.slice(0, 30), unreadCount: items.length });
 }
 
 // PATCH /api/admin/withdrawals/:id/process — tandai pencairan selesai (dibayar).

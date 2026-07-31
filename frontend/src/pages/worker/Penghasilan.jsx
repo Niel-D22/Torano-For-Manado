@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { api } from "../../lib/api";
 import Spinner from "../../components/Spinner";
+import { DashboardSkeleton } from "../../components/Skeletons";
 import Modal from "../../components/Modal";
 
 const rupiah = (rb) => "Rp" + (Number(rb || 0) * 1000).toLocaleString("id-ID");
@@ -40,9 +41,7 @@ const Penghasilan = () => {
 
   if (loading) {
     return (
-      <div className="grid place-items-center py-24 text-moss">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <DashboardSkeleton />
     );
   }
 

@@ -10,8 +10,63 @@ import {
   LogOut,
 } from "lucide-react";
 import { api } from "../../lib/api";
-import { getAdminName, adminLogout } from "../../lib/adminApi";
+import { adminApi, getAdminName, adminLogout } from "../../lib/adminApi";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import Spinner from "../../components/Spinner";
+
+const inputCls =
+  "ring-focus h-11 w-full rounded-xl border border-line bg-paper px-3 text-sm text-ink focus:outline-none";
+
+// Form ganti kata sandi admin (tersimpan di database).
+const PasswordForm = () => {
+  const [cur, setCur] = useState("");
+  const [next, setNext] = useState("");
+  const [conf, setConf] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async (e) => {
+    e.preventDefault();
+    if (next.length < 8) return toast.error("Kata sandi baru minimal 8 karakter");
+    if (next !== conf) return toast.error("Konfirmasi kata sandi tidak cocok");
+    setBusy(true);
+    try {
+      await adminApi.patch("/admin/password", { currentPassword: cur, newPassword: next });
+      toast.success("Kata sandi admin diperbarui");
+      setCur("");
+      setNext("");
+      setConf("");
+    } catch (err) {
+      toast.error(err.response?.data?.error?.message || "Gagal mengubah kata sandi");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <form onSubmit={submit} className="space-y-3">
+      <label className="block">
+        <span className="mb-1.5 block text-sm font-bold text-ink">Kata sandi saat ini</span>
+        <input type="password" className={inputCls} value={cur} onChange={(e) => setCur(e.target.value)} required />
+      </label>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-bold text-ink">Kata sandi baru</span>
+          <input type="password" className={inputCls} value={next} onChange={(e) => setNext(e.target.value)} placeholder="Minimal 8 karakter" required />
+        </label>
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-bold text-ink">Ulangi kata sandi baru</span>
+          <input type="password" className={inputCls} value={conf} onChange={(e) => setConf(e.target.value)} required />
+        </label>
+      </div>
+      <button
+        type="submit"
+        disabled={busy}
+        className="ring-focus flex h-11 items-center justify-center gap-2 rounded-xl bg-forest px-5 text-sm font-bold text-white transition-colors hover:bg-ink disabled:opacity-70"
+      >
+        {busy && <Spinner />}
+        {busy ? "Menyimpan…" : "Simpan Kata Sandi Baru"}
+      </button>
+    </form>
+  );
+};
 
 const Section = ({ icon: Icon, title, children }) => (
   <section className="rounded-2xl border border-line bg-white p-5">
@@ -99,17 +154,16 @@ const AdminPengaturan = () => {
       </div>
 
       <section className="mt-5 rounded-2xl border border-line bg-white p-5">
-        <div className="flex items-center gap-3">
+        <div className="mb-4 flex items-center gap-3">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-cloud text-moss">
             <KeyRound className="h-5 w-5" aria-hidden="true" />
           </span>
           <div>
             <h2 className="font-extrabold text-ink">Kredensial Admin</h2>
-            <p className="text-sm text-moss">
-              Ubah kata sandi admin lewat variabel ADMIN_PASSWORD di server, lalu mulai ulang backend.
-            </p>
+            <p className="text-sm text-moss">Ganti kata sandi untuk masuk ke panel admin.</p>
           </div>
         </div>
+        <PasswordForm />
       </section>
 
       <button

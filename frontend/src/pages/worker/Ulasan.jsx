@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Star, MessageSquareQuote } from "lucide-react";
 import { api } from "../../lib/api";
-import Spinner from "../../components/Spinner";
+import { ListSkeleton } from "../../components/Skeletons";
 import Avatar from "../../components/Avatar";
 
 const Stars = ({ value, size = "h-4 w-4" }) => (
@@ -32,9 +32,7 @@ const Ulasan = () => {
 
   if (loading) {
     return (
-      <div className="grid place-items-center py-24 text-moss">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <ListSkeleton />
     );
   }
 

@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Map, ArrowLeft } from "lucide-react";
 import WorkerCard from "../components/WorkerCard";
+import { WorkerCardsSkeleton } from "../components/Skeletons";
 import MapView from "../components/MapView";
 import CariControls, { jarakOpts, hargaOpts, CategoryChips } from "../components/CariControls";
 import { api } from "../lib/api";
@@ -36,9 +37,15 @@ const SearchResults = () => {
 
   // Pekerja terverifikasi dari database (jarak dihitung dari titik lokasi pencari).
   const [workers, setWorkers] = useState([]);
+  const [loadingWorkers, setLoadingWorkers] = useState(true);
   useEffect(() => {
     const qs = f.coords ? `?lat=${f.coords.lat}&lng=${f.coords.lng}` : "";
-    api.get(`/workers${qs}`).then((r) => setWorkers(r.data.data)).catch(() => setWorkers([]));
+    setLoadingWorkers(true);
+    api
+      .get(`/workers${qs}`)
+      .then((r) => setWorkers(r.data.data))
+      .catch(() => setWorkers([]))
+      .finally(() => setLoadingWorkers(false));
   }, [f.coords]);
 
   // null = mode grid; berisi id = mode split (peta terbuka di kanan).
@@ -84,7 +91,11 @@ const SearchResults = () => {
         <CariControls f={f} up={up} />
         <div className="mt-5">{count}</div>
 
-        {results.length > 0 ? (
+        {loadingWorkers ? (
+          <div className="mt-4">
+            <WorkerCardsSkeleton count={6} />
+          </div>
+        ) : results.length > 0 ? (
           <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {results.map((w, i) => (
               <WorkerCard

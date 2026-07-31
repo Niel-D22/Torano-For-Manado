@@ -5,6 +5,7 @@ interface SendEmailInput {
   to: string;
   subject: string;
   html: string;
+  replyTo?: string;
 }
 
 /**
@@ -17,6 +18,7 @@ export async function sendEmail({
   to,
   subject,
   html,
+  replyTo,
 }: SendEmailInput): Promise<void> {
   if (!env.RESEND_API_KEY) {
     logger.info(
@@ -33,7 +35,13 @@ export async function sendEmail({
         Authorization: `Bearer ${env.RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ from: env.EMAIL_FROM, to, subject, html }),
+      body: JSON.stringify({
+        from: env.EMAIL_FROM,
+        to,
+        subject,
+        html,
+        ...(replyTo ? { reply_to: replyTo } : {}),
+      }),
     });
     if (!res.ok) {
       const detail = await res.text();

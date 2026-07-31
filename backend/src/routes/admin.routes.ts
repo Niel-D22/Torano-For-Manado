@@ -1,7 +1,12 @@
 import express from "express";
 import { validate } from "../shared/validation/index.js";
 import { requireAdminSession } from "../middleware/require-admin-session.js";
-import { adminLogin, adminMe } from "../controllers/admin-auth.controller.js";
+import {
+  adminLogin,
+  adminMe,
+  changeAdminPassword,
+} from "../controllers/admin-auth.controller.js";
+import { listReports, updateReport } from "../controllers/reports.controller.js";
 import {
   listApplications,
   getApplication,
@@ -25,12 +30,17 @@ import {
   getAdminDashboard,
   listTransactions,
   processWithdrawal,
+  getAdminNotifications,
 } from "../controllers/admin-analytics.controller.js";
 import {
   adminLoginSchema,
   rejectSchema,
   updateReferenceSchema,
 } from "../validators/admin.validator.js";
+import {
+  updateReportSchema,
+  changeAdminPasswordSchema,
+} from "../validators/report.validator.js";
 
 const router = express.Router();
 
@@ -41,6 +51,12 @@ router.post("/login", validate("body", adminLoginSchema), adminLogin);
 router.use(requireAdminSession);
 
 router.get("/me", adminMe);
+router.patch(
+  "/password",
+  validate("body", changeAdminPasswordSchema),
+  changeAdminPassword,
+);
+router.get("/notifications", getAdminNotifications);
 router.get("/dashboard", getAdminDashboard);
 router.get("/transactions", listTransactions);
 router.patch("/withdrawals/:id/process", processWithdrawal);
@@ -62,6 +78,10 @@ router.patch(
 router.get("/users", listUsers);
 router.get("/users/:id/detail", getUserDetail);
 router.patch("/users/:profileId/status", setUserStatus);
+
+// Laporan pengguna
+router.get("/reports", listReports);
+router.patch("/reports/:id", validate("body", updateReportSchema), updateReport);
 
 // Sengketa
 router.get("/disputes", listDisputes);

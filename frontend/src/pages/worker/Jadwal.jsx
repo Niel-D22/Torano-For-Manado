@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { CalendarDays, MapPin, Clock, Check, MessageSquareText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "../../lib/api";
-import Spinner from "../../components/Spinner";
+import { ListSkeleton } from "../../components/Skeletons";
 
 const rupiah = (rb) => "Rp" + (Number(rb || 0) * 1000).toLocaleString("id-ID");
 const jam = (iso) =>
@@ -92,9 +92,7 @@ const Jadwal = () => {
 
   if (loading) {
     return (
-      <div className="grid place-items-center py-24 text-moss">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <ListSkeleton />
     );
   }
 

@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import ImageUpload from "../components/ImageUpload";
 import Spinner from "../components/Spinner";
+import { ListSkeleton } from "../components/Skeletons";
 
 const inputCls =
   "ring-focus h-11 w-full rounded-xl border border-line bg-paper px-3 text-sm text-ink focus:outline-none";
@@ -25,9 +26,7 @@ const ProfilPencari = () => {
 
   if (!user) {
     return (
-      <div className="grid place-items-center py-24 text-moss">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <ListSkeleton count={3} />
     );
   }
 
