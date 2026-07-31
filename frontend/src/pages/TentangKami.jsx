@@ -187,7 +187,7 @@ const TentangKami = () => (
         </div>
       </section>
     </Reveal>
-    \{/* ── Tim pengembang ── */}
+    {/* ── Tim pengembang ── */}
     <section className="mt-16">
       <Reveal className="text-center">
         <h2 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
